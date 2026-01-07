@@ -1,31 +1,46 @@
 <script>
 let credit = localStorage.getItem("credit");
+
 if (credit === null) {
   credit = 5;
   localStorage.setItem("credit", credit);
 }
+
+credit = parseInt(credit);
 document.getElementById("credit").innerText = credit;
 
-const SHEET_ID = "https://docs.google.com/spreadsheets/d/16GwAXZyYn109Bji4j--Ym9a-GG4b3oTkwP0bdQGnHkM/edit?usp=drivesdk"; // BURAYA KENDİ ID'Nİ YAZ
-const URL = `https://opensheet.elk.sh/${SHEET_ID}/Sheet1`;
+const SHEET_ID = "16GwAXZyYn109Bji4j--Ym9a-GG4b3oTkwP0bdQGnHkM";
+const SHEET_NAME = "Sheet1";
+const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 fetch(URL)
-.then(res => res.json())
-.then(data => {
-  let html = "";
-  data.forEach((item, i) => {
-    html += `
-    <div class="card">
-      <img src="${item.image}">
-      <button onclick="unlock(${i})">Unlock Prompt (1 Credit)</button>
-      <p id="p${i}" style="display:none;margin-top:10px;">${item.prompt}</p>
-    </div>
-    `;
-  });
-  document.body.innerHTML += html;
-});
+  .then(res => res.json())
+  .then(data => {
+    const container = document.createElement("div");
 
-function unlock(i){
+    data.forEach((item, i) => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <img src="${item.image}">
+        <button onclick="unlock(${i})">Unlock Prompt (1 Credit)</button>
+        <p id="p${i}" style="display:none;margin-top:10px;">
+          ${item.prompt}
+        </p>
+      `;
+
+      container.appendChild(card);
+    });
+
+    document.body.appendChild(container);
+  })
+  .catch(err => {
+    alert("Sheet error");
+    console.log(err);
+  });
+
+function unlock(i) {
   if (credit <= 0) {
     alert("No credits");
     return;
@@ -33,7 +48,7 @@ function unlock(i){
   credit--;
   localStorage.setItem("credit", credit);
   document.getElementById("credit").innerText = credit;
-  document.getElementById("p"+i).style.display = "block";
+  document.getElementById("p" + i).style.display = "block";
 }
-</script>
+    </script>
 
