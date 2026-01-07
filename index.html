@@ -10,22 +10,31 @@
   .card { background:#fff; padding:15px; margin-bottom:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.2);}
   .card img { max-width:100%; border-radius:5px; }
   .card button { margin-top:10px; padding:8px 12px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer;}
+  #watchAd { background:#FF5722; margin-bottom:20px; }
 </style>
+
+<!-- AdsGram SDK -->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
 </head>
 <body>
 
 <div class="credit">Credits: <span id="credit">0</span></div>
+<button id="watchAd">Watch Ad → +2 Credits</button>
 
 <script>
+// Kredi sistemi
 let credit = localStorage.getItem("credit");
 if (credit === null) { credit = 5; localStorage.setItem("credit", credit); }
 credit = parseInt(credit);
 document.getElementById("credit").innerText = credit;
 
+// Sheet ID ve adı
 const SHEET_ID = "1a4gxpaMg2gHNP9krJtVtqmDwMsvpY1KD1tqIes6zNNY";
 const SHEET_NAME = "Sheet1";
 const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
+// Fetch promptlar
 fetch(URL)
 .then(res => res.json())
 .then(data => {
@@ -47,6 +56,7 @@ fetch(URL)
   console.log(err);
 });
 
+// Unlock fonksiyonu
 function unlock(i){
   if(credit<=0){ alert("No credits"); return; }
   credit--;
@@ -54,6 +64,23 @@ function unlock(i){
   document.getElementById("credit").innerText = credit;
   document.getElementById("p"+i).style.display = "block";
 }
+
+// AdsGram başlat
+const AdController = window.Adsgram.init({ blockId: "20767" });
+
+// Watch Ad butonu
+document.getElementById("watchAd").addEventListener("click", () => {
+    AdController.showRewardedAd()
+    .then(() => {
+        credit += 2;
+        localStorage.setItem("credit", credit);
+        document.getElementById("credit").innerText = credit;
+        alert("You earned 2 credits!");
+    })
+    .catch(() => {
+        alert("Ad not completed or failed.");
+    });
+});
 </script>
 
 </body>
