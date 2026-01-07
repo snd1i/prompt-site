@@ -6,15 +6,12 @@
 <title>Prompt Site</title>
 <style>
   body { font-family: Arial, sans-serif; padding: 20px 20px 80px 20px; background:#f0f0f0;}
-  .credit { font-size: 18px; margin-bottom: 20px; }
   .card { background:#fff; padding:15px; margin-bottom:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.2);}
   .card img { max-width:100%; border-radius:5px; }
   .card button { margin-top:10px; padding:8px 12px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer;}
 </style>
 </head>
 <body>
-
-<div class="credit">Credits: <span id="credit">0</span></div>
 
 <!-- A-Ads Banner (Alt Bar) -->
 <div style="position: absolute; z-index: 99999">
@@ -47,15 +44,6 @@
 </div>
 
 <script>
-// Kullanıcı ID'si (isteğe bağlı, localStorage için)
-let userId = "guest";
-
-// Kredi sistemi
-let credit = localStorage.getItem("credit_" + userId);
-if (credit === null) { credit = 5; localStorage.setItem("credit_" + userId, credit); }
-credit = parseInt(credit);
-document.getElementById("credit").innerText = credit;
-
 // Google Sheet ID ve Sheet adı
 const SHEET_ID = "1a4gxpaMg2gHNP9krJtVtqmDwMsvpY1KD1tqIes6zNNY";
 const SHEET_NAME = "Sheet1";
@@ -71,8 +59,9 @@ fetch(URL)
     card.className = "card";
     card.innerHTML = `
       <img src="${item.image}">
-      <button onclick="unlock(${i})">Unlock Prompt (1 Credit)</button>
-      <p id="p${i}" style="display:none;margin-top:10px;">${item.prompt}</p>
+      <p style="margin-top:10px;">${item.prompt}</p>
+      <button onclick="copyPrompt(${i})">Copy</button>
+      <textarea id="prompt${i}" style="display:none;">${item.prompt}</textarea>
     `;
     container.appendChild(card);
   });
@@ -83,13 +72,14 @@ fetch(URL)
   console.log(err);
 });
 
-// Unlock fonksiyonu
-function unlock(i){
-  if(credit<=0){ alert("No credits"); return; }
-  credit--;
-  localStorage.setItem("credit_" + userId, credit);
-  document.getElementById("credit").innerText = credit;
-  document.getElementById("p"+i).style.display = "block";
+// Copy fonksiyonu
+function copyPrompt(i){
+  const textarea = document.getElementById(`prompt${i}`);
+  textarea.style.display = 'block';
+  textarea.select();
+  document.execCommand('copy');
+  textarea.style.display = 'none';
+  alert('Prompt copied!');
 }
 </script>
 
