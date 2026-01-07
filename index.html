@@ -10,7 +10,7 @@
   .card { background:#fff; padding:15px; margin-bottom:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.2);}
   .card img { max-width:100%; border-radius:5px; }
   .card button { margin-top:10px; padding:8px 12px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer;}
-  #watchAd { background:#FF5722; margin-bottom:20px; }
+  #watchAd { background:#FF5722; margin-bottom:20px; padding:10px 15px; border:none; color:white; border-radius:5px; cursor:pointer;}
 </style>
 
 <!-- AdsGram SDK -->
@@ -23,9 +23,16 @@
 <button id="watchAd">Watch Ad → +2 Credits</button>
 
 <script>
+// Kullanıcı ID'sini al
+function getUserId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("userId") || "guest";
+}
+const userId = getUserId();
+
 // Kredi sistemi
-let credit = localStorage.getItem("credit");
-if (credit === null) { credit = 5; localStorage.setItem("credit", credit); }
+let credit = localStorage.getItem("credit_" + userId);
+if (credit === null) { credit = 5; localStorage.setItem("credit_" + userId, credit); }
 credit = parseInt(credit);
 document.getElementById("credit").innerText = credit;
 
@@ -60,20 +67,23 @@ fetch(URL)
 function unlock(i){
   if(credit<=0){ alert("No credits"); return; }
   credit--;
-  localStorage.setItem("credit", credit);
+  localStorage.setItem("credit_" + userId, credit);
   document.getElementById("credit").innerText = credit;
   document.getElementById("p"+i).style.display = "block";
 }
 
-// AdsGram başlat
-const AdController = window.Adsgram.init({ blockId: "20767" });
+// AdsGram başlat (Rewarded Ad)
+const AdController = window.Adsgram.init({ 
+    blockId: "20767", 
+    rewardUrl: "https://snd1i.github.io/prompt-site/?userId=[userId]"
+});
 
 // Watch Ad butonu
 document.getElementById("watchAd").addEventListener("click", () => {
     AdController.showRewardedAd()
     .then(() => {
         credit += 2;
-        localStorage.setItem("credit", credit);
+        localStorage.setItem("credit_" + userId, credit);
         document.getElementById("credit").innerText = credit;
         alert("You earned 2 credits!");
     })
