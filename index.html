@@ -5,41 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prompt Site</title>
 <style>
-  body { font-family: Arial, sans-serif; padding: 20px 20px 80px 20px; background:#f0f0f0;}
-  .card { background:#fff; padding:15px; margin-bottom:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.2);}
-  .card img { max-width:100%; border-radius:5px; }
-  .card button { margin-top:10px; padding:8px 12px; border:none; background:#4CAF50; color:white; border-radius:5px; cursor:pointer;}
+body { font-family: Arial, sans-serif; padding: 20px 20px 100px 20px; background:#f0f0f0; margin:0;}
+.card { background:#fff; padding:15px; margin-bottom:15px; border-radius:10px; box-shadow:0 3px 8px rgba(0,0,0,0.2);}
+.card img { max-width:100%; border-radius:5px; margin-bottom:10px;}
+.card p { margin-bottom:10px; font-size:14px; }
+.button-container { display:flex; gap:10px; flex-wrap: wrap;}
+.card button, .card a { flex:1; padding:8px; border:none; border-radius:5px; cursor:pointer; text-align:center; text-decoration:none; color:white;}
+.copy-btn { background:#4CAF50; }
+.share-btn { background:#2196F3; }
+.support-btn { background:#FF5722; }
 </style>
 </head>
 <body>
 
+<!-- Prompt Kartları Burada Eklenecek -->
+
 <!-- A-Ads Banner (Alt Bar) -->
-<div style="position: absolute; z-index: 99999">
-  <input autocomplete="off" type="checkbox" id="aadsstickymk4jqjs2" hidden />
-  <div style="padding-top: 0; padding-bottom: 50px;">
-    <div style="width:320px;height:50px;position:fixed;text-align:center;font-size:0;bottom:0;left:0;right:0;margin:auto">
-      <label for="aadsstickymk4jqjs2" style="top: -24px; right: 0; position: absolute;border-radius: 4px; background: rgba(248, 248, 249, 0.70); padding: 4px;z-index: 99999;cursor:pointer">
-        <svg fill="#000000" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-          <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "/>
-        </svg>
-      </label>
-      <div id="frame" style="width: 320px;margin: auto;z-index: 99998;height: auto">
-        <div style="width: 320px;margin:auto;text-align:left;position: absolute;left: 0;right: 0; top:-24px">
-          <a style="display:inline-block;font-size: 13px;color: #263238;padding: 4px 10px;background: #F8F8F9;text-decoration: none; border-radius: 4px 4px 0 0;"
-             id="frame-link"
-             target="_blank"
-             href="https://aads.com/campaigns/new?source_id=2423518&source_type=ad_unit&partner=2423518">
-             Advertise here
-          </a>
-        </div>
-        <iframe data-aa=2423518 src="//ad.a-ads.com/2423518/?size=320x50" style='border:0; padding:0; width:320px; height:50px; overflow:hidden; margin: auto'></iframe>
-      </div>
-    </div>
-    <style>
-      #aadsstickymk4jqjs2:checked + div {
-        display: none;
-      }
-    </style>
+<div style="position: fixed; z-index: 99999; bottom:0; left:0; right:0; text-align:center;">
+  <input type="checkbox" id="aadsstickymk4jqjs2" hidden>
+  <div style="width:320px;height:50px;margin:auto;">
+    <label for="aadsstickymk4jqjs2" style="top: -24px; right: 0; position: absolute;border-radius: 4px; background: rgba(248, 248, 249, 0.70); padding: 4px; cursor:pointer;">
+      <svg fill="#000000" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
+        <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "/>
+      </svg>
+    </label>
+    <iframe data-aa=2423518 src="//ad.a-ads.com/2423518/?size=320x50" style='border:0; padding:0; width:320px; height:50px; overflow:hidden; margin:auto'></iframe>
   </div>
 </div>
 
@@ -59,18 +49,19 @@ fetch(URL)
     card.className = "card";
     card.innerHTML = `
       <img src="${item.image}">
-      <p style="margin-top:10px;">${item.prompt}</p>
-      <button onclick="copyPrompt(${i})">Copy</button>
+      <p>${item.prompt}</p>
+      <div class="button-container">
+        <button class="copy-btn" onclick="copyPrompt(${i})">Copy</button>
+        <button class="share-btn" onclick="sharePrompt(${i})">Share</button>
+        <a class="support-btn" href="https://t.me/k4miran_sndi" target="_blank">Support</a>
+      </div>
       <textarea id="prompt${i}" style="display:none;">${item.prompt}</textarea>
     `;
     container.appendChild(card);
   });
   document.body.appendChild(container);
 })
-.catch(err => {
-  alert("Sheet error");
-  console.log(err);
-});
+.catch(err => { console.log("Sheet error", err); alert("Sheet error"); });
 
 // Copy fonksiyonu
 function copyPrompt(i){
@@ -80,6 +71,13 @@ function copyPrompt(i){
   document.execCommand('copy');
   textarea.style.display = 'none';
   alert('Prompt copied!');
+}
+
+// Share fonksiyonu (Telegram)
+function sharePrompt(i){
+  const textarea = document.getElementById(`prompt${i}`);
+  const text = encodeURIComponent(textarea.value);
+  window.open(`https://t.me/share/url?url=&text=${text}`, '_blank');
 }
 </script>
 
