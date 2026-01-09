@@ -8,63 +8,80 @@ document.addEventListener('DOMContentLoaded', () => {
 // Main initialization function
 async function initializeApp() {
     try {
-        showLoading();
         await fetchPrompts();
         setupEventListeners();
-        checkUrlForPrompt();
         updateStats();
     } catch (error) {
         showError(error);
-    } finally {
-        hideLoading();
     }
 }
 
 // Fetch prompts from Google Sheets
 async function fetchPrompts() {
-    const URL = `https://opensheet.elk.sh/${CONFIG.SHEET_ID}/${CONFIG.SHEET_NAME}`;
-    
-    const response = await fetch(URL);
-    const data = await response.json();
-    
-    // Process prompts data
-    STATE.allPrompts = data.map((item, index) => {
-        const promptId = item.prompt ? 
-            item.prompt.substring(0, 50).replace(/\s/g, '_') + '_' + index : 
-            'prompt_' + index;
+    try {
+        const URL = `https://opensheet.elk.sh/${CONFIG.SHEET_ID}/${CONFIG.SHEET_NAME}`;
+        console.log('Fetching from:', URL);
         
-        const dateAdded = item.date || new Date().toISOString();
-        const isNew = isPromptNew(dateAdded);
-        const isViewed = STATE.viewedNewPrompts.includes(promptId);
+        const response = await fetch(URL);
+        if (!response.ok) throw new Error('Failed to fetch prompts');
         
-        return {
-            ...item,
-            id: promptId,
-            likes: STATE.likes[promptId] || 0,
-            dateAdded: dateAdded,
-            image: item.image || CONFIG.DEFAULT_IMAGE,
-            isNew: isNew && !isViewed,
-            isViewed: isViewed
-        };
-    });
-    
-    // Set initial language
-    const savedLang = localStorage.getItem('preferredLanguage') || detectUserLanguage();
-    document.getElementById('languageSelect').value = savedLang;
-    changeLanguage(savedLang);
-    
-    // Initial render
-    STATE.filteredPrompts = [...STATE.allPrompts];
-    renderPrompts();
+        const data = await response.json();
+        console.log('Fetched data:', data);
+        
+        if (!Array.isArray(data)) {
+            throw new Error('Invalid data format from Google Sheets');
+        }
+        
+        // Process prompts data
+        STATE.allPrompts = data.map((item, index) => {
+            const promptId = item.prompt ? 
+                item.prompt.substring(0, 50).replace(/\s/g, '_') + '_' + index : 
+                'prompt_' + index;
+            
+            const dateAdded = item.date || new Date().toISOString();
+            const isNew = isPromptNew(dateAdded);
+            const isViewed = STATE.viewedNewPrompts.includes(promptId);
+            
+            return {
+                ...item,
+                id: promptId,
+                likes: STATE.likes[promptId] || 0,
+                dateAdded: dateAdded,
+                image: item.image || CONFIG.DEFAULT_IMAGE,
+                prompt: item.prompt || 'No prompt text available',
+                isNew: isNew && !isViewed,
+                isViewed: isViewed
+            };
+        });
+        
+        console.log('Processed prompts:', STATE.allPrompts);
+        
+        // Set initial language
+        const savedLang = localStorage.getItem('preferredLanguage') || detectUserLanguage();
+        document.getElementById('languageSelect').value = savedLang;
+        changeLanguage(savedLang);
+        
+        // Initial render
+        STATE.filteredPrompts = [...STATE.allPrompts];
+        renderPrompts();
+        
+    } catch (error) {
+        console.error('Error fetching prompts:', error);
+        showError(error);
+    }
 }
 
 // Check if prompt is new (within last N days)
 function isPromptNew(dateString) {
-    const promptDate = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - promptDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= CONFIG.NEW_PROMPT_DAYS;
+    try {
+        const promptDate = new Date(dateString);
+        const now = new Date();
+        const diffTime = Math.abs(now - promptDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays <= CONFIG.NEW_PROMPT_DAYS;
+    } catch (e) {
+        return false;
+    }
 }
 
 // Mark prompt as viewed (remove NEW badge)
@@ -103,7 +120,6 @@ function updatePageText() {
     const t = TRANSLATIONS[STATE.currentLanguage];
     
     document.title = t.title;
-    document.querySelector('.logo h1').innerHTML = `AI Prompt <span>Hub</span>`;
     document.getElementById('subtitle').textContent = t.subtitle;
     document.getElementById('searchInput').placeholder = t.search_placeholder;
     document.getElementById('footerText').textContent = t.footer;
@@ -151,7 +167,7 @@ function renderPrompts() {
             <div class="no-results">
                 <i class="fas fa-search"></i>
                 <h3>${t.no_results}</h3>
-                <p>Try different keywords or reset filters</p>
+                <p>Try different keywords</p>
             </div>
         `;
         return;
@@ -165,13 +181,13 @@ function renderPrompts() {
             <div class="prompt-card" data-id="${promptId}">
                 ${prompt.isNew ? `<div class="new-badge">${t.new_badge}</div>` : ''}
                 
-                <div class="card-image-container">
-                    <img src="${prompt.image}" class="card-image" alt="Prompt preview">
+                <div class="image-container">
+                    <img src="${prompt.image}" alt="Prompt image">
                 </div>
                 
                 <div class="card-content">
                     <div class="prompt-text">
-                        <p>${prompt.prompt || 'No prompt text available'}</p>
+                        <p>${prompt.prompt}</p>
                     </div>
                     
                     <div class="card-meta">
@@ -215,12 +231,16 @@ function renderPrompts() {
 
 // Format date
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(STATE.currentLanguage === 'ku' ? 'en-US' : STATE.currentLanguage, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString(STATE.currentLanguage === 'ku' ? 'en-US' : STATE.currentLanguage, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } catch (e) {
+        return 'Recent';
+    }
 }
 
 // Copy prompt to clipboard
@@ -279,8 +299,8 @@ function copyShareLink() {
     showNotification(t.copied);
 }
 
-// Open Telegram share
-function openTelegramShare() {
+// Share to Telegram
+function shareToTelegram() {
     const t = TRANSLATIONS[STATE.currentLanguage];
     const message = `${t.share_message}\n\n${CONFIG.TELEGRAM_PROMPT_LINK}`;
     const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(CONFIG.TELEGRAM_PROMPT_LINK)}&text=${encodeURIComponent(message)}`;
@@ -297,16 +317,15 @@ function toggleLike(promptId) {
     
     const isLiked = localStorage.getItem(`liked_${promptId}`) === 'true';
     const likeBtn = document.querySelector(`.prompt-card[data-id="${promptId}"] .like-btn`);
-    const likeCount = document.querySelector(`.prompt-card[data-id="${promptId}"] .like-count`);
     
     if (isLiked) {
         prompt.likes--;
         localStorage.setItem(`liked_${promptId}`, 'false');
-        likeBtn.classList.remove('liked');
+        if (likeBtn) likeBtn.classList.remove('liked');
     } else {
         prompt.likes++;
         localStorage.setItem(`liked_${promptId}`, 'true');
-        likeBtn.classList.add('liked');
+        if (likeBtn) likeBtn.classList.add('liked');
     }
     
     // Update likes in localStorage
@@ -314,6 +333,7 @@ function toggleLike(promptId) {
     localStorage.setItem('promptLikes', JSON.stringify(STATE.likes));
     
     // Update UI
+    const likeCount = document.querySelector(`.prompt-card[data-id="${promptId}"] .like-count`);
     if (likeCount) {
         const t = TRANSLATIONS[STATE.currentLanguage];
         likeCount.textContent = `${prompt.likes} ${t.likes}`;
@@ -346,17 +366,6 @@ function filterPrompts(filterType) {
         default:
             STATE.filteredPrompts = [...STATE.allPrompts];
     }
-    
-    updateFilterButtons();
-    renderPrompts();
-}
-
-// Reset filters
-function resetFilters() {
-    STATE.currentFilter = 'all';
-    STATE.filteredPrompts = [...STATE.allPrompts];
-    document.getElementById('searchInput').value = '';
-    STATE.searchQuery = '';
     
     updateFilterButtons();
     renderPrompts();
@@ -422,37 +431,30 @@ function applySearchFilter() {
     }
 }
 
-// Check URL for prompt parameter
-function checkUrlForPrompt() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const promptId = urlParams.get('prompt');
-    
-    if (promptId) {
-        setTimeout(() => {
-            const promptElement = document.querySelector(`[data-id="${promptId}"]`);
-            if (promptElement) {
-                promptElement.scrollIntoView({ behavior: 'smooth' });
-                
-                // Add highlight effect
-                promptElement.style.boxShadow = '0 0 0 3px var(--accent), 0 20px 40px rgba(0,0,0,0.2)';
-                promptElement.style.transform = 'translateY(-10px)';
-                
-                // Remove highlight after 5 seconds
-                setTimeout(() => {
-                    promptElement.style.boxShadow = '';
-                    promptElement.style.transform = '';
-                }, 5000);
-            }
-        }, 1000);
-    }
-}
-
 // Show notification
 function showNotification(message) {
     const notification = document.createElement('div');
     notification.className = 'notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--primary);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 2px solid var(--card-border);
+        backdrop-filter: blur(20px);
+    `;
+    
     notification.innerHTML = `
-        <i class="fas fa-info-circle"></i>
+        <i class="fas fa-check-circle"></i>
         <span>${message}</span>
     `;
     
@@ -460,29 +462,13 @@ function showNotification(message) {
     
     // Remove after 3 seconds
     setTimeout(() => {
-        notification.style.animation = 'slideIn 0.3s ease reverse';
+        notification.style.animation = 'slideOut 0.3s ease forwards';
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.parentNode.removeChild(notification);
             }
         }, 300);
     }, 3000);
-}
-
-// Show loading state
-function showLoading() {
-    const spinner = document.getElementById('loadingSpinner');
-    if (spinner) {
-        spinner.style.display = 'flex';
-    }
-}
-
-// Hide loading state
-function hideLoading() {
-    const spinner = document.getElementById('loadingSpinner');
-    if (spinner) {
-        spinner.style.display = 'none';
-    }
 }
 
 // Show error state
@@ -501,4 +487,4 @@ function showError(error) {
             </button>
         </div>
     `;
-                               }
+                          }
