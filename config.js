@@ -7,6 +7,7 @@ const CONFIG = {
     // Telegram Bot Configuration
     TELEGRAM_BOT_USERNAME: "PrompttAI_bot",
     TELEGRAM_SUPPORT_LINK: "https://t.me/k4miran_sndi",
+    TELEGRAM_PROMPT_LINK: "https://t.me/PrompttAI_bot/Prompts",
     
     // Default Image (if no image in sheet)
     DEFAULT_IMAGE: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=200&fit=crop",
@@ -28,7 +29,6 @@ const STATE = {
     currentFilter: 'none',
     currentLanguage: CONFIG.DEFAULT_LANGUAGE,
     likes: JSON.parse(localStorage.getItem('promptLikes')) || {},
-    currentSharingPrompt: null,
     searchQuery: ''
 };
 
