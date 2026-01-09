@@ -12,8 +12,11 @@ async function initializeApp() {
         await fetchPrompts();
         setupEventListeners();
         checkUrlForPrompt();
+        updateStats();
     } catch (error) {
         showError(error);
+    } finally {
+        hideLoading();
     }
 }
 
@@ -30,12 +33,18 @@ async function fetchPrompts() {
             item.prompt.substring(0, 50).replace(/\s/g, '_') + '_' + index : 
             'prompt_' + index;
         
+        const dateAdded = item.date || new Date().toISOString();
+        const isNew = isPromptNew(dateAdded);
+        const isViewed = STATE.viewedNewPrompts.includes(promptId);
+        
         return {
             ...item,
             id: promptId,
             likes: STATE.likes[promptId] || 0,
-            dateAdded: item.date || new Date().toISOString(),
-            image: item.image || CONFIG.DEFAULT_IMAGE
+            dateAdded: dateAdded,
+            image: item.image || CONFIG.DEFAULT_IMAGE,
+            isNew: isNew && !isViewed,
+            isViewed: isViewed
         };
     });
     
@@ -49,11 +58,34 @@ async function fetchPrompts() {
     renderPrompts();
 }
 
+// Check if prompt is new (within last N days)
+function isPromptNew(dateString) {
+    const promptDate = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - promptDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= CONFIG.NEW_PROMPT_DAYS;
+}
+
+// Mark prompt as viewed (remove NEW badge)
+function markPromptAsViewed(promptId) {
+    if (!STATE.viewedNewPrompts.includes(promptId)) {
+        STATE.viewedNewPrompts.push(promptId);
+        localStorage.setItem('viewedNewPrompts', JSON.stringify(STATE.viewedNewPrompts));
+        
+        // Update the prompt in the array
+        const promptIndex = STATE.allPrompts.findIndex(p => p.id === promptId);
+        if (promptIndex !== -1) {
+            STATE.allPrompts[promptIndex].isNew = false;
+            STATE.allPrompts[promptIndex].isViewed = true;
+        }
+    }
+}
+
 // Detect user language from browser
 function detectUserLanguage() {
     const userLang = navigator.language || navigator.userLanguage;
     const langCode = userLang.split('-')[0];
-    
     return TRANSLATIONS[langCode] ? langCode : CONFIG.DEFAULT_LANGUAGE;
 }
 
@@ -63,6 +95,7 @@ function changeLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     updatePageText();
     renderPrompts();
+    updateStats();
 }
 
 // Update all text on page
@@ -70,7 +103,7 @@ function updatePageText() {
     const t = TRANSLATIONS[STATE.currentLanguage];
     
     document.title = t.title;
-    document.querySelector('h1').innerHTML = `<i class="fas fa-robot"></i> ${t.title}`;
+    document.querySelector('.logo h1').innerHTML = `AI Prompt <span>Hub</span>`;
     document.getElementById('subtitle').textContent = t.subtitle;
     document.getElementById('searchInput').placeholder = t.search_placeholder;
     document.getElementById('footerText').textContent = t.footer;
@@ -82,6 +115,30 @@ function updatePageText() {
             el.textContent = t[key];
         }
     });
+    
+    // Update filter buttons active state
+    updateFilterButtons();
+}
+
+// Update filter buttons active state
+function updateFilterButtons() {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const activeBtn = document.querySelector(`.filter-btn[onclick*="${STATE.currentFilter}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+}
+
+// Update statistics
+function updateStats() {
+    const totalPrompts = STATE.allPrompts.length;
+    const totalLikes = STATE.allPrompts.reduce((sum, prompt) => sum + prompt.likes, 0);
+    
+    document.getElementById('promptCount').textContent = totalPrompts;
+    document.getElementById('likeCount').textContent = totalLikes;
 }
 
 // Render prompts to the grid
@@ -91,10 +148,12 @@ function renderPrompts() {
     
     if (STATE.filteredPrompts.length === 0) {
         container.innerHTML = `
-            <div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--gray)">
-                <i class="fas fa-search fa-3x" style="margin-bottom:20px;"></i>
+            <div class="no-results">
+                <i class="fas fa-search"></i>
                 <h3>${t.no_results}</h3>
-            </div>`;
+                <p>Try different keywords or reset filters</p>
+            </div>
+        `;
         return;
     }
     
@@ -104,26 +163,34 @@ function renderPrompts() {
         
         return `
             <div class="prompt-card" data-id="${promptId}">
-                <img src="${prompt.image}" class="card-image" alt="Prompt preview">
+                ${prompt.isNew ? `<div class="new-badge">${t.new_badge}</div>` : ''}
+                
+                <div class="card-image-container">
+                    <img src="${prompt.image}" class="card-image" alt="Prompt preview">
+                </div>
                 
                 <div class="card-content">
                     <div class="prompt-text">
-                        ${prompt.prompt || 'No prompt text available'}
+                        <p>${prompt.prompt || 'No prompt text available'}</p>
                     </div>
                     
                     <div class="card-meta">
-                        <div class="likes" onclick="toggleLike('${promptId}')">
-                            <i class="fas fa-heart ${isLiked ? 'liked' : ''}"></i>
-                            <span>${prompt.likes} ${t.likes}</span>
+                        <div class="likes-container">
+                            <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${promptId}')">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <span class="like-count">${prompt.likes} ${t.likes}</span>
                         </div>
-                        <div>${new Date(prompt.dateAdded).toLocaleDateString()}</div>
+                        <div class="card-date">
+                            ${formatDate(prompt.dateAdded)}
+                        </div>
                     </div>
                     
                     <div class="card-actions">
                         <button class="action-btn copy-btn" onclick="copyPrompt('${promptId}')">
                             <i class="fas fa-copy"></i> ${t.copy}
                         </button>
-                        <button class="action-btn share-btn" onclick="shareToTelegram()">
+                        <button class="action-btn share-btn" onclick="sharePrompt('${promptId}')">
                             <i class="fas fa-share-alt"></i> ${t.share}
                         </button>
                         <a class="action-btn support-btn" href="${CONFIG.TELEGRAM_SUPPORT_LINK}" target="_blank">
@@ -134,6 +201,26 @@ function renderPrompts() {
             </div>
         `;
     }).join('');
+    
+    // Add click event to new badges to mark as viewed
+    document.querySelectorAll('.new-badge').forEach(badge => {
+        badge.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const promptId = badge.closest('.prompt-card').dataset.id;
+            markPromptAsViewed(promptId);
+            badge.style.display = 'none';
+        });
+    });
+}
+
+// Format date
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(STATE.currentLanguage === 'ku' ? 'en-US' : STATE.currentLanguage, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
 }
 
 // Copy prompt to clipboard
@@ -156,20 +243,50 @@ function copyPrompt(promptId) {
         });
 }
 
-// Share to Telegram - DİREKT TELEGRAM PAYLAŞIM
-function shareToTelegram() {
+// Share prompt
+function sharePrompt(promptId) {
+    const prompt = STATE.allPrompts.find(p => p.id === promptId);
+    if (!prompt) return;
+    
+    // Mark as viewed when sharing
+    if (prompt.isNew) {
+        markPromptAsViewed(promptId);
+    }
+    
     const t = TRANSLATIONS[STATE.currentLanguage];
     
-    // Mesaj metni
-    const message = `${t.share_message}\n\n${CONFIG.TELEGRAM_PROMPT_LINK}`;
+    // Update modal content
+    document.getElementById('shareImage').src = prompt.image;
+    document.getElementById('shareMessageText').textContent = t.share_message;
+    document.getElementById('shareLinkInput').value = CONFIG.TELEGRAM_PROMPT_LINK;
     
-    // Telegram paylaşım URL'si
+    // Show modal
+    document.getElementById('shareModal').style.display = 'flex';
+}
+
+// Close share modal
+function closeShareModal() {
+    document.getElementById('shareModal').style.display = 'none';
+}
+
+// Copy share link
+function copyShareLink() {
+    const input = document.getElementById('shareLinkInput');
+    input.select();
+    document.execCommand('copy');
+    
+    const t = TRANSLATIONS[STATE.currentLanguage];
+    showNotification(t.copied);
+}
+
+// Open Telegram share
+function openTelegramShare() {
+    const t = TRANSLATIONS[STATE.currentLanguage];
+    const message = `${t.share_message}\n\n${CONFIG.TELEGRAM_PROMPT_LINK}`;
     const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(CONFIG.TELEGRAM_PROMPT_LINK)}&text=${encodeURIComponent(message)}`;
     
-    // Yeni pencerede aç - Telegram paylaşım ekranı
-    window.open(telegramShareUrl, '_blank', 'width=600,height=500');
-    
-    // Bildirim göster
+    window.open(telegramShareUrl, '_blank');
+    closeShareModal();
     showNotification(t.shared);
 }
 
@@ -179,21 +296,31 @@ function toggleLike(promptId) {
     if (!prompt) return;
     
     const isLiked = localStorage.getItem(`liked_${promptId}`) === 'true';
+    const likeBtn = document.querySelector(`.prompt-card[data-id="${promptId}"] .like-btn`);
+    const likeCount = document.querySelector(`.prompt-card[data-id="${promptId}"] .like-count`);
     
     if (isLiked) {
         prompt.likes--;
         localStorage.setItem(`liked_${promptId}`, 'false');
+        likeBtn.classList.remove('liked');
     } else {
         prompt.likes++;
         localStorage.setItem(`liked_${promptId}`, 'true');
+        likeBtn.classList.add('liked');
     }
     
     // Update likes in localStorage
     STATE.likes[promptId] = prompt.likes;
     localStorage.setItem('promptLikes', JSON.stringify(STATE.likes));
     
-    // Re-render prompts
-    renderPrompts();
+    // Update UI
+    if (likeCount) {
+        const t = TRANSLATIONS[STATE.currentLanguage];
+        likeCount.textContent = `${prompt.likes} ${t.likes}`;
+    }
+    
+    // Update stats
+    updateStats();
     
     // Re-apply current filter if needed
     if (STATE.currentFilter === 'most_liked') {
@@ -215,18 +342,23 @@ function filterPrompts(filterType) {
         case 'oldest':
             STATE.filteredPrompts = [...STATE.allPrompts].sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded));
             break;
+        case 'all':
         default:
             STATE.filteredPrompts = [...STATE.allPrompts];
     }
     
+    updateFilterButtons();
     renderPrompts();
 }
 
 // Reset filters
 function resetFilters() {
-    STATE.currentFilter = 'none';
+    STATE.currentFilter = 'all';
     STATE.filteredPrompts = [...STATE.allPrompts];
     document.getElementById('searchInput').value = '';
+    STATE.searchQuery = '';
+    
+    updateFilterButtons();
     renderPrompts();
 }
 
@@ -234,9 +366,39 @@ function resetFilters() {
 function setupEventListeners() {
     // Search functionality
     const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    
     searchInput.addEventListener('input', (e) => {
         STATE.searchQuery = e.target.value.toLowerCase();
         applySearchFilter();
+        
+        // Show/hide clear button
+        if (STATE.searchQuery.trim()) {
+            clearSearchBtn.style.display = 'block';
+        } else {
+            clearSearchBtn.style.display = 'none';
+        }
+    });
+    
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        STATE.searchQuery = '';
+        clearSearchBtn.style.display = 'none';
+        applySearchFilter();
+    });
+    
+    // Close modal on overlay click
+    document.getElementById('shareModal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            closeShareModal();
+        }
+    });
+    
+    // Close modal on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeShareModal();
+        }
     });
 }
 
@@ -244,17 +406,20 @@ function setupEventListeners() {
 function applySearchFilter() {
     if (!STATE.searchQuery.trim()) {
         STATE.filteredPrompts = [...STATE.allPrompts];
-        if (STATE.currentFilter !== 'none') {
-            filterPrompts(STATE.currentFilter);
-        }
     } else {
         STATE.filteredPrompts = STATE.allPrompts.filter(prompt => 
-            prompt.prompt.toLowerCase().includes(STATE.searchQuery) ||
-            (prompt.tags && prompt.tags.toLowerCase().includes(STATE.searchQuery))
+            (prompt.prompt && prompt.prompt.toLowerCase().includes(STATE.searchQuery)) ||
+            (prompt.tags && prompt.tags.toLowerCase().includes(STATE.searchQuery)) ||
+            (prompt.category && prompt.category.toLowerCase().includes(STATE.searchQuery))
         );
     }
     
-    renderPrompts();
+    // Apply current filter after search
+    if (STATE.currentFilter !== 'all') {
+        filterPrompts(STATE.currentFilter);
+    } else {
+        renderPrompts();
+    }
 }
 
 // Check URL for prompt parameter
@@ -269,13 +434,13 @@ function checkUrlForPrompt() {
                 promptElement.scrollIntoView({ behavior: 'smooth' });
                 
                 // Add highlight effect
-                promptElement.style.boxShadow = '0 0 0 3px var(--accent), 0 10px 30px rgba(0,0,0,0.2)';
+                promptElement.style.boxShadow = '0 0 0 3px var(--accent), 0 20px 40px rgba(0,0,0,0.2)';
                 promptElement.style.transform = 'translateY(-10px)';
                 
                 // Remove highlight after 5 seconds
                 setTimeout(() => {
-                    promptElement.style.boxShadow = 'var(--shadow)';
-                    promptElement.style.transform = 'translateY(0)';
+                    promptElement.style.boxShadow = '';
+                    promptElement.style.transform = '';
                 }, 5000);
             }
         }, 1000);
@@ -306,15 +471,18 @@ function showNotification(message) {
 
 // Show loading state
 function showLoading() {
-    const container = document.getElementById('promptsContainer');
-    const t = TRANSLATIONS[STATE.currentLanguage] || TRANSLATIONS[CONFIG.DEFAULT_LANGUAGE];
-    
-    container.innerHTML = `
-        <div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--gray)">
-            <i class="fas fa-spinner fa-spin fa-3x" style="margin-bottom:20px;"></i>
-            <h3>${t.loading || 'Loading...'}</h3>
-        </div>
-    `;
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'flex';
+    }
+}
+
+// Hide loading state
+function hideLoading() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'none';
+    }
 }
 
 // Show error state
@@ -324,13 +492,13 @@ function showError(error) {
     const t = TRANSLATIONS[STATE.currentLanguage] || TRANSLATIONS[CONFIG.DEFAULT_LANGUAGE];
     
     container.innerHTML = `
-        <div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--gray)">
-            <i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom:20px; color:var(--accent);"></i>
-            <h3>${t.error_loading || 'Error loading prompts'}</h3>
-            <p style="margin-top:10px; font-size:14px;">${error.message || 'Please check your connection'}</p>
-            <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:var(--primary); color:white; border:none; border-radius:5px; cursor:pointer;">
+        <div class="no-results">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>${t.error_loading}</h3>
+            <p>${error.message || 'Please check your connection'}</p>
+            <button class="telegram-btn" onclick="location.reload()" style="margin-top: 20px;">
                 <i class="fas fa-redo"></i> Try Again
             </button>
         </div>
     `;
-                }
+                               }
