@@ -123,7 +123,7 @@ function renderPrompts() {
                         <button class="action-btn copy-btn" onclick="copyPrompt('${promptId}')">
                             <i class="fas fa-copy"></i> ${t.copy}
                         </button>
-                        <button class="action-btn share-btn" onclick="openShareModal('${promptId}')">
+                        <button class="action-btn share-btn" onclick="shareToTelegram()">
                             <i class="fas fa-share-alt"></i> ${t.share}
                         </button>
                         <a class="action-btn support-btn" href="${CONFIG.TELEGRAM_SUPPORT_LINK}" target="_blank">
@@ -156,56 +156,21 @@ function copyPrompt(promptId) {
         });
 }
 
-// Open share modal
-function openShareModal(promptId) {
-    const prompt = STATE.allPrompts.find(p => p.id === promptId);
-    if (!prompt) return;
-    
-    STATE.currentSharingPrompt = prompt;
+// Share to Telegram - DİREKT TELEGRAM PAYLAŞIM
+function shareToTelegram() {
     const t = TRANSLATIONS[STATE.currentLanguage];
     
-    // Update modal content
-    document.getElementById('shareModalImage').src = prompt.image;
+    // Mesaj metni
+    const message = `${t.share_message}\n\n${CONFIG.TELEGRAM_PROMPT_LINK}`;
     
-    // NO URL SHOWN - Only message
-    document.getElementById('shareModalMessage').innerHTML = `
-        <div style="text-align: center;">
-            <h3 style="margin-bottom:15px; color:var(--primary); font-size:22px;">${t.share_title}</h3>
-            <p style="font-size:16px; line-height:1.5; margin-bottom:25px;">${t.share_message}</p>
-        </div>
-    `;
+    // Telegram paylaşım URL'si
+    const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(CONFIG.TELEGRAM_PROMPT_LINK)}&text=${encodeURIComponent(message)}`;
     
-    // Update button text
-    document.getElementById('telegramBtnText').textContent = t.telegram_btn;
+    // Yeni pencerede aç - Telegram paylaşım ekranı
+    window.open(telegramShareUrl, '_blank', 'width=600,height=500');
     
-    // Set up Telegram button action - DIRECT TELEGRAM SHARE
-    const telegramBtn = document.getElementById('openInTelegramBtn');
-    
-    telegramBtn.onclick = () => {
-        // Create share message (NO URL)
-        const shareText = `${t.share_title}\n\n${t.share_message}`;
-        
-        // Direct Telegram sharing (empty URL)
-        const telegramShareUrl = `https://t.me/share/url?url=&text=${encodeURIComponent(shareText)}`;
-        
-        // Open in new window
-        window.open(telegramShareUrl, '_blank', 'width=600,height=400');
-        
-        // Close modal
-        closeShareModal();
-        
-        // Show notification
-        showNotification(t.shared);
-    };
-    
-    // Show modal
-    document.getElementById('shareOverlay').style.display = 'flex';
-}
-
-// Close share modal
-function closeShareModal() {
-    document.getElementById('shareOverlay').style.display = 'none';
-    STATE.currentSharingPrompt = null;
+    // Bildirim göster
+    showNotification(t.shared);
 }
 
 // Toggle like
@@ -273,20 +238,6 @@ function setupEventListeners() {
         STATE.searchQuery = e.target.value.toLowerCase();
         applySearchFilter();
     });
-    
-    // Close modal on overlay click
-    document.getElementById('shareOverlay').addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) {
-            closeShareModal();
-        }
-    });
-    
-    // Close modal on escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeShareModal();
-        }
-    });
 }
 
 // Apply search filter
@@ -321,10 +272,6 @@ function checkUrlForPrompt() {
                 promptElement.style.boxShadow = '0 0 0 3px var(--accent), 0 10px 30px rgba(0,0,0,0.2)';
                 promptElement.style.transform = 'translateY(-10px)';
                 
-                // Show notification
-                const t = TRANSLATIONS[STATE.currentLanguage];
-                showNotification(t.share_message);
-                
                 // Remove highlight after 5 seconds
                 setTimeout(() => {
                     promptElement.style.boxShadow = 'var(--shadow)';
@@ -346,7 +293,7 @@ function showNotification(message) {
     
     document.body.appendChild(notification);
     
-    // Remove after 4 seconds
+    // Remove after 3 seconds
     setTimeout(() => {
         notification.style.animation = 'slideIn 0.3s ease reverse';
         setTimeout(() => {
@@ -354,7 +301,7 @@ function showNotification(message) {
                 notification.parentNode.removeChild(notification);
             }
         }, 300);
-    }, 4000);
+    }, 3000);
 }
 
 // Show loading state
@@ -386,4 +333,4 @@ function showError(error) {
             </button>
         </div>
     `;
-        }
+                }
