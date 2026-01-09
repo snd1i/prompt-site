@@ -130,10 +130,6 @@ function renderPrompts() {
                             <i class="fab fa-telegram"></i> ${t.support}
                         </a>
                     </div>
-                    
-                    <button class="action-btn prompt-btn" onclick="goToPrompt('${promptId}')">
-                        <i class="fas fa-arrow-right"></i> ${t.view_prompt}
-                    </button>
                 </div>
             </div>
         `;
@@ -170,27 +166,36 @@ function openShareModal(promptId) {
     
     // Update modal content
     document.getElementById('shareModalImage').src = prompt.image;
+    
+    // NO URL SHOWN - Only message
     document.getElementById('shareModalMessage').innerHTML = `
-        <h3 style="margin-bottom:10px; color:var(--primary)">${t.share_title}</h3>
-        <p>${t.share_message}</p>
+        <div style="text-align: center;">
+            <h3 style="margin-bottom:15px; color:var(--primary); font-size:22px;">${t.share_title}</h3>
+            <p style="font-size:16px; line-height:1.5; margin-bottom:25px;">${t.share_message}</p>
+        </div>
     `;
     
-    // Update button texts
+    // Update button text
     document.getElementById('telegramBtnText').textContent = t.telegram_btn;
-    document.getElementById('promptLinkText').textContent = t.prompt_btn;
     
-    // Set up button actions
+    // Set up Telegram button action - DIRECT TELEGRAM SHARE
     const telegramBtn = document.getElementById('openInTelegramBtn');
-    const promptLinkBtn = document.getElementById('promptLinkBtn');
     
     telegramBtn.onclick = () => {
-        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(t.share_message)}`;
-        window.open(shareUrl, '_blank');
-    };
-    
-    promptLinkBtn.onclick = () => {
-        const shareLink = `${window.location.origin}${window.location.pathname}?prompt=${encodeURIComponent(promptId)}`;
-        window.open(shareLink, '_blank');
+        // Create share message (NO URL)
+        const shareText = `${t.share_title}\n\n${t.share_message}`;
+        
+        // Direct Telegram sharing (empty URL)
+        const telegramShareUrl = `https://t.me/share/url?url=&text=${encodeURIComponent(shareText)}`;
+        
+        // Open in new window
+        window.open(telegramShareUrl, '_blank', 'width=600,height=400');
+        
+        // Close modal
+        closeShareModal();
+        
+        // Show notification
+        showNotification(t.shared);
     };
     
     // Show modal
@@ -201,12 +206,6 @@ function openShareModal(promptId) {
 function closeShareModal() {
     document.getElementById('shareOverlay').style.display = 'none';
     STATE.currentSharingPrompt = null;
-}
-
-// Go directly to prompt
-function goToPrompt(promptId) {
-    const shareLink = `${window.location.origin}${window.location.pathname}?prompt=${encodeURIComponent(promptId)}`;
-    window.location.href = shareLink;
 }
 
 // Toggle like
@@ -387,4 +386,4 @@ function showError(error) {
             </button>
         </div>
     `;
-                  }
+        }
