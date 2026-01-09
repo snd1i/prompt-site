@@ -236,109 +236,6 @@ body {
     opacity: 0.9;
 }
 
-/* SHARE OVERLAY */
-.share-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.9);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 100000;
-    backdrop-filter: blur(5px);
-}
-
-.share-modal {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 30px;
-    max-width: 450px;
-    width: 90%;
-    text-align: center;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    border: 2px solid var(--primary);
-    animation: modalAppear 0.3s ease;
-}
-
-@keyframes modalAppear {
-    from { 
-        transform: scale(0.9); 
-        opacity: 0; 
-    }
-    to { 
-        transform: scale(1); 
-        opacity: 1; 
-    }
-}
-
-.share-image {
-    width: 100%;
-    max-height: 250px;
-    object-fit: cover;
-    border-radius: 15px;
-    margin-bottom: 25px;
-    border: 3px solid var(--primary);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.share-message {
-    font-size: 16px;
-    margin-bottom: 30px;
-    color: var(--dark);
-    padding: 20px;
-    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(247, 37, 133, 0.1));
-    border-radius: 15px;
-    border-left: 4px solid var(--accent);
-}
-
-.share-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-}
-
-.telegram-share-btn {
-    background: linear-gradient(135deg, #0088cc, #006699) !important;
-    min-width: 200px;
-    font-size: 16px;
-    padding: 15px 25px;
-    border-radius: 50px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    transition: all 0.3s;
-}
-
-.telegram-share-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 7px 15px rgba(0,0,0,0.2);
-    background: linear-gradient(135deg, #0099e6, #0077b3) !important;
-}
-
-.close-share {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s;
-}
-
-.close-share:hover {
-    background: #d81b60;
-}
-
 /* FOOTER */
 .footer {
     text-align: center;
@@ -358,15 +255,6 @@ body {
     }
     
     .search-box {
-        min-width: 100%;
-    }
-    
-    .share-modal {
-        padding: 20px;
-        width: 95%;
-    }
-    
-    .telegram-share-btn {
         min-width: 100%;
     }
 }
@@ -397,4 +285,4 @@ body {
 @keyframes slideIn {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
-    }
+}
