@@ -3,24 +3,333 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prompt Site</title>
+<title>AI Prompt Hub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-body { font-family: Arial, sans-serif; padding: 20px 20px 100px 20px; background:#f0f0f0; margin:0;}
-.card { background:#fff; padding:15px; margin-bottom:15px; border-radius:10px; box-shadow:0 3px 8px rgba(0,0,0,0.2);}
-.card img { max-width:100%; border-radius:5px; margin-bottom:10px;}
-.card p { margin-bottom:10px; font-size:14px; }
-.button-container { display:flex; gap:10px; flex-wrap: wrap;}
-.card button, .card a { flex:1; padding:8px; border:none; border-radius:5px; cursor:pointer; text-align:center; text-decoration:none; color:white;}
-.copy-btn { background:#4CAF50; }
-.share-btn { background:#2196F3; }
-.support-btn { background:#FF5722; }
+:root {
+  --primary: #4361ee;
+  --secondary: #3a0ca3;
+  --accent: #f72585;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --gray: #6c757d;
+  --card-bg: #ffffff;
+  --shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] {
+  --light: #121212;
+  --dark: #f8f9fa;
+  --card-bg: #1e1e1e;
+  --gray: #adb5bd;
+  --shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: background 0.3s, color 0.3s;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--light);
+  color: var(--dark);
+  padding: 20px;
+  padding-bottom: 120px;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: var(--card-bg);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  color: var(--primary);
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+}
+
+/* CONTROLS */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+}
+
+.search-box {
+  flex: 1;
+  min-width: 300px;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 20px 12px 45px;
+  border: 2px solid #e0e0e0;
+  border-radius: 50px;
+  font-size: 16px;
+  background: var(--light);
+  color: var(--dark);
+}
+
+.search-box i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray);
+}
+
+.filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50px;
+  background: var(--primary);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-btn:hover {
+  background: var(--secondary);
+}
+
+.language-selector {
+  position: relative;
+}
+
+#languageSelect {
+  padding: 10px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 50px;
+  background: var(--light);
+  color: var(--dark);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* PROMPT CARDS */
+.prompts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.prompt-card {
+  background: var(--card-bg);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s;
+}
+
+.prompt-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.prompt-text {
+  margin-bottom: 20px;
+  position: relative;
+  max-height: 100px;
+  overflow: hidden;
+}
+
+.prompt-text::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(transparent, var(--card-bg));
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--gray);
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.likes i {
+  color: var(--accent);
+}
+
+.likes:hover i {
+  transform: scale(1.2);
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: white;
+}
+
+.copy-btn {
+  background: var(--primary);
+}
+
+.share-btn {
+  background: #17a2b8;
+}
+
+.support-btn {
+  background: var(--accent);
+  text-decoration: none;
+}
+
+.action-btn:hover {
+  opacity: 0.9;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  margin-top: 50px;
+  color: var(--gray);
+  font-size: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .prompts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .controls {
+    flex-direction: column;
+  }
+  
+  .search-box {
+    min-width: 100%;
+  }
+}
+
+/* HIDDEN TEXTAREA */
+.hidden-textarea {
+  position: absolute;
+  left: -9999px;
+}
 </style>
 </head>
 <body>
 
-<!-- Prompt Kartları Burada Eklenecek -->
+<div class="container">
+  <!-- HEADER -->
+  <header class="header">
+    <h1><i class="fas fa-robot"></i> AI Prompt Hub</h1>
+    <p id="subtitle">Discover and share the best AI prompts</p>
+  </header>
 
-<!-- A-Ads Banner (Alt Bar) -->
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search prompts...">
+    </div>
+    
+    <div class="filter-controls">
+      <button class="filter-btn" onclick="filterPrompts('most_liked')">
+        <i class="fas fa-fire"></i> <span data-lang="most_liked">Most Liked</span>
+      </button>
+      <button class="filter-btn" onclick="filterPrompts('newest')">
+        <i class="fas fa-clock"></i> <span data-lang="newest">Newest First</span>
+      </button>
+      <button class="filter-btn" onclick="filterPrompts('oldest')">
+        <i class="fas fa-history"></i> <span data-lang="oldest">Oldest First</span>
+      </button>
+      <button class="filter-btn" onclick="resetFilters()">
+        <i class="fas fa-redo"></i> <span data-lang="reset">Reset</span>
+      </button>
+      
+      <div class="language-selector">
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+          <option value="en">🇬🇧 English</option>
+          <option value="tr">🇹🇷 Türkçe</option>
+          <option value="ku">🇮🇶 کوردی سۆرانی</option>
+          <option value="ar">🇸🇦 العربية</option>
+          <option value="ru">🇷🇺 Русский</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROMPTS GRID -->
+  <div id="promptsContainer" class="prompts-grid">
+    <!-- Prompts will be loaded here -->
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p id="footerText">© 2024 AI Prompt Hub | Share your creativity with the world</p>
+  </div>
+</div>
+
+<!-- HIDDEN TEXTAREA FOR COPYING -->
+<textarea id="hiddenTextarea" class="hidden-textarea"></textarea>
+
+<!-- A-Ads Banner (Alt Bar) - ORIGINAL KEPT -->
 <div style="position: fixed; z-index: 99999; bottom:0; left:0; right:0; text-align:center;">
   <input type="checkbox" id="aadsstickymk4jqjs2" hidden>
   <div style="width:320px;height:50px;margin:auto;">
@@ -34,52 +343,395 @@ body { font-family: Arial, sans-serif; padding: 20px 20px 100px 20px; background
 </div>
 
 <script>
-// Google Sheet ID ve Sheet adı
+// CONFIGURATION
 const SHEET_ID = "1a4gxpaMg2gHNP9krJtVtqmDwMsvpY1KD1tqIes6zNNY";
 const SHEET_NAME = "Sheet1";
 const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
-// Sheet'ten promptları çek
-fetch(URL)
-.then(res => res.json())
-.then(data => {
-  const container = document.createElement("div");
-  data.forEach((item, i) => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <img src="${item.image}">
-      <p>${item.prompt}</p>
-      <div class="button-container">
-        <button class="copy-btn" onclick="copyPrompt(${i})">Copy</button>
-        <button class="share-btn" onclick="sharePrompt(${i})">Share</button>
-        <a class="support-btn" href="https://t.me/k4miran_sndi" target="_blank">Support</a>
-      </div>
-      <textarea id="prompt${i}" style="display:none;">${item.prompt}</textarea>
-    `;
-    container.appendChild(card);
+// STATE MANAGEMENT
+let allPrompts = [];
+let filteredPrompts = [];
+let currentFilter = 'none';
+let currentLanguage = 'en';
+let likes = JSON.parse(localStorage.getItem('promptLikes')) || {};
+
+// TRANSLATIONS
+const translations = {
+  en: {
+    title: "AI Prompt Hub",
+    subtitle: "Discover and share the best AI prompts",
+    search_placeholder: "Search prompts...",
+    most_liked: "Most Liked",
+    newest: "Newest First",
+    oldest: "Oldest First",
+    reset: "Reset",
+    copy: "Copy",
+    share: "Share",
+    support: "Support",
+    copied: "Prompt copied to clipboard!",
+    shared: "Link copied! Share this prompt with friends",
+    like: "Like",
+    likes: "Likes",
+    footer: "© 2024 AI Prompt Hub | Share your creativity with the world",
+    no_results: "No prompts found. Try a different search."
+  },
+  tr: {
+    title: "AI Prompt Merkezi",
+    subtitle: "En iyi AI promptlarını keşfedin ve paylaşın",
+    search_placeholder: "Prompt ara...",
+    most_liked: "En Beğenilenler",
+    newest: "Yeniden Eskiye",
+    oldest: "Eskiden Yeniye",
+    reset: "Sıfırla",
+    copy: "Kopyala",
+    share: "Paylaş",
+    support: "Destek",
+    copied: "Prompt panoya kopyalandı!",
+    shared: "Link kopyalandı! Bu promptu arkadaşlarınla paylaş",
+    like: "Beğen",
+    likes: "Beğeni",
+    footer: "© 2024 AI Prompt Merkezi | Yaratıcılığınızı dünyayla paylaşın",
+    no_results: "Prompt bulunamadı. Farklı bir arama deneyin."
+  },
+  ku: {
+    title: "هۆبی پرۆمپتی AI",
+    subtitle: "باشترین پرۆمپتەکانی AI دۆزینەوە و هاوبەشی بکە",
+    search_placeholder: "گەڕان بە پرۆمپت...",
+    most_liked: "زۆرترین حەزکراو",
+    newest: "نوێترین سەرەتا",
+    oldest: "کۆنترین سەرەتا",
+    reset: "دووبارەکردنەوە",
+    copy: "لەبەرگرتنەوە",
+    share: "هاوبەشی کردن",
+    support: "پشتیوانی",
+    copied: "پرۆمپت کۆپی کراوە بۆ کلیپبۆرد!",
+    shared: "لینک کۆپی کراوە! ئەم پرۆمپتە هاوبەشی بکە لەگەڵ هاوڕێکان",
+    like: "حەز",
+    likes: "حەزەکان",
+    footer: "© 2024 هۆبی پرۆمپتی AI | داهێنانەکەت هاوبەشی بکە لەگەڵ جیهان",
+    no_results: "هیچ پرۆمپتێک نەدۆزرایەوە. گەڕانێکی جیاواز تاقی بکەوە."
+  },
+  ar: {
+    title: "مركز برومبت الذكاء الاصطناعي",
+    subtitle: "اكتشف وشارك أفضل برومبتات الذكاء الاصطناعي",
+    search_placeholder: "ابحث في البرومبتات...",
+    most_liked: "الأكثر إعجاباً",
+    newest: "الأحدث أولاً",
+    oldest: "الأقدم أولاً",
+    reset: "إعادة تعيين",
+    copy: "نسخ",
+    share: "مشاركة",
+    support: "الدعم",
+    copied: "تم نسخ البرومبت إلى الحافظة!",
+    shared: "تم نسخ الرابط! شارك هذا البرومبت مع الأصدقاء",
+    like: "إعجاب",
+    likes: "إعجابات",
+    footer: "© 2024 مركز برومبت الذكاء الاصطناعي | شارك إبداعك مع العالم",
+    no_results: "لم يتم العثور على برومبتات. جرب بحثاً مختلفاً."
+  },
+  ru: {
+    title: "Хаб AI Промптов",
+    subtitle: "Откройте и поделитесь лучшими AI промптами",
+    search_placeholder: "Поиск промптов...",
+    most_liked: "Самые популярные",
+    newest: "Сначала новые",
+    oldest: "Сначала старые",
+    reset: "Сбросить",
+    copy: "Копировать",
+    share: "Поделиться",
+    support: "Поддержка",
+    copied: "Промпт скопирован в буфер обмена!",
+    shared: "Ссылка скопирована! Поделитесь этим промптом с друзьями",
+    like: "Нравится",
+    likes: "Лайков",
+    footer: "© 2024 Хаб AI Промптов | Поделитесь своим творчеством с миром",
+    no_results: "Промпты не найдены. Попробуйте другой поиск."
+  }
+};
+
+// DETECT USER LANGUAGE
+function detectUserLanguage() {
+  const userLang = navigator.language || navigator.userLanguage;
+  const langCode = userLang.split('-')[0];
+  
+  if (translations[langCode]) {
+    return langCode;
+  }
+  return 'en'; // Default to English
+}
+
+// CHANGE LANGUAGE
+function changeLanguage(lang) {
+  currentLanguage = lang;
+  localStorage.setItem('preferredLanguage', lang);
+  updatePageText();
+  renderPrompts();
+}
+
+// UPDATE ALL TEXT ON PAGE
+function updatePageText() {
+  const t = translations[currentLanguage];
+  
+  document.title = t.title;
+  document.querySelector('h1').innerHTML = `<i class="fas fa-robot"></i> ${t.title}`;
+  document.getElementById('subtitle').textContent = t.subtitle;
+  document.getElementById('searchInput').placeholder = t.search_placeholder;
+  document.getElementById('footerText').textContent = t.footer;
+  
+  // Update button texts
+  document.querySelectorAll('[data-lang]').forEach(el => {
+    const key = el.getAttribute('data-lang');
+    if (t[key]) {
+      el.textContent = t[key];
+    }
   });
-  document.body.appendChild(container);
-})
-.catch(err => { console.log("Sheet error", err); alert("Sheet error"); });
-
-// Copy fonksiyonu
-function copyPrompt(i){
-  const textarea = document.getElementById(`prompt${i}`);
-  textarea.style.display = 'block';
-  textarea.select();
-  document.execCommand('copy');
-  textarea.style.display = 'none';
-  alert('Prompt copied!');
 }
 
-// Share fonksiyonu (Telegram)
-function sharePrompt(i){
-  const textarea = document.getElementById(`prompt${i}`);
-  const text = encodeURIComponent(textarea.value);
-  window.open(`https://t.me/share/url?url=&text=${text}`, '_blank');
+// FETCH PROMPTS FROM GOOGLE SHEETS
+async function fetchPrompts() {
+  try {
+    const response = await fetch(URL);
+    const data = await response.json();
+    
+    // Add likes data to each prompt
+    allPrompts = data.map((item, index) => {
+      const promptId = item.prompt ? item.prompt.substring(0, 50).replace(/\s/g, '_') + '_' + index : 'prompt_' + index;
+      return {
+        ...item,
+        id: promptId,
+        likes: likes[promptId] || 0,
+        dateAdded: item.date || new Date().toISOString()
+      };
+    });
+    
+    // Set initial language
+    const savedLang = localStorage.getItem('preferredLanguage') || detectUserLanguage();
+    document.getElementById('languageSelect').value = savedLang;
+    changeLanguage(savedLang);
+    
+    // Initial render
+    filteredPrompts = [...allPrompts];
+    renderPrompts();
+    setupSearch();
+    
+  } catch (error) {
+    console.error("Error fetching prompts:", error);
+    document.getElementById('promptsContainer').innerHTML = 
+      `<div style="text-align:center; padding:50px; color:var(--gray)">
+        <i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom:20px;"></i>
+        <h3>Error loading prompts</h3>
+        <p>Please check your internet connection</p>
+      </div>`;
+  }
 }
+
+// RENDER PROMPTS
+function renderPrompts() {
+  const container = document.getElementById('promptsContainer');
+  const t = translations[currentLanguage];
+  
+  if (filteredPrompts.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--gray)">
+        <i class="fas fa-search fa-3x" style="margin-bottom:20px;"></i>
+        <h3>${t.no_results}</h3>
+      </div>`;
+    return;
+  }
+  
+  container.innerHTML = filteredPrompts.map((prompt, index) => {
+    const promptId = prompt.id;
+    const isLiked = localStorage.getItem(`liked_${promptId}`) === 'true';
+    
+    // Create shareable link
+    const shareLink = `${window.location.origin}${window.location.pathname}?prompt=${encodeURIComponent(promptId)}`;
+    
+    return `
+      <div class="prompt-card" data-id="${promptId}">
+        <img src="${prompt.image || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=200&fit=crop'}" 
+             class="card-image" 
+             alt="Prompt preview">
+        
+        <div class="card-content">
+          <div class="prompt-text">
+            ${prompt.prompt || 'No prompt text available'}
+          </div>
+          
+          <div class="card-meta">
+            <div class="likes" onclick="toggleLike('${promptId}')">
+              <i class="fas fa-heart ${isLiked ? 'liked' : ''}"></i>
+              <span>${prompt.likes} ${t.likes}</span>
+            </div>
+            <div>${new Date(prompt.dateAdded).toLocaleDateString()}</div>
+          </div>
+          
+          <div class="card-actions">
+            <button class="action-btn copy-btn" onclick="copyPrompt('${promptId}')">
+              <i class="fas fa-copy"></i> ${t.copy}
+            </button>
+            <button class="action-btn share-btn" onclick="sharePrompt('${promptId}')">
+              <i class="fas fa-share-alt"></i> ${t.share}
+            </button>
+            <a class="action-btn support-btn" href="https://t.me/k4miran_sndi" target="_blank">
+              <i class="fas fa-hands-helping"></i> ${t.support}
+            </a>
+          </div>
+        </div>
+        
+        <!-- Hidden prompt text for copying -->
+        <div class="hidden-prompt" style="display:none">${prompt.prompt || ''}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// COPY PROMPT
+function copyPrompt(promptId) {
+  const prompt = allPrompts.find(p => p.id === promptId);
+  if (!prompt) return;
+  
+  navigator.clipboard.writeText(prompt.prompt || '')
+    .then(() => {
+      alert(translations[currentLanguage].copied);
+    })
+    .catch(err => {
+      console.error('Copy failed:', err);
+      // Fallback method
+      const textarea = document.getElementById('hiddenTextarea');
+      textarea.value = prompt.prompt || '';
+      textarea.select();
+      document.execCommand('copy');
+      alert(translations[currentLanguage].copied);
+    });
+}
+
+// SHARE PROMPT WITH LINK
+function sharePrompt(promptId) {
+  const shareLink = `${window.location.origin}${window.location.pathname}?prompt=${encodeURIComponent(promptId)}`;
+  
+  navigator.clipboard.writeText(shareLink)
+    .then(() => {
+      alert(translations[currentLanguage].shared);
+    })
+    .catch(err => {
+      console.error('Share failed:', err);
+      // Fallback method
+      const textarea = document.getElementById('hiddenTextarea');
+      textarea.value = shareLink;
+      textarea.select();
+      document.execCommand('copy');
+      alert(translations[currentLanguage].shared);
+    });
+}
+
+// TOGGLE LIKE
+function toggleLike(promptId) {
+  const prompt = allPrompts.find(p => p.id === promptId);
+  if (!prompt) return;
+  
+  const isLiked = localStorage.getItem(`liked_${promptId}`) === 'true';
+  
+  if (isLiked) {
+    prompt.likes--;
+    localStorage.setItem(`liked_${promptId}`, 'false');
+  } else {
+    prompt.likes++;
+    localStorage.setItem(`liked_${promptId}`, 'true');
+  }
+  
+  // Update likes in localStorage
+  likes[promptId] = prompt.likes;
+  localStorage.setItem('promptLikes', JSON.stringify(likes));
+  
+  // Re-render prompts
+  renderPrompts();
+  
+  // Re-apply current filter if needed
+  if (currentFilter === 'most_liked') {
+    filterPrompts('most_liked');
+  }
+}
+
+// FILTER PROMPTS
+function filterPrompts(filterType) {
+  currentFilter = filterType;
+  
+  switch(filterType) {
+    case 'most_liked':
+      filteredPrompts = [...allPrompts].sort((a, b) => b.likes - a.likes);
+      break;
+    case 'newest':
+      filteredPrompts = [...allPrompts].sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+      break;
+    case 'oldest':
+      filteredPrompts = [...allPrompts].sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded));
+      break;
+    default:
+      filteredPrompts = [...allPrompts];
+  }
+  
+  renderPrompts();
+}
+
+// RESET FILTERS
+function resetFilters() {
+  currentFilter = 'none';
+  filteredPrompts = [...allPrompts];
+  document.getElementById('searchInput').value = '';
+  renderPrompts();
+}
+
+// SETUP SEARCH FUNCTIONALITY
+function setupSearch() {
+  const searchInput = document.getElementById('searchInput');
+  
+  searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    
+    if (!searchTerm.trim()) {
+      filteredPrompts = [...allPrompts];
+      if (currentFilter !== 'none') {
+        filterPrompts(currentFilter);
+      }
+    } else {
+      filteredPrompts = allPrompts.filter(prompt => 
+        prompt.prompt.toLowerCase().includes(searchTerm) ||
+        (prompt.tags && prompt.tags.toLowerCase().includes(searchTerm))
+      );
+    }
+    
+    renderPrompts();
+  });
+}
+
+// CHECK URL FOR PROMPT PARAMETER
+function checkUrlForPrompt() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const promptId = urlParams.get('prompt');
+  
+  if (promptId) {
+    // Scroll to the specific prompt
+    setTimeout(() => {
+      const promptElement = document.querySelector(`[data-id="${promptId}"]`);
+      if (promptElement) {
+        promptElement.scrollIntoView({ behavior: 'smooth' });
+        promptElement.style.boxShadow = '0 0 0 3px var(--accent)';
+        setTimeout(() => {
+          promptElement.style.boxShadow = 'var(--shadow)';
+        }, 3000);
+      }
+    }, 1000);
+  }
+}
+
+// INITIALIZE
+document.addEventListener('DOMContentLoaded', () => {
+  fetchPrompts();
+  
+  // Check for prompt in URL after a delay
+  setTimeout(checkUrlForPrompt, 1500);
+});
 </script>
 
 </body>
-</html>
+      </html>
