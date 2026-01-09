@@ -11,37 +11,33 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- ANIMATED BACKGROUND -->
-    <div class="bg-animation">
-        <div class="bg-circle circle-1"></div>
-        <div class="bg-circle circle-2"></div>
-        <div class="bg-circle circle-3"></div>
-        <div class="bg-circle circle-4"></div>
-    </div>
+    <!-- ARKA PLAN RESMİ (BULANIK) -->
+    <div class="background-image"></div>
+    <div class="background-overlay"></div>
 
     <div class="container">
         <!-- HEADER -->
         <header class="header">
             <div class="logo">
-                <i class="fas fa-robot"></i>
+                <i class="fas fa-magic"></i>
                 <div>
-                    <h1>AI Prompt <span>Hub</span></h1>
-                    <p id="subtitle">Professional AI Image Prompts Collection</p>
+                    <h1>Prompt<span>Master</span></h1>
+                    <p id="subtitle">Professional AI Image Prompts</p>
                 </div>
             </div>
             <div class="stats">
                 <div class="stat">
-                    <i class="fas fa-images"></i>
+                    <i class="fas fa-sparkles"></i>
                     <div>
                         <span class="count" id="promptCount">0</span>
-                        <span>Prompts</span>
+                        <span class="label">Prompts</span>
                     </div>
                 </div>
                 <div class="stat">
                     <i class="fas fa-heart"></i>
                     <div>
                         <span class="count" id="likeCount">0</span>
-                        <span>Total Likes</span>
+                        <span class="label">Total Likes</span>
                     </div>
                 </div>
             </div>
@@ -49,45 +45,37 @@
 
         <!-- CONTROLS -->
         <div class="controls">
-            <div class="search-container">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search prompts...">
-                    <div class="search-actions">
-                        <button class="clear-search" id="clearSearch" title="Clear search">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search prompts...">
+                <button class="clear-btn" id="clearSearch">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             
-            <div class="filters-container">
-                <div class="filters">
-                    <button class="filter-btn active" onclick="filterPrompts('all')">
-                        <i class="fas fa-layer-group"></i> <span data-lang="all">All</span>
-                    </button>
-                    <button class="filter-btn" onclick="filterPrompts('most_liked')">
-                        <i class="fas fa-fire"></i> <span data-lang="most_liked">Most Liked</span>
-                    </button>
-                    <button class="filter-btn" onclick="filterPrompts('newest')">
-                        <i class="fas fa-clock"></i> <span data-lang="newest">Newest</span>
-                    </button>
-                    <button class="filter-btn" onclick="filterPrompts('oldest')">
-                        <i class="fas fa-history"></i> <span data-lang="oldest">Oldest</span>
-                    </button>
-                </div>
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterPrompts('all')">
+                    <i class="fas fa-layer-group"></i> <span data-lang="all">All</span>
+                </button>
+                <button class="filter-btn" onclick="filterPrompts('most_liked')">
+                    <i class="fas fa-fire"></i> <span data-lang="most_liked">Most Liked</span>
+                </button>
+                <button class="filter-btn" onclick="filterPrompts('newest')">
+                    <i class="fas fa-clock"></i> <span data-lang="newest">Newest</span>
+                </button>
+                <button class="filter-btn" onclick="filterPrompts('oldest')">
+                    <i class="fas fa-history"></i> <span data-lang="oldest">Oldest</span>
+                </button>
                 
-                <div class="language-container">
-                    <div class="language-selector">
-                        <i class="fas fa-globe"></i>
-                        <select id="languageSelect" onchange="changeLanguage(this.value)">
-                            <option value="en">🇬🇧 English</option>
-                            <option value="tr">🇹🇷 Türkçe</option>
-                            <option value="ku">🇮🇶 کوردی سۆرانی</option>
-                            <option value="ar">🇸🇦 العربية</option>
-                            <option value="ru">🇷🇺 Русский</option>
-                        </select>
-                    </div>
+                <div class="language-selector">
+                    <i class="fas fa-globe"></i>
+                    <select id="languageSelect" onchange="changeLanguage(this.value)">
+                        <option value="en">🇬🇧 English</option>
+                        <option value="tr">🇹🇷 Türkçe</option>
+                        <option value="ku">🇮🇶 کوردی</option>
+                        <option value="ar">🇸🇦 العربية</option>
+                        <option value="ru">🇷🇺 Русский</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -97,32 +85,17 @@
             <!-- Prompts will be loaded here -->
         </div>
 
-        <!-- LOADING SPINNER -->
-        <div id="loadingSpinner" class="loading-spinner">
-            <div class="spinner">
-                <div class="spinner-circle"></div>
-                <div class="spinner-text">Loading prompts...</div>
-            </div>
-        </div>
-
         <!-- FOOTER -->
         <footer class="footer">
             <div class="footer-content">
-                <div class="footer-left">
-                    <div class="footer-logo">
-                        <i class="fas fa-robot"></i>
-                        <span>AI Prompt Hub</span>
-                    </div>
-                    <p id="footerText">Create amazing AI images with professional prompts</p>
+                <div class="footer-logo">
+                    <i class="fas fa-magic"></i>
+                    <span>PromptMaster</span>
                 </div>
-                <div class="footer-right">
-                    <a href="https://t.me/k4miran_sndi" class="telegram-btn" target="_blank">
-                        <i class="fab fa-telegram"></i> Join Telegram
-                    </a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 AI Prompt Hub. All prompts are free to use.</p>
+                <p id="footerText">Create amazing AI images with professional prompts</p>
+                <a href="https://t.me/sndiyi" class="telegram-btn" target="_blank">
+                    <i class="fab fa-telegram"></i> Join Telegram
+                </a>
             </div>
         </footer>
     </div>
@@ -131,27 +104,27 @@
     <div id="shareModal" class="share-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-share-alt"></i> Share Prompt</h3>
-                <button class="close-modal" onclick="closeShareModal()">
+                <h3><i class="fas fa-share-alt"></i> Share</h3>
+                <button class="close-btn" onclick="closeShareModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="share-preview">
-                    <img id="shareImage" src="" alt="Prompt Image">
+                <div class="share-image">
+                    <img id="shareImage" src="" alt="">
                 </div>
                 <div class="share-message">
                     <p id="shareMessageText">Check out this amazing AI prompt!</p>
                 </div>
                 <div class="share-link">
                     <input type="text" id="shareLinkInput" readonly value="https://t.me/PrompttAI_bot/Prompts">
-                    <button class="copy-link-btn" onclick="copyShareLink()">
+                    <button onclick="copyShareLink()">
                         <i class="fas fa-copy"></i>
                     </button>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn telegram-share-btn" onclick="openTelegramShare()">
+                <button class="share-telegram-btn" onclick="shareToTelegram()">
                     <i class="fab fa-telegram"></i> Share on Telegram
                 </button>
             </div>
@@ -161,16 +134,14 @@
     <!-- HIDDEN TEXTAREA -->
     <textarea id="hiddenTextarea" class="hidden-textarea"></textarea>
 
-    <!-- A-Ads Banner (Alt Bar) -->
-    <div class="ads-container">
-        <input type="checkbox" id="aadsstickymk4jqjs2" hidden>
-        <div class="ads-banner">
-            <label for="aadsstickymk4jqjs2" class="ads-close">
-                <svg fill="#000000" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-                    <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "/>
-                </svg>
+    <!-- ADS BANNER -->
+    <div class="ads-banner">
+        <input type="checkbox" id="adsToggle" hidden>
+        <div class="ads-container">
+            <label for="adsToggle" class="ads-close">
+                <i class="fas fa-times"></i>
             </label>
-            <iframe data-aa=2423518 src="//ad.a-ads.com/2423518/?size=320x50" style='border:0; padding:0; width:320px; height:50px; overflow:hidden; margin:auto'></iframe>
+            <iframe data-aa="2423518" src="//ad.a-ads.com/2423518/?size=320x50" scrolling="no"></iframe>
         </div>
     </div>
 
@@ -178,4 +149,4 @@
     <script src="translations.js"></script>
     <script src="script.js"></script>
 </body>
-                </html>
+</html>
