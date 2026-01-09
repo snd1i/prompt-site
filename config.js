@@ -5,14 +5,13 @@ const CONFIG = {
     SHEET_NAME: "Sheet1",
     
     // Telegram Configuration
-    TELEGRAM_BOT_USERNAME: "k4miran_sndi",
-    TELEGRAM_SUPPORT_LINK: "https://t.me/k4miran_sndi",
+    TELEGRAM_SUPPORT_LINK: "https://t.me/sndiyi",
     TELEGRAM_PROMPT_LINK: "https://t.me/PrompttAI_bot/Prompts",
     
-    // Default Images
+    // Default Image
     DEFAULT_IMAGE: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop",
     
-    // New Prompt Days (how many days a prompt is considered "new")
+    // New Prompt Days
     NEW_PROMPT_DAYS: 7,
     
     // App Settings
