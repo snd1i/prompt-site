@@ -5,7 +5,7 @@ const CONFIG = {
     SHEET_NAME: "Sheet1",
     
     // Telegram Bot Configuration
-    TELEGRAM_BOT_USERNAME: "k4miran_sndi",
+    TELEGRAM_BOT_USERNAME: "PrompttAI_bot",
     TELEGRAM_SUPPORT_LINK: "https://t.me/k4miran_sndi",
     
     // Default Image (if no image in sheet)
