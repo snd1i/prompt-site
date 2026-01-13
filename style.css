@@ -29,6 +29,11 @@ body {
     padding: 20px;
     position: relative;
     overflow-x: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* ===== ARKA PLAN ===== */
@@ -334,7 +339,7 @@ body {
     border-color: var(--primary);
 }
 
-/* NEW BADGE */
+/* NEW BADGE - SADECE YENİLERDE GÖSTER */
 .new-badge {
     position: absolute;
     top: 20px;
@@ -351,6 +356,11 @@ body {
     animation: pulse 2s infinite;
     box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
     border: 2px solid white;
+    display: none; /* Varsayılan olarak gizli */
+}
+
+.prompt-card.new .new-badge {
+    display: block; /* Sadece "new" class'ı olanlarda göster */
 }
 
 @keyframes pulse {
@@ -358,23 +368,44 @@ body {
     50% { transform: scale(1.05); }
 }
 
-/* IMAGE CONTAINER - TAM GÖRÜNÜM */
+/* IMAGE CONTAINER - TAM GÖRÜNÜM DÜZELTMESİ */
 .image-container {
     position: relative;
     width: 100%;
-    height: 250px;
+    height: 280px;
     overflow: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    background: #f0f0f0;
 }
 
 .image-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     transition: transform 0.5s ease;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    pointer-events: none;
 }
 
 .prompt-card:hover .image-container img {
     transform: scale(1.05);
+}
+
+/* Görsel koruma overlay */
+.image-protection {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: transparent;
+    cursor: default;
 }
 
 /* CARD CONTENT */
@@ -387,6 +418,8 @@ body {
     max-height: 150px;
     overflow: hidden;
     position: relative;
+    -webkit-user-select: text;
+    user-select: text;
 }
 
 .prompt-text::after {
@@ -457,6 +490,7 @@ body {
     color: var(--dark);
     font-size: 1.1rem;
     min-width: 60px;
+    font-family: 'Poppins', sans-serif;
 }
 
 .card-date {
@@ -488,6 +522,8 @@ body {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    -webkit-touch-callout: none;
+    user-select: none;
 }
 
 .action-btn::after {
@@ -710,14 +746,20 @@ body {
 
 .share-image {
     margin-bottom: 20px;
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 15px;
+    border: 2px solid rgba(139, 92, 246, 0.3);
 }
 
 .share-image img {
     width: 100%;
-    height: 200px;
+    height: 100%;
     object-fit: cover;
-    border-radius: 15px;
-    border: 2px solid rgba(139, 92, 246, 0.3);
+    object-position: center;
+    pointer-events: none;
+    user-select: none;
 }
 
 .share-message {
@@ -837,6 +879,20 @@ body {
     left: -9999px;
 }
 
+/* ===== GÖRSEL KORUMA ===== */
+.no-image-context {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    pointer-events: none !important;
+}
+
+.disable-right-click {
+    pointer-events: none;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1200px) {
     .prompts-grid {
@@ -902,6 +958,10 @@ body {
         gap: 20px;
     }
     
+    .image-container {
+        height: 250px;
+    }
+    
     .card-actions {
         flex-direction: column;
     }
@@ -929,6 +989,10 @@ body {
         font-size: 0.9rem;
     }
     
+    .image-container {
+        height: 220px;
+    }
+    
     .action-btn {
         padding: 12px;
         font-size: 0.9rem;
@@ -937,11 +1001,4 @@ body {
     .telegram-btn {
         padding: 12px 25px;
     }
-    }
-
-.image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
 }
