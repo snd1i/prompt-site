@@ -3,20 +3,46 @@ const SHEET_ID = '1a4gxpaMg2gHNP9krJtVtqmDwMsvpY1KD1tqIes6zNNY';
 const SHEET_NAME = 'Sheet1'; // Google Sheets sayfa adı
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
-// Dil desteği
+// Dil desteği - DİL SEÇİCİ İNGİLİZCE
 const languages = {
-    'tr': 'Türkçe',
     'en': 'English',
-    'ar': 'العربية',
-    'sorani': 'Kürtçe Sorani',
-    'badini': 'Kürtçe Badini'
+    'sorani': 'Kurdish Sorani',
+    'badini': 'Kurdish Badini',
+    'tr': 'Turkish',
+    'ar': 'Arabic'
 };
 
-// Varsayılan dil
-let currentLanguage = localStorage.getItem('selectedLanguage') || 'tr';
+// Varsayılan dil İngilizce
+let currentLanguage = localStorage.getItem('selectedLanguage') || 'en';
+
+// Badini çevirileri için obje
+const badiniTranslations = {
+    // Hata mesajları
+    'loading': 'چافەرێبە',
+    'load_error': 'خەلەتیەک چێبی هیفیە سەڤحێ جدید بکە',
+    'no_prompts': 'هێشتا چ کود داخل نەکرنە',
+    'copy_button': 'کوپی بکە',
+    'copied': 'هاتە کوپیکرن',
+    'telegram_title': 'کەنالێ مەیێ تلیگرامی',
+    'telegram_desc': 'بو پرومپتێن جدید و تحدیسان جوین بکە',
+    'change_language': 'زمانی بگهورە',
+    'view_full': 'دیتنا هەمیێ',
+    'scroll_more': 'بو دیتنا پتر کودێن وینا ببە خارێ',
+    'click_copy': 'ژبو کوپیکرنێ تبلا خو لێبدە',
+    'image_loading': 'چافەرێی رسمی بە',
+    'gallery': 'گەلەری',
+    'image_error': 'خەلەتیەک چێبی وێنە نەهات',
+    'network_error': 'خەلەتی انترنێتا تە نە درستە',
+    'try_again': 'دوبارە بکە',
+    'language': 'زمان',
+    'settings': 'سێتینگ',
+    'close': 'بگرە',
+    'back': 'پاشڤە زفرین'
+};
 
 // Sayfa yüklendiğinde
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("Site yüklendi. Dil:", currentLanguage);
     initLanguageSelector();
     loadPrompts();
     updateLanguage();
@@ -64,11 +90,16 @@ function updateLanguage() {
     // Kopyalama bildirimi
     updateTextBySelector('#copy-notification span', currentLanguage);
     
-    // Badini notları (Badini dili için özel işlem)
+    // Kopyala butonları (dinamik olarak güncellenecek)
+    updateCopyButtons();
+    
+    // Badini dili için özel font
     if (currentLanguage === 'badini') {
-        document.querySelectorAll('.badini-note').forEach(note => {
-            note.textContent = 'Buraya Badini kelime girilecek';
-        });
+        document.body.style.fontFamily = "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif";
+        document.documentElement.lang = 'badini';
+    } else {
+        document.body.style.fontFamily = "'Poppins', sans-serif";
+        document.documentElement.lang = currentLanguage;
     }
 }
 
@@ -78,8 +109,25 @@ function updateTextBySelector(selector, lang) {
     
     elements.forEach(element => {
         const text = element.getAttribute(`data-${lang}`);
-        if (text && text !== 'Buraya Badini kelime girilecek') {
+        if (text) {
             element.textContent = text;
+        }
+    });
+}
+
+// Kopyala butonlarını güncelle
+function updateCopyButtons() {
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    
+    copyButtons.forEach(button => {
+        const span = button.querySelector('span');
+        if (span) {
+            const text = span.getAttribute(`data-${currentLanguage}`);
+            if (text) {
+                span.textContent = text;
+            } else if (currentLanguage === 'badini') {
+                span.textContent = badiniTranslations.copy_button || 'کوپی بکە';
+            }
         }
     });
 }
@@ -87,8 +135,15 @@ function updateTextBySelector(selector, lang) {
 // Google Sheets'ten verileri çek
 async function loadPrompts() {
     try {
+        console.log("Google Sheets'ten veri çekiliyor...");
         const response = await fetch(SHEET_URL);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const text = await response.text();
+        console.log("Google Sheets verisi alındı.");
         
         // Google Sheets JSON formatını işle
         const json = JSON.parse(text.substring(47).slice(0, -2));
@@ -98,20 +153,42 @@ async function loadPrompts() {
         
     } catch (error) {
         console.error('Google Sheets verileri yüklenirken hata:', error);
-        document.getElementById('prompts-container').innerHTML = `
-            <div class="error-message">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p data-tr="Promptlar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin." 
-                   data-en="An error occurred while loading prompts. Please refresh the page."
-                   data-ar="حدث خطأ أثناء تحميل الأوامر. يرجى تحديث الصفحة."
-                   data-sorani="هەڵەیەک ڕوویدا لە کاتی بارکردنی پڕۆمپتەکان. تکایە پەڕەکە نوێ بکەرەوە."
-                   data-badini="Buraya Badini kelime girilecek">
-                    Promptlar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
-                </p>
-            </div>
-        `;
-        updateLanguage();
+        showErrorMessage();
     }
+}
+
+// Hata mesajını göster
+function showErrorMessage() {
+    const container = document.getElementById('prompts-container');
+    let errorMessage = '';
+    let tryAgainText = 'Try Again';
+    
+    if (currentLanguage === 'badini') {
+        errorMessage = badiniTranslations.load_error || 'خەلەتیەک چێبی';
+        tryAgainText = badiniTranslations.try_again || 'دوبارە بکە';
+    } else if (currentLanguage === 'tr') {
+        errorMessage = 'Promptlar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.';
+        tryAgainText = 'Tekrar Dene';
+    } else if (currentLanguage === 'ar') {
+        errorMessage = 'حدث خطأ أثناء تحميل الأوامر. يرجى تحديث الصفحة.';
+        tryAgainText = 'حاول مرة أخرى';
+    } else if (currentLanguage === 'sorani') {
+        errorMessage = 'هەڵەیەک ڕوویدا لە کاتی بارکردنی پڕۆمپتەکان. تکایە پەڕەکە نوێ بکەرەوە.';
+        tryAgainText = 'دووبارە هەوڵبدە';
+    } else {
+        errorMessage = 'An error occurred while loading prompts. Please refresh the page.';
+    }
+    
+    container.innerHTML = `
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>${errorMessage}</p>
+            <button class="retry-btn" onclick="location.reload()">
+                <i class="fas fa-redo"></i>
+                ${tryAgainText}
+            </button>
+        </div>
+    `;
 }
 
 // Google Sheets verilerini işle
@@ -120,6 +197,7 @@ function processSheetData(table) {
     
     // Sütun başlıklarını al
     const cols = table.cols.map(col => col.label);
+    console.log("Sütunlar:", cols);
     
     // Promptlar için verileri işle
     const prompts = [];
@@ -137,29 +215,44 @@ function processSheetData(table) {
         });
         
         // Boş satırları atla
-        if (Object.keys(prompt).length > 0) {
+        if (Object.keys(prompt).length > 0 && prompt.image) {
             prompts.push(prompt);
         }
     });
+    
+    console.log(`${prompts.length} prompt bulundu.`);
     
     // Prompt kartlarını oluştur
     if (prompts.length > 0) {
         displayPrompts(prompts);
     } else {
-        container.innerHTML = `
-            <div class="no-prompts">
-                <i class="fas fa-image"></i>
-                <p data-tr="Henüz prompt eklenmemiş." 
-                   data-en="No prompts added yet."
-                   data-ar="لم تتم إضافة أي أوامر بعد."
-                   data-sorani="هیچ پڕۆمپتێک زیاد نەکراوە."
-                   data-badini="Buraya Badini kelime girilecek">
-                    Henüz prompt eklenmemiş.
-                </p>
-            </div>
-        `;
-        updateLanguage();
+        showNoPromptsMessage();
     }
+}
+
+// Prompt yok mesajını göster
+function showNoPromptsMessage() {
+    const container = document.getElementById('prompts-container');
+    let message = '';
+    
+    if (currentLanguage === 'badini') {
+        message = badiniTranslations.no_prompts || 'هێشتا چ کود داخل نەکرنە';
+    } else if (currentLanguage === 'tr') {
+        message = 'Henüz prompt eklenmemiş.';
+    } else if (currentLanguage === 'ar') {
+        message = 'لم تتم إضافة أي أوامر بعد.';
+    } else if (currentLanguage === 'sorani') {
+        message = 'هیچ پڕۆمپتێک زیاد نەکراوە.';
+    } else {
+        message = 'No prompts added yet.';
+    }
+    
+    container.innerHTML = `
+        <div class="no-prompts">
+            <i class="fas fa-image"></i>
+            <p>${message}</p>
+        </div>
+    `;
 }
 
 // Promptları ekranda göster
@@ -174,6 +267,8 @@ function displayPrompts(prompts) {
     
     // Kopyalama butonlarına event listener ekle
     attachCopyListeners();
+    // Dil değişince butonları güncelle
+    updateCopyButtons();
 }
 
 // Prompt kartı oluştur
@@ -181,30 +276,26 @@ function createPromptCard(prompt) {
     const card = document.createElement('div');
     card.className = 'prompt-card';
     
-    // Resim URL'si (image sütunu) - eğer yoksa varsayılan resim
-    const imageUrl = prompt.image || prompt.resim || 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+    // Resim URL'si - 'image' sütunundan
+    const imageUrl = prompt.image || 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
     
-    // Prompt metni (prompt sütunu) - farklı dil sütunlarını kontrol et
-    let promptText = '';
+    // Prompt metni - 'prompt' sütunundan (HER ZAMAN İNGİLİZCE)
+    const promptText = prompt.prompt || prompt.Prompt || 'No prompt text available.';
     
-    if (currentLanguage === 'tr' && prompt.prompt_tr) {
-        promptText = prompt.prompt_tr;
-    } else if (currentLanguage === 'en' && prompt.prompt_en) {
-        promptText = prompt.prompt_en;
-    } else if (currentLanguage === 'ar' && prompt.prompt_ar) {
-        promptText = prompt.prompt_ar;
-    } else if (currentLanguage === 'sorani' && prompt.prompt_sorani) {
-        promptText = prompt.prompt_sorani;
-    } else if (currentLanguage === 'badini') {
-        promptText = 'Buraya Badini kelime girilecek';
-    } else {
-        // Varsayılan olarak ilk sütunu kullan
-        promptText = prompt.prompt || prompt.prompt_tr || prompt.prompt_en || 
-                     prompt.Prompt || 'Prompt metni bulunamadı.';
+    // Buton metni - diline göre
+    let copyButtonText = 'Copy Prompt';
+    if (currentLanguage === 'badini') {
+        copyButtonText = badiniTranslations.copy_button || 'کوپی بکە';
+    } else if (currentLanguage === 'tr') {
+        copyButtonText = 'Promptu Kopyala';
+    } else if (currentLanguage === 'ar') {
+        copyButtonText = 'نسخ الأمر';
+    } else if (currentLanguage === 'sorani') {
+        copyButtonText = 'پڕۆمپتەکە کۆپی بکە';
     }
     
     card.innerHTML = `
-        <img src="${imageUrl}" alt="AI Generated Image" class="prompt-image">
+        <img src="${imageUrl}" alt="AI Generated Image" class="prompt-image" loading="lazy">
         <div class="prompt-content">
             <div class="prompt-text-container">
                 <p class="prompt-text">${escapeHtml(promptText)}</p>
@@ -212,16 +303,33 @@ function createPromptCard(prompt) {
             </div>
             <button class="copy-btn" data-prompt="${escapeHtml(promptText)}">
                 <i class="far fa-copy"></i>
-                <span data-tr="Promptu Kopyala" 
-                      data-en="Copy Prompt" 
+                <span data-en="Copy Prompt" 
+                      data-tr="Promptu Kopyala" 
                       data-ar="نسخ الأمر" 
                       data-sorani="پڕۆمپتەکە کۆپی بکە"
-                      data-badini="Buraya Badini kelime girilecek">
-                    Promptu Kopyala
+                      data-badini="${badiniTranslations.copy_button || 'کوپی بکە'}">
+                    ${copyButtonText}
                 </span>
             </button>
         </div>
     `;
+    
+    // Resim yükleme hatası
+    const img = card.querySelector('img');
+    img.onerror = function() {
+        this.src = 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+        let altText = 'Image failed to load';
+        if (currentLanguage === 'badini') {
+            altText = badiniTranslations.image_error || 'وێنە نەهات';
+        } else if (currentLanguage === 'tr') {
+            altText = 'Resim yüklenemedi';
+        } else if (currentLanguage === 'ar') {
+            altText = 'فشل تحميل الصورة';
+        } else if (currentLanguage === 'sorani') {
+            altText = 'وێنە بار نەکرا';
+        }
+        this.alt = altText;
+    };
     
     return card;
 }
@@ -258,14 +366,18 @@ async function copyToClipboard(text) {
 // Kopyalandı bildirimi göster
 function showCopyNotification() {
     const notification = document.getElementById('copy-notification');
-    notification.classList.add('show');
     
-    // Bildirimi güncelle (dil desteği için)
-    updateTextBySelector('#copy-notification span', currentLanguage);
+    // Bildirim metnini güncelle
+    const span = notification.querySelector('span');
+    if (currentLanguage === 'badini') {
+        span.textContent = badiniTranslations.copied || 'هاتە کوپیکرن';
+    }
+    
+    notification.classList.add('show');
     
     setTimeout(() => {
         notification.classList.remove('show');
-    }, 3000);
+    }, 2000);
 }
 
 // HTML escape fonksiyonu (güvenlik için)
@@ -277,16 +389,16 @@ function escapeHtml(text) {
 
 // Google Sheets sütun yapısı hakkında bilgi
 console.log(`
-📊 GOOGLE SHEETS SÜTUN YAPISI:
+🚀 AI PROMPT GALLERY
+📊 GOOGLE SHEETS YAPISI:
+Sadece 2 sütun kullanın:
+1. image: Resim URL'si (Unsplash, Imgur, vs.)
+2. prompt: İngilizce prompt metni
 
-Google Sheets'te aşağıdaki sütunları kullanmanız önerilir:
+🌍 DİL DESTEĞİ:
+- Arayüz: 5 dil (English, Kurdish Sorani, Kurdish Badini, Turkish, Arabic)
+- Promptlar: Sadece İngilizce (tüm dillerde İngilizce gösterilir)
 
-1. image: Resim URL'si (Unsplash, Imgur vb.)
-2. prompt_tr: Türkçe prompt metni
-3. prompt_en: İngilizce prompt metni  
-4. prompt_ar: Arapça prompt metni
-5. prompt_sorani: Kürtçe Sorani prompt metni
-6. prompt_badini: Kürtçe Badini prompt metni (Boş bırakabilirsiniz)
-
-NOT: Sütun adları farklı olabilir, script otomatik olarak uyum sağlayacaktır.
+✅ SİTENİZ HAZIR!
+Google Sheets'inizi düzenleyin ve siteniz otomatik güncellenecek.
 `);
