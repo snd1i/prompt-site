@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Hub</title>
+    <title>PromptMaster Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- ARKA PLAN RESMİ (BULANIK) -->
+    <!-- ARKA PLAN -->
     <div class="background-image"></div>
     <div class="background-overlay"></div>
 
@@ -21,7 +21,7 @@
             <div class="logo">
                 <i class="fas fa-magic"></i>
                 <div>
-                    <h1>Prompt<span>Master</span></h1>
+                    <h1>Prompt<span>Master</span> Pro</h1>
                     <p id="subtitle">Professional AI Image Prompts</p>
                 </div>
             </div>
@@ -63,18 +63,12 @@
                 <button class="filter-btn" onclick="filterPrompts('newest')">
                     <i class="fas fa-clock"></i> <span data-lang="newest">Newest</span>
                 </button>
-                <button class="filter-btn" onclick="filterPrompts('oldest')">
-                    <i class="fas fa-history"></i> <span data-lang="oldest">Oldest</span>
-                </button>
                 
                 <div class="language-selector">
                     <i class="fas fa-globe"></i>
                     <select id="languageSelect" onchange="changeLanguage(this.value)">
                         <option value="en">🇬🇧 English</option>
                         <option value="tr">🇹🇷 Türkçe</option>
-                        <option value="ku">🇮🇶 کوردی</option>
-                        <option value="ar">🇸🇦 العربية</option>
-                        <option value="ru">🇷🇺 Русский</option>
                     </select>
                 </div>
             </div>
@@ -82,7 +76,7 @@
 
         <!-- PROMPTS GRID -->
         <div id="promptsContainer" class="prompts-grid">
-            <!-- Prompts will be loaded here -->
+            <!-- Prompts will be loaded from Google Sheets -->
         </div>
 
         <!-- FOOTER -->
@@ -90,12 +84,15 @@
             <div class="footer-content">
                 <div class="footer-logo">
                     <i class="fas fa-magic"></i>
-                    <span>PromptMaster</span>
+                    <span>PromptMaster Pro</span>
                 </div>
                 <p id="footerText">Create amazing AI images with professional prompts</p>
                 <a href="https://t.me/sndiyi" class="telegram-btn" target="_blank">
                     <i class="fab fa-telegram"></i> Join Telegram
                 </a>
+                <p class="footer-note">
+                    👤 Admin: <a href="https://t.me/k4miran_sndi" target="_blank">@k4miran_sndi</a>
+                </p>
             </div>
         </footer>
     </div>
@@ -104,7 +101,7 @@
     <div id="shareModal" class="share-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-share-alt"></i> Share</h3>
+                <h3><i class="fas fa-share-alt"></i> Share Prompt</h3>
                 <button class="close-btn" onclick="closeShareModal()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -119,7 +116,7 @@
                 <div class="share-link">
                     <input type="text" id="shareLinkInput" readonly value="https://t.me/sndiyi">
                     <button onclick="copyShareLink()">
-                        <i class="fas fa-copy"></i>
+                        <i class="fas fa-copy"></i> Copy
                     </button>
                 </div>
             </div>
@@ -134,19 +131,6 @@
     <!-- HIDDEN TEXTAREA -->
     <textarea id="hiddenTextarea" class="hidden-textarea"></textarea>
 
-    <!-- ADS BANNER -->
-    <div class="ads-banner">
-        <input type="checkbox" id="adsToggle" hidden>
-        <div class="ads-container">
-            <label for="adsToggle" class="ads-close">
-                <i class="fas fa-times"></i>
-            </label>
-            <iframe data-aa="2423518" src="//ad.a-ads.com/2423518/?size=320x50" scrolling="no"></iframe>
-        </div>
-    </div>
-
-    <script src="config.js"></script>
-    <script src="translations.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
