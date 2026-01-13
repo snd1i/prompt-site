@@ -1,31 +1,27 @@
-// ===== CONFIGURATION =====
-const GOOGLE_SHEETS_URL = 'YOUR_GOOGLE_SHEETS_URL_HERE';
-const SHEET_ID = 'YOUR_SHEET_ID';
-const API_KEY = 'YOUR_API_KEY';
+// ===== GOOGLE SHEETS AYARLARI =====
+const SHEET_ID = '1a4gxpaMg2gHNP9krJtVtqmDwMsvpY1KD1tqIes6zNNY';
+const API_KEY = 'AIzaSyDyJ6YvBt7l24p4WpJ7n5L2vqjC6bW8zKk'; // Bu çalışacak
 
-// ===== GLOBAL VARIABLES =====
+// ===== GLOBAL DEĞİŞKENLER =====
 let allPrompts = [];
 let filteredPrompts = [];
 let currentFilter = 'all';
 let currentLanguage = 'en';
-let isInitialized = false;
 let userLikes = JSON.parse(localStorage.getItem('promptMasterLikes')) || {};
 
-// ===== TRANSLATIONS =====
-const translations = window.translations || {
+// ===== ÇEVİRİLER =====
+const translations = {
     en: {
         all: "All",
         most_liked: "Most Liked",
         newest: "Newest",
-        oldest: "Oldest",
         subtitle: "Professional AI Image Prompts",
         footerText: "Create amazing AI images with professional prompts",
         searchPlaceholder: "Search prompts...",
         noResults: "No prompts found",
-        loading: "Loading prompts...",
+        loading: "Loading prompts from Google Sheets...",
         copy: "Copy",
         share: "Share",
-        copied: "Copied!",
         like: "Like",
         new: "NEW"
     },
@@ -33,83 +29,23 @@ const translations = window.translations || {
         all: "Tümü",
         most_liked: "En Beğenilen",
         newest: "En Yeni",
-        oldest: "En Eski",
         subtitle: "Profesyonel AI Görsel Promptları",
         footerText: "Profesyonel prompt'larla harika AI görselleri oluşturun",
         searchPlaceholder: "Prompt ara...",
         noResults: "Prompt bulunamadı",
-        loading: "Prompt'lar yükleniyor...",
+        loading: "Google Sheets'ten prompt'lar yükleniyor...",
         copy: "Kopyala",
         share: "Paylaş",
-        copied: "Kopyalandı!",
         like: "Beğen",
         new: "YENİ"
-    },
-    ku: {
-        all: "Hemû",
-        most_liked: "Herî Hezkirî",
-        newest: "Herî Nû",
-        oldest: "Herî Kevin",
-        subtitle: "Promptên Wêneyên AI yê Professional",
-        footerText: "Bi promptên profesyonel re wêneyên AI yên ecêb çêbikin",
-        searchPlaceholder: "Prompt bigerin...",
-        noResults: "Prompt nehate dîtin",
-        loading: "Prompt tên barkirin...",
-        copy: "Kopî bike",
-        share: "Parve bike",
-        copied: "Hat kopîkirin!",
-        like: "Hez bike",
-        new: "NÛ"
-    },
-    ar: {
-        all: "الكل",
-        most_liked: "الأكثر إعجابًا",
-        newest: "الأحدث",
-        oldest: "الأقدم",
-        subtitle: "برومبتات صور الذكاء الاصطناعي الاحترافية",
-        footerText: "أنشئ صور ذكاء اصطناعي مذهلة باستخدام برومبتات احترافية",
-        searchPlaceholder: "ابحث عن برومبتات...",
-        noResults: "لم يتم العثور على برومبتات",
-        loading: "جاري تحميل البرومبتات...",
-        copy: "نسخ",
-        share: "مشاركة",
-        copied: "تم النسخ!",
-        like: "إعجاب",
-        new: "جديد"
-    },
-    ru: {
-        all: "Все",
-        most_liked: "Самые популярные",
-        newest: "Самые новые",
-        oldest: "Самые старые",
-        subtitle: "Профессиональные промпты для AI изображений",
-        footerText: "Создавайте удивительные AI изображения с профессиональными промптами",
-        searchPlaceholder: "Поиск промптов...",
-        noResults: "Промпты не найдены",
-        loading: "Загрузка промптов...",
-        copy: "Копировать",
-        share: "Поделиться",
-        copied: "Скопировано!",
-        like: "Нравится",
-        new: "НОВЫЙ"
     }
 };
 
-// ===== RANDOM LIKES GENERATOR (SADECE İLK YÜKLEMEDE) =====
+// ===== İLK BEĞENİ ÜRETİCİ =====
 function generateInitialLikes() {
-    // 1000 ile 15000 arasında rastgele sayı
     const likes = Math.floor(Math.random() * 14000) + 1000;
-    
-    // Format: 1.2K, 5.7K, 12.3K gibi
-    if (likes >= 1000) {
-        const formatted = (likes / 1000).toFixed(1);
-        return {
-            formatted: formatted.endsWith('.0') ? formatted.replace('.0', '') + 'K' : formatted + 'K',
-            numeric: likes
-        };
-    }
     return {
-        formatted: likes.toString(),
+        formatted: likes >= 1000 ? (likes / 1000).toFixed(1).replace('.0', '') + 'K' : likes.toString(),
         numeric: likes
     };
 }
@@ -120,7 +56,6 @@ function protectImages() {
     
     images.forEach(img => {
         img.setAttribute('crossorigin', 'anonymous');
-        img.classList.add('no-image-context');
         
         img.addEventListener('contextmenu', function(e) {
             e.preventDefault();
@@ -129,22 +64,6 @@ function protectImages() {
         });
         
         img.addEventListener('dragstart', function(e) {
-            e.preventDefault();
-            return false;
-        });
-        
-        const originalSrc = img.src;
-        img.dataset.originalSrc = originalSrc;
-    });
-    
-    const imageContainers = document.querySelectorAll('.image-container');
-    imageContainers.forEach(container => {
-        const overlay = document.createElement('div');
-        overlay.className = 'image-protection';
-        overlay.innerHTML = '<div class="protection-overlay"></div>';
-        container.appendChild(overlay);
-        
-        overlay.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             return false;
         });
@@ -176,162 +95,129 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// ===== UYGULAMA BAŞLATMA =====
-async function initializeApp() {
-    if (isInitialized) return;
-    
-    showNotification('🚀 Uygulama başlatılıyor...', 'info');
-    
-    const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
-    changeLanguage(savedLanguage);
-    
-    await loadPrompts();
-    
-    setupEventListeners();
-    
-    protectImages();
-    
-    isInitialized = true;
-    showNotification('✅ Uygulama hazır!', 'success');
-}
-
-// ===== PROMPT'LARI YÜKLE =====
-async function loadPrompts() {
-    const promptsContainer = document.getElementById('promptsContainer');
-    if (!promptsContainer) return;
-    
-    promptsContainer.innerHTML = `
-        <div class="loading">
-            <div class="loading-spinner"></div>
-            <p>${translations[currentLanguage].loading}</p>
-        </div>
-    `;
-    
+// ===== GOOGLE SHEETS'TEN VERİ ÇEKME =====
+async function loadFromGoogleSheets() {
     try {
-        let promptsData = [];
+        showNotification('📊 Google Sheets verileri yükleniyor...', 'info');
         
-        // DEMO VERİ - Google Sheets URL'nizi buraya ekleyin
-        promptsData = [
-            {
-                id: 1,
-                title: "Cyberpunk Cityscape",
-                description: "A futuristic city with neon lights, flying cars, and towering skyscrapers at night",
-                prompt: "cyberpunk cityscape, neon lights, raining, futuristic, towering skyscrapers, flying cars, cinematic lighting, 8k, ultra detailed",
-                image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop",
-                category: "landscape",
-                date: "2024-01-15",
-                isNew: true
-            },
-            {
-                id: 2,
-                title: "Fantasy Warrior",
-                description: "A powerful warrior in fantasy armor with glowing magical effects",
-                prompt: "fantasy warrior, full body, intricate armor, glowing magical effects, dramatic lighting, cinematic, detailed, 8k",
-                image: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=800&h=600&fit=crop",
-                category: "characters",
-                date: "2024-01-14",
-                isNew: true
-            },
-            {
-                id: 3,
-                title: "Surreal Landscape",
-                description: "A dreamlike landscape with floating islands and waterfalls",
-                prompt: "surreal landscape, floating islands, waterfalls, dreamlike, mystical, vibrant colors, magical, 8k",
-                image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-                category: "landscape",
-                date: "2024-01-13",
-                isNew: false
-            },
-            {
-                id: 4,
-                title: "Steampunk Workshop",
-                description: "A detailed steampunk workshop with gears and mechanical devices",
-                prompt: "steampunk workshop, intricate details, gears, mechanical devices, brass and copper, warm lighting, detailed, 8k",
-                image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&h=600&fit=crop",
-                category: "art",
-                date: "2024-01-12",
-                isNew: false
-            },
-            {
-                id: 5,
-                title: "AI Portrait",
-                description: "A detailed portrait of a person with cybernetic enhancements",
-                prompt: "cybernetic portrait, detailed face, glowing circuit patterns, neon accents, cinematic lighting, 8k, ultra detailed",
-                image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
-                category: "characters",
-                date: "2024-01-11",
-                isNew: false
-            },
-            {
-                id: 6,
-                title: "Magic Forest",
-                description: "An enchanted forest with glowing plants and magical creatures",
-                prompt: "enchanted forest, glowing plants, magical creatures, bioluminescent, mystical, fantasy, detailed, 8k",
-                image: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=600&fit=crop",
-                category: "landscape",
-                date: "2024-01-10",
-                isNew: false
-            }
-        ];
+        const range = 'Sheet1!A:G'; // A'dan G'ye kadar sütunlar
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
         
-        // Her prompt'a rastgele başlangıç beğenisi ata (sadece ilk yüklemede)
-        promptsData.forEach(prompt => {
-            const promptId = prompt.id.toString();
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (!data.values || data.values.length < 2) {
+            throw new Error('Google Sheets boş veya hatalı');
+        }
+        
+        const rows = data.values;
+        const headers = rows[0];
+        
+        allPrompts = rows.slice(1).map((row, index) => {
+            const promptId = (index + 1).toString();
+            const initialLikes = generateInitialLikes();
             
-            // LocalStorage'da kayıtlı beğeni var mı kontrol et
-            if (userLikes[promptId] !== undefined) {
-                // Kullanıcı daha önce beğenmiş, onun verisini kullan
-                prompt.baseLikes = userLikes[promptId].baseLikes || 0;
-                prompt.userLiked = userLikes[promptId].liked || false;
+            // LocalStorage'dan beğeni durumunu kontrol et
+            let baseLikes = initialLikes.numeric;
+            let userLiked = false;
+            
+            if (userLikes[promptId]) {
+                baseLikes = userLikes[promptId].baseLikes;
+                userLiked = userLikes[promptId].liked;
             } else {
-                // İlk defa görüntüleniyor, rastgele beğeni ata
-                const initialLikes = generateInitialLikes();
-                prompt.baseLikes = initialLikes.numeric;
-                prompt.userLiked = false;
-                
-                // LocalStorage'a kaydet
                 userLikes[promptId] = {
-                    baseLikes: prompt.baseLikes,
+                    baseLikes: baseLikes,
                     liked: false
                 };
             }
             
-            // Toplam beğeni sayısını hesapla
-            prompt.totalLikes = prompt.baseLikes + (prompt.userLiked ? 1 : 0);
+            const totalLikes = baseLikes + (userLiked ? 1 : 0);
             
-            // Formatlı gösterim için
-            if (prompt.totalLikes >= 1000) {
-                prompt.likesFormatted = (prompt.totalLikes / 1000).toFixed(1);
-                prompt.likesFormatted = prompt.likesFormatted.endsWith('.0') 
-                    ? prompt.likesFormatted.replace('.0', '') + 'K' 
-                    : prompt.likesFormatted + 'K';
-            } else {
-                prompt.likesFormatted = prompt.totalLikes.toString();
-            }
+            // Google Sheets sütunları:
+            // 0: Başlık, 1: Açıklama, 2: Prompt, 3: Resim URL, 4: Kategori, 5: Tarih, 6: Yeni mi?
+            return {
+                id: index + 1,
+                title: row[0] || 'Untitled',
+                description: row[1] || '',
+                prompt: row[2] || '',
+                image: row[3] || 'https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?w=800&h=600&fit=crop',
+                category: row[4] || 'art',
+                baseLikes: baseLikes,
+                totalLikes: totalLikes,
+                likesFormatted: totalLikes >= 1000 ? 
+                    (totalLikes / 1000).toFixed(1).replace('.0', '') + 'K' : 
+                    totalLikes.toString(),
+                userLiked: userLiked,
+                date: row[5] || new Date().toISOString().split('T')[0],
+                isNew: row[6] === 'TRUE' || row[6] === 'true' || false
+            };
         });
         
-        allPrompts = promptsData;
         filteredPrompts = [...allPrompts];
-        
-        updateStats();
-        renderPrompts();
         
         // LocalStorage'ı güncelle
         localStorage.setItem('promptMasterLikes', JSON.stringify(userLikes));
         
+        updateStats();
+        renderPrompts();
+        showNotification('✅ Google Sheets verileri yüklendi!', 'success');
+        
     } catch (error) {
-        console.error('Error loading prompts:', error);
-        promptsContainer.innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>Error Loading Prompts</h3>
-                <p>Please check your connection and try again.</p>
-                <button onclick="loadPrompts()" style="margin-top: 20px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer;">
-                    <i class="fas fa-redo"></i> Try Again
-                </button>
-            </div>
-        `;
+        console.error('Google Sheets hatası:', error);
+        showNotification('❌ Google Sheets yüklenemedi', 'error');
+        
+        // Fallback: Demo veriler
+        loadDemoPrompts();
     }
+}
+
+// ===== DEMO VERİLER (YEDEK) =====
+function loadDemoPrompts() {
+    const demoPrompts = [
+        {
+            id: 1,
+            title: "Cyberpunk Cityscape",
+            description: "A futuristic city with neon lights, flying cars, and towering skyscrapers at night",
+            prompt: "cyberpunk cityscape, neon lights, raining, futuristic, towering skyscrapers, flying cars, cinematic lighting, 8k, ultra detailed",
+            image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop",
+            category: "landscape",
+            isNew: true
+        },
+        {
+            id: 2,
+            title: "Fantasy Warrior",
+            description: "A powerful warrior in fantasy armor with glowing magical effects",
+            prompt: "fantasy warrior, full body, intricate armor, glowing magical effects, dramatic lighting, cinematic, detailed, 8k",
+            image: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=800&h=600&fit=crop",
+            category: "characters",
+            isNew: true
+        }
+    ];
+    
+    // Beğenileri ekle
+    demoPrompts.forEach(prompt => {
+        const promptId = prompt.id.toString();
+        const initialLikes = generateInitialLikes();
+        
+        if (!userLikes[promptId]) {
+            userLikes[promptId] = {
+                baseLikes: initialLikes.numeric,
+                liked: false
+            };
+        }
+        
+        prompt.baseLikes = userLikes[promptId].baseLikes;
+        prompt.userLiked = userLikes[promptId].liked;
+        prompt.totalLikes = prompt.baseLikes + (prompt.userLiked ? 1 : 0);
+        prompt.likesFormatted = prompt.totalLikes >= 1000 ? 
+            (prompt.totalLikes / 1000).toFixed(1).replace('.0', '') + 'K' : 
+            prompt.totalLikes.toString();
+    });
+    
+    allPrompts = demoPrompts;
+    filteredPrompts = [...allPrompts];
+    updateStats();
+    renderPrompts();
 }
 
 // ===== PROMPT'LARI GÖSTER =====
@@ -358,7 +244,7 @@ function renderPrompts() {
                 <img src="${prompt.image}" 
                      alt="${prompt.title}"
                      loading="lazy"
-                     onerror="this.src='https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?w=800&h=600&fit=crop'">
+                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?w=800&h=600&fit=crop'">
                 <div class="image-protection"></div>
             </div>
             
@@ -372,7 +258,7 @@ function renderPrompts() {
                         <button class="like-btn ${prompt.userLiked ? 'liked' : ''}" onclick="toggleLike(this, ${prompt.id})">
                             <i class="fas fa-heart"></i>
                         </button>
-                        <span class="like-count" data-prompt-id="${prompt.id}" data-base-likes="${prompt.baseLikes}">
+                        <span class="like-count" data-prompt-id="${prompt.id}">
                             ${prompt.likesFormatted}
                         </span>
                     </div>
@@ -394,7 +280,7 @@ function renderPrompts() {
     protectImages();
 }
 
-// ===== BEĞENİ DEĞİŞTİRME =====
+// ===== BEĞENİ DEĞİŞTİR =====
 function toggleLike(button, promptId) {
     const prompt = allPrompts.find(p => p.id === promptId);
     if (!prompt) return;
@@ -402,28 +288,21 @@ function toggleLike(button, promptId) {
     const likeCountElement = button.nextElementSibling;
     const promptIdStr = promptId.toString();
     
-    // Mevcut durumu kontrol et
-    const currentlyLiked = button.classList.contains('liked');
-    
-    if (currentlyLiked) {
+    if (button.classList.contains('liked')) {
         // Beğeniyi kaldır
         button.classList.remove('liked');
         prompt.userLiked = false;
         prompt.totalLikes = prompt.baseLikes;
         
-        // LocalStorage güncelle
         if (userLikes[promptIdStr]) {
             userLikes[promptIdStr].liked = false;
         }
-        
-        showNotification('💔 Beğeniniz kaldırıldı', 'info');
     } else {
         // Beğeni ekle
         button.classList.add('liked');
         prompt.userLiked = true;
         prompt.totalLikes = prompt.baseLikes + 1;
         
-        // LocalStorage güncelle
         if (!userLikes[promptIdStr]) {
             userLikes[promptIdStr] = {
                 baseLikes: prompt.baseLikes,
@@ -446,13 +325,9 @@ function toggleLike(button, promptId) {
         likeCountElement.textContent = prompt.totalLikes.toString();
     }
     
-    // Prompt verisini güncelle
     prompt.likesFormatted = likeCountElement.textContent;
     
-    // LocalStorage'ı kaydet
     localStorage.setItem('promptMasterLikes', JSON.stringify(userLikes));
-    
-    // İstatistikleri güncelle
     updateStats();
 }
 
@@ -499,12 +374,6 @@ function filterPrompts(filterType) {
             );
             break;
             
-        case 'oldest':
-            filteredPrompts = [...allPrompts].sort((a, b) => 
-                new Date(a.date) - new Date(b.date)
-            );
-            break;
-            
         default:
             filteredPrompts = [...allPrompts];
             break;
@@ -538,13 +407,13 @@ function searchPrompts(query) {
     renderPrompts();
 }
 
-// ===== PROMPT KOPYALAMA =====
+// ===== PROMPT KOPYALA =====
 function copyPrompt(promptText) {
     const decodedPrompt = decodeURIComponent(promptText);
     navigator.clipboard.writeText(decodedPrompt).then(() => {
         showNotification('✅ Prompt kopyalandı!', 'success');
     }).catch(err => {
-        console.error('Failed to copy:', err);
+        console.error('Kopyalama hatası:', err);
         showNotification('❌ Kopyalama başarısız', 'error');
     });
 }
@@ -560,18 +429,16 @@ function sharePrompt(promptId) {
     const shareLinkInput = document.getElementById('shareLinkInput');
     
     if (shareImage) shareImage.src = prompt.image;
-    if (shareMessageText) shareMessageText.textContent = `"${prompt.title}" - ${prompt.totalLikes} beğeni`;
+    if (shareMessageText) shareMessageText.textContent = `"${prompt.title}" - ${prompt.likesFormatted} likes`;
     if (shareLinkInput) shareLinkInput.value = `https://t.me/sndiyi?text=${encodeURIComponent(prompt.title + ': ' + prompt.prompt)}`;
     
     shareModal.style.display = 'flex';
 }
 
-// ===== PAYLAŞIM MODAL KAPATMA =====
 function closeShareModal() {
     document.getElementById('shareModal').style.display = 'none';
 }
 
-// ===== LİNK KOPYALAMA =====
 function copyShareLink() {
     const shareLinkInput = document.getElementById('shareLinkInput');
     if (shareLinkInput) {
@@ -582,7 +449,6 @@ function copyShareLink() {
     }
 }
 
-// ===== TELEGRAM'A PAYLAŞ =====
 function shareToTelegram() {
     const shareLinkInput = document.getElementById('shareLinkInput');
     if (shareLinkInput) {
@@ -591,7 +457,7 @@ function shareToTelegram() {
     }
 }
 
-// ===== DİL DEĞİŞTİRME =====
+// ===== DİL DEĞİŞTİR =====
 function changeLanguage(lang) {
     currentLanguage = lang;
     localStorage.setItem('preferredLanguage', lang);
@@ -675,175 +541,39 @@ function setupEventListeners() {
             }
         });
     }
-    
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) {
-            updateStats();
-        }
-    });
 }
 
 // ===== UYGULAMAYI BAŞLAT =====
+async function initializeApp() {
+    showNotification('🚀 Uygulama başlatılıyor...', 'info');
+    
+    const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
+    changeLanguage(savedLanguage);
+    
+    await loadFromGoogleSheets();
+    
+    setupEventListeners();
+    protectImages();
+    
+    showNotification('✅ Uygulama hazır!', 'success');
+}
+
+// ===== SAYFA YÜKLENDİĞİNDE ÇALIŞTIR =====
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
-    
-    const style = document.createElement('style');
-    style.textContent = `
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .notification.success {
-            border-left-color: #10B981;
-        }
-        
-        .notification.warning {
-            border-left-color: #F59E0B;
-        }
-        
-        .notification.error {
-            border-left-color: #EF4444;
-        }
-        
-        .notification i {
-            font-size: 1.2rem;
-        }
-        
-        .notification.success i {
-            color: #10B981;
-        }
-        
-        .notification.warning i {
-            color: #F59E0B;
-        }
-        
-        .notification.error i {
-            color: #EF4444;
-        }
-        
-        .close-notification {
-            background: none;
-            border: none;
-            color: #6B7280;
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-left: 10px;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .protection-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            z-index: 2;
-        }
-        
-        .like-btn.liked i {
-            color: var(--secondary) !important;
-        }
-    `;
-    document.head.appendChild(style);
 });
 
-// ===== GOOGLE SHEETS ENTEGRASYONU =====
-async function loadFromGoogleSheets() {
-    /* 
-    // Google Sheets API kullanımı:
-    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`);
-    const data = await response.json();
-    
-    const rows = data.values;
-    const headers = rows[0];
-    
-    allPrompts = rows.slice(1).map((row, index) => {
-        const promptId = (index + 1).toString();
-        const initialLikes = generateInitialLikes();
-        
-        let baseLikes = initialLikes.numeric;
-        let userLiked = false;
-        
-        if (userLikes[promptId]) {
-            baseLikes = userLikes[promptId].baseLikes;
-            userLiked = userLikes[promptId].liked;
-        } else {
-            userLikes[promptId] = {
-                baseLikes: baseLikes,
-                liked: false
-            };
-        }
-        
-        const totalLikes = baseLikes + (userLiked ? 1 : 0);
-        
-        return {
-            id: index + 1,
-            title: row[0] || '',
-            description: row[1] || '',
-            prompt: row[2] || '',
-            image: row[3] || '',
-            category: row[4] || 'art',
-            baseLikes: baseLikes,
-            totalLikes: totalLikes,
-            likesFormatted: totalLikes >= 1000 ? (totalLikes / 1000).toFixed(1).replace('.0', '') + 'K' : totalLikes.toString(),
-            userLiked: userLiked,
-            date: row[5] || new Date().toISOString().split('T')[0],
-            isNew: row[6] === 'TRUE'
-        };
-    });
-    
-    filteredPrompts = [...allPrompts];
-    localStorage.setItem('promptMasterLikes', JSON.stringify(userLikes));
-    updateStats();
-    renderPrompts();
-    */
-}
+// ===== GOOGLE SHEETS SÜTUN AÇIKLAMASI =====
+/*
+Google Sheets'inizde bu sütunları oluşturun:
+A: Başlık (Title)
+B: Açıklama (Description)
+C: Prompt metni (Prompt)
+D: Resim URL (Image URL)
+E: Kategori (Category)
+F: Tarih (Date - YYYY-MM-DD)
+G: Yeni mi? (isNew - TRUE veya FALSE)
 
-// ===== HATA YAKALAMA =====
-window.addEventListener('error', (e) => {
-    console.error('Global error:', e.error);
-    showNotification('⚠️ Bir hata oluştu. Lütfen sayfayı yenileyin.', 'error');
-});
-
-// ===== SAYFA GÖRÜNÜRLÜĞÜ =====
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-        updateStats();
-    }
-});
-
-// ===== RESET BUTTON (Gizli - Geliştirici için) =====
-function resetLikes() {
-    if (confirm('Tüm beğenileri sıfırlamak istediğinize emin misiniz?')) {
-        localStorage.removeItem('promptMasterLikes');
-        userLikes = {};
-        location.reload();
-    }
-}
-
-// Console'a gizli buton ekle
-console.log('%c🔧 Geliştirici Araçları:', 'color: #8B5CF6; font-weight: bold;');
-console.log('%cresetLikes() - Beğenileri sıfırla', 'color: #EC4899;');
+Örnek satır:
+Cyberpunk City | Futuristic city... | cyberpunk cityscape... | https://... | landscape | 2024-01-15 | TRUE
+*/
