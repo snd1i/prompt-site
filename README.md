@@ -1,81 +1,60 @@
-# AI Prompt Galerisi - Kurulum ve Kullanım Kılavuzu
+# AI Prompt Gallery
 
-Merhaba! Bu rehber, kodlama bilgisi olmayanlar için hazırlanmıştır. Aşağıdaki adımları takip ederek web sitenizi ücretsiz olarak yayınlayabilirsiniz.
+Modern, responsive AI prompt gallery that displays image generation prompts from Google Sheets.
 
-## 📱 Telefondan GitHub'a Nasıl Yüklenir?
+## 🚀 Quick Setup
 
-### 1. GitHub Hesabı Oluşturun
-- Telefonunuzdan Chrome veya Safari ile [GitHub.com](https://github.com) sitesine gidin
-- Sağ üst köşedeki "Sign up" (Kaydol) butonuna tıklayın
-- E-posta, şifre ve kullanıcı adı girin
-- Hesabınızı doğrulayın
-
-### 2. Yeni Depo (Repository) Oluşturun
-- GitHub ana sayfasında, yeşil "New" (Yeni) butonuna tıklayın
-- "Repository name" (Depo adı) kısmına: `ai-prompt-galerisi` yazın
-- "Public" (Herkese açık) seçeneğini işaretleyin
-- "Initialize this repository with a README" seçeneğini İŞARETLEMEYİN
-- Yeşil "Create repository" (Depo oluştur) butonuna tıklayın
-
-### 3. Dosyaları GitHub'a Yükleyin
-Oluşturduğunuz depo sayfasında:
-1. "Add file" (Dosya ekle) butonuna tıklayın
-2. "Upload files" (Dosya yükle) seçeneğini seçin
-3. Bilgisayarınızdan şu 4 dosyayı seçin:
+### 1. Upload to GitHub
+1. Go to your GitHub repository
+2. Click "Add file" → "Upload files"
+3. Upload these 4 files:
    - `index.html`
    - `style.css`
    - `script.js`
    - `README.md`
-4. "Commit changes" (Değişiklikleri kaydet) butonuna tıklayın
 
-## 🌐 GitHub Pages Nasıl Açılır?
+### 2. Enable GitHub Pages
+1. Go to Repository Settings
+2. Find "Pages" in left menu
+3. Under "Source", select "main" branch
+4. Click "Save"
+5. Wait 1-2 minutes
+6. Your site will be live at: `https://[username].github.io/[repository-name]/`
 
-1. Deponuzun ana sayfasında (ai-prompt-galerisi)
-2. Üst menüden "Settings" (Ayarlar) sekmesine tıklayın
-3. Sol menüden "Pages" sayfasını seçin
-4. "Branch" kısmında "main" seçin
-5. "Save" (Kaydet) butonuna tıklayın
-6. 1-2 dakika bekleyin
-7. Yeşil kutuda sitenizin linki görünecek: `https://[kullanıcı-adınız].github.io/ai-prompt-galerisi/`
+## 📊 Google Sheets Setup
 
-**Tebrikler!** Artık siteniz tüm dünyada erişilebilir durumda.
+### Sheet Structure
+Use only 2 columns in your Google Sheet:
 
-## 📊 Google Sheets Nasıl Düzenlenir?
+| Column | Description | Example |
+|--------|-------------|---------|
+| `image` | Image URL | `https://images.unsplash.com/photo-...` |
+| `prompt` | English prompt text | `Photographic, ultra realistic, a robot drawing...` |
 
-### 1. Mevcut Sheet'i Kopyalayın
-- [Bu Google Sheets linkine](https://docs.google.com/spreadsheets/d/1a4gxpaMg2gHNP9krJtVtqmDwMsvpY1KD1tqIes6zNNY/edit?usp=drivesdk) gidin
-- "Dosya" menüsünden "Kopya oluştur" seçeneğini tıklayın
-- Kendi Google Drive'ınıza kaydedin
+### Sharing Settings (IMPORTANT)
+1. Open your Google Sheet
+2. Click "Share" button (top-right)
+3. Change from "Restricted" to "Anyone with the link"
+4. Set permission to "Viewer"
+5. Click "Done"
 
-### 2. Sheet'i Herkese Açık Yapın
-- Kopyaladığınız Sheet'te, sağ üstteki "Paylaş" butonuna tıklayın
-- "Genel erişim" bölümünde "Herkes" seçeneğini seçin
-- Yanındaki açılır menüden "Görüntüleyen" seçin
-- "Tamam" butonuna tıklayın
+## 🌍 Language Support
 
-### 3. Sheet Linkinizi Alın
-- Tarayıcınızın adres çubuğundaki linki kopyalayın
-- Link şuna benzer olacak: `https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit`
-- Bu linki `script.js` dosyasındaki 2. satırdaki `SHEET_ID` kısmına değiştirin:
-  - Linkten `YOUR_SHEET_ID` kısmını bulun (uzun harf-rakam karışımı)
-  - `const SHEET_ID = 'YOUR_SHEET_ID';` şeklinde değiştirin
+### Interface Languages (5 supported)
+- 🇬🇧 English
+- 🇹🇯 Kurdish Sorani
+- 🇹🇯 Kurdish Badini
+- 🇹🇷 Turkish
+- 🇮🇶 Arabic
 
-## ➕ Yeni Prompt Nasıl Eklenir?
+### Prompts Language
+- All prompts are displayed in **ENGLISH ONLY**
+- Interface texts change based on selected language
+- Prompt content remains in English for all languages
 
-### 1. Google Sheets'e Gidin
-- Kopyaladığınız Sheet'i açın
+## 🔧 Customization
 
-### 2. Yeni Satır Ekleme
-- En alt satıra gidin
-- Her sütun için bilgileri girin:
-
-| Sütun Adı | Ne Yazılacak? |
-|-----------|--------------|
-| image | Resim URL'si (Unsplash, Imgur, vb.) |
-| prompt_tr | Türkçe prompt metni |
-| prompt_en | İngilizce prompt metni |
-| prompt_ar | Arapça prompt metni |
-| prompt_sorani | Kürtçe Sorani prompt metni |
-| prompt_badini | Boş bırakın veya "Buraya Badini kelime girilecek" yazın |
-
-### 3. Örnek Satır:
+### Change Google Sheets ID
+Edit `script.js` line 2:
+```javascript
+const SHEET_ID = 'YOUR_SHEET_ID_HERE';
