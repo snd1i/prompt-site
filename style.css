@@ -1,0 +1,482 @@
+/* Genel Stiller */
+:root {
+    --primary-color: #6c63ff;
+    --primary-dark: #554fd8;
+    --secondary-color: #ff6584;
+    --bg-color: #0f0f23;
+    --card-bg: #1a1a2e;
+    --text-color: #f0f0f0;
+    --text-secondary: #b0b0c0;
+    --border-radius: 20px;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Dil Seçici */
+.language-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.language-dropdown {
+    position: relative;
+}
+
+.language-btn {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border: 2px solid rgba(108, 99, 255, 0.3);
+    border-radius: var(--border-radius);
+    padding: 12px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+}
+
+.language-btn:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.language-btn i {
+    font-size: 18px;
+}
+
+.language-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    min-width: 250px;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: var(--transition);
+    z-index: 1000;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.language-dropdown:hover .language-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.language-option {
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: var(--transition);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.language-option:last-child {
+    border-bottom: none;
+}
+
+.language-option:hover {
+    background: rgba(108, 99, 255, 0.1);
+    padding-left: 25px;
+}
+
+.language-option .flag {
+    font-size: 20px;
+}
+
+.badini-note {
+    font-size: 12px;
+    color: var(--secondary-color);
+    margin-left: auto;
+    font-style: italic;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    padding: 100px 0 60px;
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.1) 0%, rgba(26, 26, 46, 0.1) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: fadeInUp 0.8s ease;
+}
+
+.subtitle {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+/* Prompt Kartları */
+.main-content {
+    padding: 40px 0 80px;
+}
+
+.prompts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.prompt-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    animation: fadeIn 0.5s ease;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.prompt-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    border-color: rgba(108, 99, 255, 0.3);
+}
+
+.prompt-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    transition: var(--transition);
+}
+
+.prompt-card:hover .prompt-image {
+    transform: scale(1.03);
+}
+
+.prompt-content {
+    padding: 25px;
+    position: relative;
+}
+
+.prompt-text-container {
+    position: relative;
+    max-height: 200px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.prompt-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.fade-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--card-bg));
+    pointer-events: none;
+}
+
+.copy-btn {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    transition: var(--transition);
+    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+}
+
+.copy-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(108, 99, 255, 0.4);
+}
+
+.copy-btn:active {
+    transform: translateY(0);
+}
+
+.copy-btn i {
+    font-size: 18px;
+}
+
+/* Yükleme Spinner */
+.loading-spinner {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 0;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(108, 99, 255, 0.2);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+/* Telegram Bölümü */
+.telegram-section {
+    padding: 40px 0;
+}
+
+.telegram-card {
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(26, 26, 46, 0.8));
+    border-radius: var(--border-radius);
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    border: 1px solid rgba(108, 99, 255, 0.2);
+    box-shadow: var(--shadow);
+}
+
+.telegram-icon {
+    background: linear-gradient(45deg, #0088cc, #00a2ff);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.telegram-info h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: var(--text-color);
+}
+
+.telegram-info p {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+.telegram-links {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.telegram-link {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 20px;
+    border-radius: 50px;
+    color: var(--text-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.telegram-link:hover {
+    background: rgba(0, 136, 204, 0.2);
+    border-color: #0088cc;
+    transform: translateY(-3px);
+}
+
+.user-link:hover {
+    background: rgba(108, 99, 255, 0.2);
+    border-color: var(--primary-color);
+}
+
+/* Reklam */
+.ad-container {
+    padding: 30px 0;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 30px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* Kopyalandı Bildirimi */
+.copy-notification {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(108, 99, 255, 0.3);
+    border-radius: var(--border-radius);
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    z-index: 1001;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.copy-notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.copy-notification i {
+    color: #4CAF50;
+    font-size: 20px;
+}
+
+/* Animasyonlar */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+    .language-selector {
+        top: 15px;
+        right: 15px;
+    }
+    
+    .language-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    .title {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.1rem;
+        padding: 0 15px;
+    }
+    
+    .header {
+        padding: 80px 0 40px;
+    }
+    
+    .prompts-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .telegram-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 25px;
+    }
+    
+    .telegram-links {
+        justify-content: center;
+    }
+    
+    .language-menu {
+        min-width: 200px;
+        right: -20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 2rem;
+    }
+    
+    .prompt-card {
+        margin: 0 10px;
+    }
+    
+    .prompt-content {
+        padding: 20px;
+    }
+}
