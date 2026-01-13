@@ -1,5 +1,5 @@
 // Google Sheets API URL (JSON formatında)
-const SHEET_ID = '1ycPsfDBTQOVgewcBizheXinnrqe4UV-hiHFMZE4FZvU'; // BURAYI DEĞİŞTİRİN
+const SHEET_ID = '16GwAXZyYn109Bji4j--Ym9a-GG4b3oTkwP0bdQGnHkM'; // YENİ ID BURAYA
 const SHEET_NAME = 'Sheet1'; // Google Sheets sayfa adı
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
