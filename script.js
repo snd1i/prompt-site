@@ -1,5 +1,5 @@
 // ===== CONFIGURATION =====
-const GOOGLE_SHEETS_URL = 'YOUR_GOOGLE_SHEETS_URL_HERE'; // Sheets URL'nizi buraya ekleyin
+const GOOGLE_SHEETS_URL = 'YOUR_GOOGLE_SHEETS_URL_HERE';
 const SHEET_ID = 'YOUR_SHEET_ID';
 const API_KEY = 'YOUR_API_KEY';
 
@@ -9,6 +9,7 @@ let filteredPrompts = [];
 let currentFilter = 'all';
 let currentLanguage = 'en';
 let isInitialized = false;
+let userLikes = JSON.parse(localStorage.getItem('promptMasterLikes')) || {};
 
 // ===== TRANSLATIONS =====
 const translations = window.translations || {
@@ -94,17 +95,26 @@ const translations = window.translations || {
     }
 };
 
-// ===== RANDOM LIKES GENERATOR =====
-function generateRandomLikes() {
+// ===== RANDOM LIKES GENERATOR (SADECE İLK YÜKLEMEDE) =====
+function generateInitialLikes() {
+    // 1000 ile 15000 arasında rastgele sayı
     const likes = Math.floor(Math.random() * 14000) + 1000;
+    
+    // Format: 1.2K, 5.7K, 12.3K gibi
     if (likes >= 1000) {
         const formatted = (likes / 1000).toFixed(1);
-        return formatted.endsWith('.0') ? formatted.replace('.0', '') + 'K' : formatted + 'K';
+        return {
+            formatted: formatted.endsWith('.0') ? formatted.replace('.0', '') + 'K' : formatted + 'K',
+            numeric: likes
+        };
     }
-    return likes.toString();
+    return {
+        formatted: likes.toString(),
+        numeric: likes
+    };
 }
 
-// ===== IMAGE PROTECTION =====
+// ===== GÖRSEL KORUMA =====
 function protectImages() {
     const images = document.querySelectorAll('.image-container img, .share-image img');
     
@@ -123,7 +133,6 @@ function protectImages() {
             return false;
         });
         
-        // Görsel URL'sini gizle
         const originalSrc = img.src;
         img.dataset.originalSrc = originalSrc;
     });
@@ -142,7 +151,7 @@ function protectImages() {
     });
 }
 
-// ===== NOTIFICATION SYSTEM =====
+// ===== BİLDİRİM SİSTEMİ =====
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
@@ -167,30 +176,26 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// ===== INITIALIZATION =====
+// ===== UYGULAMA BAŞLATMA =====
 async function initializeApp() {
     if (isInitialized) return;
     
     showNotification('🚀 Uygulama başlatılıyor...', 'info');
     
-    // Dil ayarlarını yükle
     const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
     changeLanguage(savedLanguage);
     
-    // Prompt'ları yükle
     await loadPrompts();
     
-    // Event listener'ları ekle
     setupEventListeners();
     
-    // Görsel korumayı etkinleştir
     protectImages();
     
     isInitialized = true;
     showNotification('✅ Uygulama hazır!', 'success');
 }
 
-// ===== LOAD PROMPTS =====
+// ===== PROMPT'LARI YÜKLE =====
 async function loadPrompts() {
     const promptsContainer = document.getElementById('promptsContainer');
     if (!promptsContainer) return;
@@ -203,10 +208,9 @@ async function loadPrompts() {
     `;
     
     try {
-        // Google Sheets'ten veri çekme
         let promptsData = [];
         
-        // DEMO DATA - Google Sheets URL'nizi buraya ekleyin
+        // DEMO VERİ - Google Sheets URL'nizi buraya ekleyin
         promptsData = [
             {
                 id: 1,
@@ -215,7 +219,6 @@ async function loadPrompts() {
                 prompt: "cyberpunk cityscape, neon lights, raining, futuristic, towering skyscrapers, flying cars, cinematic lighting, 8k, ultra detailed",
                 image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop",
                 category: "landscape",
-                likes: generateRandomLikes(),
                 date: "2024-01-15",
                 isNew: true
             },
@@ -226,7 +229,6 @@ async function loadPrompts() {
                 prompt: "fantasy warrior, full body, intricate armor, glowing magical effects, dramatic lighting, cinematic, detailed, 8k",
                 image: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=800&h=600&fit=crop",
                 category: "characters",
-                likes: generateRandomLikes(),
                 date: "2024-01-14",
                 isNew: true
             },
@@ -235,9 +237,8 @@ async function loadPrompts() {
                 title: "Surreal Landscape",
                 description: "A dreamlike landscape with floating islands and waterfalls",
                 prompt: "surreal landscape, floating islands, waterfalls, dreamlike, mystical, vibrant colors, magical, 8k",
-                image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w-800&h=600&fit=crop",
+                image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
                 category: "landscape",
-                likes: generateRandomLikes(),
                 date: "2024-01-13",
                 isNew: false
             },
@@ -248,7 +249,6 @@ async function loadPrompts() {
                 prompt: "steampunk workshop, intricate details, gears, mechanical devices, brass and copper, warm lighting, detailed, 8k",
                 image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&h=600&fit=crop",
                 category: "art",
-                likes: generateRandomLikes(),
                 date: "2024-01-12",
                 isNew: false
             },
@@ -259,7 +259,6 @@ async function loadPrompts() {
                 prompt: "cybernetic portrait, detailed face, glowing circuit patterns, neon accents, cinematic lighting, 8k, ultra detailed",
                 image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
                 category: "characters",
-                likes: generateRandomLikes(),
                 date: "2024-01-11",
                 isNew: false
             },
@@ -270,23 +269,55 @@ async function loadPrompts() {
                 prompt: "enchanted forest, glowing plants, magical creatures, bioluminescent, mystical, fantasy, detailed, 8k",
                 image: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=600&fit=crop",
                 category: "landscape",
-                likes: generateRandomLikes(),
                 date: "2024-01-10",
                 isNew: false
             }
         ];
         
+        // Her prompt'a rastgele başlangıç beğenisi ata (sadece ilk yüklemede)
+        promptsData.forEach(prompt => {
+            const promptId = prompt.id.toString();
+            
+            // LocalStorage'da kayıtlı beğeni var mı kontrol et
+            if (userLikes[promptId] !== undefined) {
+                // Kullanıcı daha önce beğenmiş, onun verisini kullan
+                prompt.baseLikes = userLikes[promptId].baseLikes || 0;
+                prompt.userLiked = userLikes[promptId].liked || false;
+            } else {
+                // İlk defa görüntüleniyor, rastgele beğeni ata
+                const initialLikes = generateInitialLikes();
+                prompt.baseLikes = initialLikes.numeric;
+                prompt.userLiked = false;
+                
+                // LocalStorage'a kaydet
+                userLikes[promptId] = {
+                    baseLikes: prompt.baseLikes,
+                    liked: false
+                };
+            }
+            
+            // Toplam beğeni sayısını hesapla
+            prompt.totalLikes = prompt.baseLikes + (prompt.userLiked ? 1 : 0);
+            
+            // Formatlı gösterim için
+            if (prompt.totalLikes >= 1000) {
+                prompt.likesFormatted = (prompt.totalLikes / 1000).toFixed(1);
+                prompt.likesFormatted = prompt.likesFormatted.endsWith('.0') 
+                    ? prompt.likesFormatted.replace('.0', '') + 'K' 
+                    : prompt.likesFormatted + 'K';
+            } else {
+                prompt.likesFormatted = prompt.totalLikes.toString();
+            }
+        });
+        
         allPrompts = promptsData;
         filteredPrompts = [...allPrompts];
         
-        // İstatistikleri güncelle
         updateStats();
-        
-        // Prompt'ları render et
         renderPrompts();
         
-        // Rastgele beğenileri ekle
-        addRandomLikes();
+        // LocalStorage'ı güncelle
+        localStorage.setItem('promptMasterLikes', JSON.stringify(userLikes));
         
     } catch (error) {
         console.error('Error loading prompts:', error);
@@ -303,7 +334,7 @@ async function loadPrompts() {
     }
 }
 
-// ===== RENDER PROMPTS =====
+// ===== PROMPT'LARI GÖSTER =====
 function renderPrompts() {
     const promptsContainer = document.getElementById('promptsContainer');
     if (!promptsContainer) return;
@@ -338,10 +369,12 @@ function renderPrompts() {
                 
                 <div class="card-meta">
                     <div class="likes-container">
-                        <button class="like-btn" onclick="toggleLike(this)">
+                        <button class="like-btn ${prompt.userLiked ? 'liked' : ''}" onclick="toggleLike(this, ${prompt.id})">
                             <i class="fas fa-heart"></i>
                         </button>
-                        <span class="like-count">${prompt.likes}</span>
+                        <span class="like-count" data-prompt-id="${prompt.id}" data-base-likes="${prompt.baseLikes}">
+                            ${prompt.likesFormatted}
+                        </span>
                     </div>
                     <span class="card-date">${formatDate(prompt.date)}</span>
                 </div>
@@ -358,11 +391,72 @@ function renderPrompts() {
         </div>
     `).join('');
     
-    // Görsel korumayı yeniden etkinleştir
     protectImages();
 }
 
-// ===== UPDATE STATS =====
+// ===== BEĞENİ DEĞİŞTİRME =====
+function toggleLike(button, promptId) {
+    const prompt = allPrompts.find(p => p.id === promptId);
+    if (!prompt) return;
+    
+    const likeCountElement = button.nextElementSibling;
+    const promptIdStr = promptId.toString();
+    
+    // Mevcut durumu kontrol et
+    const currentlyLiked = button.classList.contains('liked');
+    
+    if (currentlyLiked) {
+        // Beğeniyi kaldır
+        button.classList.remove('liked');
+        prompt.userLiked = false;
+        prompt.totalLikes = prompt.baseLikes;
+        
+        // LocalStorage güncelle
+        if (userLikes[promptIdStr]) {
+            userLikes[promptIdStr].liked = false;
+        }
+        
+        showNotification('💔 Beğeniniz kaldırıldı', 'info');
+    } else {
+        // Beğeni ekle
+        button.classList.add('liked');
+        prompt.userLiked = true;
+        prompt.totalLikes = prompt.baseLikes + 1;
+        
+        // LocalStorage güncelle
+        if (!userLikes[promptIdStr]) {
+            userLikes[promptIdStr] = {
+                baseLikes: prompt.baseLikes,
+                liked: true
+            };
+        } else {
+            userLikes[promptIdStr].liked = true;
+        }
+        
+        showNotification('❤️ Beğendiniz!', 'success');
+    }
+    
+    // Görüntüyü güncelle
+    if (prompt.totalLikes >= 1000) {
+        likeCountElement.textContent = (prompt.totalLikes / 1000).toFixed(1);
+        likeCountElement.textContent = likeCountElement.textContent.endsWith('.0') 
+            ? likeCountElement.textContent.replace('.0', '') + 'K' 
+            : likeCountElement.textContent + 'K';
+    } else {
+        likeCountElement.textContent = prompt.totalLikes.toString();
+    }
+    
+    // Prompt verisini güncelle
+    prompt.likesFormatted = likeCountElement.textContent;
+    
+    // LocalStorage'ı kaydet
+    localStorage.setItem('promptMasterLikes', JSON.stringify(userLikes));
+    
+    // İstatistikleri güncelle
+    updateStats();
+}
+
+// ===== İSTATİSTİKLERİ GÜNCELLE =====
 function updateStats() {
     const promptCount = document.getElementById('promptCount');
     const likeCount = document.getElementById('likeCount');
@@ -374,55 +468,29 @@ function updateStats() {
     if (likeCount) {
         let totalLikes = 0;
         allPrompts.forEach(prompt => {
-            const likesStr = prompt.likes;
-            const likesNum = parseFloat(likesStr) * (likesStr.includes('K') ? 1000 : 1);
-            totalLikes += likesNum;
+            totalLikes += prompt.totalLikes;
         });
-        likeCount.textContent = totalLikes >= 1000 ? (totalLikes / 1000).toFixed(1).replace('.0', '') + 'K' : totalLikes;
+        
+        if (totalLikes >= 1000) {
+            likeCount.textContent = (totalLikes / 1000).toFixed(1).replace('.0', '') + 'K';
+        } else {
+            likeCount.textContent = totalLikes;
+        }
     }
 }
 
-// ===== ADD RANDOM LIKES =====
-function addRandomLikes() {
-    const likeCounts = document.querySelectorAll('.like-count');
-    
-    likeCounts.forEach(countElement => {
-        if (!countElement.dataset.initialized) {
-            const randomLikes = generateRandomLikes();
-            countElement.textContent = randomLikes;
-            countElement.dataset.initialized = 'true';
-            countElement.dataset.actualLikes = randomLikes;
-            
-            // Prompt verisini de güncelle
-            const promptId = countElement.closest('.prompt-card')?.dataset.id;
-            if (promptId) {
-                const prompt = allPrompts.find(p => p.id == promptId);
-                if (prompt) {
-                    prompt.likes = randomLikes;
-                }
-            }
-        }
-    });
-}
-
-// ===== FILTER PROMPTS =====
+// ===== FİLTRELEME =====
 function filterPrompts(filterType) {
     currentFilter = filterType;
     
-    // Filter butonlarını güncelle
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
     
-    // Filtrele
     switch (filterType) {
         case 'most_liked':
-            filteredPrompts = [...allPrompts].sort((a, b) => {
-                const likesA = parseFloat(a.likes) * (a.likes.includes('K') ? 1000 : 1);
-                const likesB = parseFloat(b.likes) * (b.likes.includes('K') ? 1000 : 1);
-                return likesB - likesA;
-            });
+            filteredPrompts = [...allPrompts].sort((a, b) => b.totalLikes - a.totalLikes);
             break;
             
         case 'newest':
@@ -437,12 +505,11 @@ function filterPrompts(filterType) {
             );
             break;
             
-        default: // 'all'
+        default:
             filteredPrompts = [...allPrompts];
             break;
     }
     
-    // Arama terimi varsa uygula
     const searchInput = document.getElementById('searchInput');
     if (searchInput && searchInput.value.trim()) {
         searchPrompts(searchInput.value.trim());
@@ -452,7 +519,7 @@ function filterPrompts(filterType) {
     renderPrompts();
 }
 
-// ===== SEARCH PROMPTS =====
+// ===== ARAMA =====
 function searchPrompts(query) {
     const searchTerm = query.toLowerCase().trim();
     
@@ -471,18 +538,18 @@ function searchPrompts(query) {
     renderPrompts();
 }
 
-// ===== COPY PROMPT =====
+// ===== PROMPT KOPYALAMA =====
 function copyPrompt(promptText) {
     const decodedPrompt = decodeURIComponent(promptText);
     navigator.clipboard.writeText(decodedPrompt).then(() => {
-        showNotification('✅ Prompt copied to clipboard!', 'success');
+        showNotification('✅ Prompt kopyalandı!', 'success');
     }).catch(err => {
         console.error('Failed to copy:', err);
-        showNotification('❌ Failed to copy prompt', 'error');
+        showNotification('❌ Kopyalama başarısız', 'error');
     });
 }
 
-// ===== SHARE PROMPT =====
+// ===== PAYLAŞIM =====
 function sharePrompt(promptId) {
     const prompt = allPrompts.find(p => p.id === promptId);
     if (!prompt) return;
@@ -493,29 +560,29 @@ function sharePrompt(promptId) {
     const shareLinkInput = document.getElementById('shareLinkInput');
     
     if (shareImage) shareImage.src = prompt.image;
-    if (shareMessageText) shareMessageText.textContent = `Check out: "${prompt.title}"`;
+    if (shareMessageText) shareMessageText.textContent = `"${prompt.title}" - ${prompt.totalLikes} beğeni`;
     if (shareLinkInput) shareLinkInput.value = `https://t.me/sndiyi?text=${encodeURIComponent(prompt.title + ': ' + prompt.prompt)}`;
     
     shareModal.style.display = 'flex';
 }
 
-// ===== CLOSE SHARE MODAL =====
+// ===== PAYLAŞIM MODAL KAPATMA =====
 function closeShareModal() {
     document.getElementById('shareModal').style.display = 'none';
 }
 
-// ===== COPY SHARE LINK =====
+// ===== LİNK KOPYALAMA =====
 function copyShareLink() {
     const shareLinkInput = document.getElementById('shareLinkInput');
     if (shareLinkInput) {
         shareLinkInput.select();
         navigator.clipboard.writeText(shareLinkInput.value).then(() => {
-            showNotification('✅ Link copied to clipboard!', 'success');
+            showNotification('✅ Link kopyalandı!', 'success');
         });
     }
 }
 
-// ===== SHARE TO TELEGRAM =====
+// ===== TELEGRAM'A PAYLAŞ =====
 function shareToTelegram() {
     const shareLinkInput = document.getElementById('shareLinkInput');
     if (shareLinkInput) {
@@ -524,43 +591,16 @@ function shareToTelegram() {
     }
 }
 
-// ===== TOGGLE LIKE =====
-function toggleLike(button) {
-    const likeCount = button.nextElementSibling;
-    let currentLikes = likeCount.textContent;
-    
-    let numericLikes = parseFloat(currentLikes) * (currentLikes.includes('K') ? 1000 : 1);
-    
-    if (button.classList.contains('liked')) {
-        numericLikes -= 1;
-        button.classList.remove('liked');
-    } else {
-        numericLikes += 1;
-        button.classList.add('liked');
-    }
-    
-    if (numericLikes >= 1000) {
-        likeCount.textContent = (numericLikes / 1000).toFixed(1).replace('.0', '') + 'K';
-    } else {
-        likeCount.textContent = numericLikes;
-    }
-    
-    // Toplam beğeniyi güncelle
-    updateStats();
-}
-
-// ===== CHANGE LANGUAGE =====
+// ===== DİL DEĞİŞTİRME =====
 function changeLanguage(lang) {
     currentLanguage = lang;
     localStorage.setItem('preferredLanguage', lang);
     
-    // Dil seçicisini güncelle
     const languageSelect = document.getElementById('languageSelect');
     if (languageSelect) {
         languageSelect.value = lang;
     }
     
-    // Tüm çevirileri güncelle
     const elements = document.querySelectorAll('[data-lang]');
     elements.forEach(element => {
         const key = element.getAttribute('data-lang');
@@ -569,7 +609,6 @@ function changeLanguage(lang) {
         }
     });
     
-    // Statik metinleri güncelle
     const subtitle = document.getElementById('subtitle');
     const footerText = document.getElementById('footerText');
     const searchInput = document.getElementById('searchInput');
@@ -584,11 +623,10 @@ function changeLanguage(lang) {
         searchInput.placeholder = translations[lang].searchPlaceholder;
     }
     
-    // Prompt'ları yeniden render et (new badge'ler için)
     renderPrompts();
 }
 
-// ===== UTILITY FUNCTIONS =====
+// ===== YARDIMCI FONKSİYONLAR =====
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString(currentLanguage === 'tr' ? 'tr-TR' : 'en-US', {
@@ -599,7 +637,6 @@ function formatDate(dateString) {
 }
 
 function setupEventListeners() {
-    // Arama input'u
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         let searchTimeout;
@@ -611,7 +648,6 @@ function setupEventListeners() {
         });
     }
     
-    // Temizle butonu
     const clearSearch = document.getElementById('clearSearch');
     if (clearSearch && searchInput) {
         searchInput.addEventListener('input', () => {
@@ -625,14 +661,12 @@ function setupEventListeners() {
         });
     }
     
-    // ESC ile modal kapatma
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeShareModal();
         }
     });
     
-    // Modal dışına tıklayınca kapatma
     const shareModal = document.getElementById('shareModal');
     if (shareModal) {
         shareModal.addEventListener('click', (e) => {
@@ -642,19 +676,17 @@ function setupEventListeners() {
         });
     }
     
-    // Pano değişikliği için
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
-            addRandomLikes();
+            updateStats();
         }
     });
 }
 
-// ===== INITIALIZE ON LOAD =====
+// ===== UYGULAMAYI BAŞLAT =====
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
     
-    // CSS ekle (bildirimler için)
     const style = document.createElement('style');
     style.textContent = `
         .notification {
@@ -730,48 +762,88 @@ document.addEventListener('DOMContentLoaded', () => {
             background: transparent;
             z-index: 2;
         }
+        
+        .like-btn.liked i {
+            color: var(--secondary) !important;
+        }
     `;
     document.head.appendChild(style);
 });
 
-// ===== GOOGLE SHEETS INTEGRATION TEMPLATE =====
+// ===== GOOGLE SHEETS ENTEGRASYONU =====
 async function loadFromGoogleSheets() {
     /* 
-    // Google Sheets API entegrasyonu için:
+    // Google Sheets API kullanımı:
     const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`);
     const data = await response.json();
     
-    // Veriyi işle
     const rows = data.values;
     const headers = rows[0];
     
-    allPrompts = rows.slice(1).map((row, index) => ({
-        id: index + 1,
-        title: row[0] || '',
-        description: row[1] || '',
-        prompt: row[2] || '',
-        image: row[3] || '',
-        category: row[4] || 'art',
-        likes: generateRandomLikes(),
-        date: row[5] || new Date().toISOString().split('T')[0],
-        isNew: row[6] === 'TRUE' || Math.random() > 0.7
-    }));
+    allPrompts = rows.slice(1).map((row, index) => {
+        const promptId = (index + 1).toString();
+        const initialLikes = generateInitialLikes();
+        
+        let baseLikes = initialLikes.numeric;
+        let userLiked = false;
+        
+        if (userLikes[promptId]) {
+            baseLikes = userLikes[promptId].baseLikes;
+            userLiked = userLikes[promptId].liked;
+        } else {
+            userLikes[promptId] = {
+                baseLikes: baseLikes,
+                liked: false
+            };
+        }
+        
+        const totalLikes = baseLikes + (userLiked ? 1 : 0);
+        
+        return {
+            id: index + 1,
+            title: row[0] || '',
+            description: row[1] || '',
+            prompt: row[2] || '',
+            image: row[3] || '',
+            category: row[4] || 'art',
+            baseLikes: baseLikes,
+            totalLikes: totalLikes,
+            likesFormatted: totalLikes >= 1000 ? (totalLikes / 1000).toFixed(1).replace('.0', '') + 'K' : totalLikes.toString(),
+            userLiked: userLiked,
+            date: row[5] || new Date().toISOString().split('T')[0],
+            isNew: row[6] === 'TRUE'
+        };
+    });
     
     filteredPrompts = [...allPrompts];
+    localStorage.setItem('promptMasterLikes', JSON.stringify(userLikes));
     updateStats();
     renderPrompts();
     */
 }
 
-// Hata yakalama
+// ===== HATA YAKALAMA =====
 window.addEventListener('error', (e) => {
     console.error('Global error:', e.error);
-    showNotification('⚠️ An error occurred. Please refresh the page.', 'error');
+    showNotification('⚠️ Bir hata oluştu. Lütfen sayfayı yenileyin.', 'error');
 });
 
-// Sayfa görünür olduğunda
+// ===== SAYFA GÖRÜNÜRLÜĞÜ =====
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-        addRandomLikes();
+        updateStats();
     }
 });
+
+// ===== RESET BUTTON (Gizli - Geliştirici için) =====
+function resetLikes() {
+    if (confirm('Tüm beğenileri sıfırlamak istediğinize emin misiniz?')) {
+        localStorage.removeItem('promptMasterLikes');
+        userLikes = {};
+        location.reload();
+    }
+}
+
+// Console'a gizli buton ekle
+console.log('%c🔧 Geliştirici Araçları:', 'color: #8B5CF6; font-weight: bold;');
+console.log('%cresetLikes() - Beğenileri sıfırla', 'color: #EC4899;');
