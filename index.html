@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Gallery - Image Generation Prompts for ChatGPT & Gemini</title>
+    <title>AI Prompt Gallery</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
 </head>
 <body>
     <!-- Dil Seçici -->
@@ -26,21 +24,9 @@
                     <span class="flag">🇬🇧</span>
                     <span>English</span>
                 </div>
-                <div class="language-option" data-lang="sorani">
-                    <span class="flag">🇹🇯</span>
-                    <span>Kurdish Sorani</span>
-                </div>
-                <div class="language-option" data-lang="badini">
-                    <span class="flag">🇹🇯</span>
-                    <span>Kurdish Badini</span>
-                </div>
                 <div class="language-option" data-lang="tr">
                     <span class="flag">🇹🇷</span>
                     <span>Turkish</span>
-                </div>
-                <div class="language-option" data-lang="ar">
-                    <span class="flag">🇮🇶</span>
-                    <span>Arabic</span>
                 </div>
             </div>
         </div>
@@ -49,10 +35,10 @@
     <!-- Başlık -->
     <header class="header">
         <div class="container">
-            <h1 class="title" data-tr="AI Prompt Galerisi" data-en="AI Prompt Gallery" data-ar="معرض أوامر الذكاء الاصطناعي" data-sorani="پڕۆمپتی گالێری ئەی آی" data-badini="جهێ بدەستفە ینانا کودێن وێنا">
+            <h1 class="title" data-tr="AI Prompt Galerisi" data-en="AI Prompt Gallery">
                 AI Prompt Gallery
             </h1>
-            <p class="subtitle" data-tr="ChatGPT & Gemini için hazırlanmış resim oluşturma promptları" data-en="Image generation prompts for ChatGPT & Gemini" data-ar="أوامر إنشاء الصور لـ ChatGPT و Gemini" data-sorani="پڕۆمپتی دروستکردنی وێنه بۆ ChatGPT و Gemini" data-badini="کودێن حازر دشێی د نافا chatgpt/ gemini دا بکار بینی">
+            <p class="subtitle" data-tr="ChatGPT & Gemini için hazırlanmış resim oluşturma promptları" data-en="Image generation prompts for ChatGPT & Gemini">
                 Image generation prompts for ChatGPT & Gemini
             </p>
         </div>
@@ -62,10 +48,9 @@
     <main class="main-content">
         <div class="container">
             <div class="prompts-grid" id="prompts-container">
-                <!-- Prompt kartları buraya JavaScript ile yüklenecek -->
                 <div class="loading-spinner">
                     <div class="spinner"></div>
-                    <p data-tr="Promptlar yükleniyor..." data-en="Loading prompts..." data-ar="جارٍ تحميل الأوامر..." data-sorani="پڕۆمپتەکان بار دەکرێن..." data-badini="چافەرێبە">
+                    <p data-tr="Promptlar yükleniyor..." data-en="Loading prompts...">
                         Loading prompts...
                     </p>
                 </div>
@@ -73,7 +58,7 @@
         </div>
     </main>
 
-    <!-- Telegram Bağlantısı -->
+    <!-- Telegram -->
     <div class="telegram-section">
         <div class="container">
             <div class="telegram-card">
@@ -81,10 +66,10 @@
                     <i class="fab fa-telegram"></i>
                 </div>
                 <div class="telegram-info">
-                    <h3 data-tr="Telegram Kanalımız" data-en="Our Telegram Channel" data-ar="قناتنا على تلغرام" data-sorani="کەناڵی تێلێگراممان" data-badini="کەنالێ مەیێ تلیگرامی">
+                    <h3 data-tr="Telegram Kanalımız" data-en="Our Telegram Channel">
                         Our Telegram Channel
                     </h3>
-                    <p data-tr="Yeni promptlar ve güncellemeler için katılın" data-en="Join for new prompts and updates" data-ar="انضم للحصول على أوامر جديدة وتحديثات" data-sorani="بۆ پڕۆمپتە نوێیەکان و نوێکردنەوەکان بڕۆ" data-badini="بو پرومپتێن جدید و تحدیسان جوین بکە">
+                    <p data-tr="Yeni promptlar ve güncellemeler için katılın" data-en="Join for new prompts and updates">
                         Join for new prompts and updates
                     </p>
                     <div class="telegram-links">
@@ -92,22 +77,8 @@
                             <i class="fab fa-telegram"></i>
                             <span>@sndiyi</span>
                         </a>
-                        <a href="https://t.me/k4miran_sndi" target="_blank" class="telegram-link user-link">
-                            <i class="fas fa-user"></i>
-                            <span>@k4miran_sndi</span>
-                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Reklam -->
-    <div class="ad-container">
-        <div class="container">
-            <div id="frame" style="width: 320px;margin: auto;z-index: 99998;height: auto">
-                <iframe data-aa='2423518' src='//ad.a-ads.com/2423518/?size=320x50' 
-                style='border:0; padding:0; width:320px; height:50px; overflow:hidden;display: block;margin: auto'></iframe>
             </div>
         </div>
     </div>
@@ -115,8 +86,8 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p data-tr="© 2025 AI Prompt Galerisi. Tüm hakları saklıdır." data-en="© 2025 AI Prompt Gallery. All rights reserved." data-ar="© 2025 معرض أوامر الذكاء الاصطناعي. جميع الحقوق محفوظة." data-sorani="© 2025 پڕۆمپتی گالێری ئەی آی. هەموو مافان پارێزراوە." data-badini="© 2025 AI Prompt Gallery. All rights reserved.">
-                © 2025 AI Prompt Gallery. All rights reserved.
+            <p data-tr="© 2025 AI Prompt Galerisi" data-en="© 2025 AI Prompt Gallery">
+                © 2025 AI Prompt Gallery
             </p>
         </div>
     </footer>
@@ -124,8 +95,8 @@
     <!-- Kopyalandı bildirimi -->
     <div class="copy-notification" id="copy-notification">
         <i class="fas fa-check-circle"></i>
-        <span data-tr="Prompt kopyalandı!" data-en="Prompt copied!" data-ar="تم نسخ الأمر!" data-sorani="پڕۆمپت کۆپی کراوە!" data-badini="هاتە کوپیکرن">
-            Prompt copied!
+        <span data-tr="Kopyalandı!" data-en="Copied!">
+            Copied!
         </span>
     </div>
 
