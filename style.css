@@ -127,14 +127,12 @@ body {
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
-/* RESİMLER - TAM BOYUTLU */
+/* RESİMLER - ORJİNAL GÖRÜNÜM */
 .prompt-image {
     width: 100%;
-    height: auto !important;
-    object-fit: none !important;
+    height: auto; /* Orjinal boyut */
     display: block;
     border-radius: 15px 15px 0 0;
-    max-height: none !important;
 }
 
 .prompt-content {
@@ -370,6 +368,13 @@ body {
     opacity: 1;
 }
 
+/* RESİM KORUMA - SADECE LINK MENÜSÜ */
+.prompt-image {
+    -webkit-touch-callout: none !important; /* iOS link menüsü */
+    -webkit-user-select: none !important; /* Seçmeyi engelle */
+    user-select: none !important;
+}
+
 /* MOBİL UYUMLULUK */
 @media (max-width: 768px) {
     .title {
@@ -403,6 +408,11 @@ body {
         left: 0;
         right: auto;
     }
+    
+    .prompt-image {
+        max-height: 400px; /* Mobilde çok büyük olmasın */
+        object-fit: contain; /* Orantılı küçült */
+    }
 }
 
 @media (max-width: 480px) {
@@ -416,5 +426,9 @@ body {
     
     .telegram-links {
         flex-direction: column;
+    }
+    
+    .prompt-image {
+        max-height: 300px;
     }
 }
