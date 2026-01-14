@@ -3,10 +3,10 @@ const SHEET_ID = '16GwAXZyYn109Bji4j--Ym9a-GG4b3oTkwP0bdQGnHkM';
 const SHEET_NAME = 'Sheet1';
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
-console.log("🚀 AI Prompt Gallery - Badini Dil Desteğiyle");
+console.log("🚀 AI Prompt Gallery - 5 Dil Desteğiyle");
 console.log("📊 Sheets ID:", SHEET_ID);
 
-// Dil desteği - BADİNİ DAHİL
+// Dil desteği
 const languages = {
     'en': 'English',
     'sorani': 'Kurdish Sorani',
@@ -17,7 +17,6 @@ const languages = {
 
 // Badini çevirileri
 const badiniTranslations = {
-    // Hata mesajları
     'loading': 'چافەرێبە',
     'load_error': 'خەلەتیەک چێبی هیفیە سەڤحێ جدید بکە',
     'no_prompts': 'هێشتا چ کود داخل نەکرنە',
@@ -25,8 +24,6 @@ const badiniTranslations = {
     'copied': 'هاتە کوپیکرن',
     'telegram_title': 'کەنالێ مەیێ تلیگرامی',
     'telegram_desc': 'بو پرومپتێن جدید و تحدیسان جوین بکە',
-    
-    // Buton metinleri
     'copy_prompt': 'کوپی بکە',
     'try_again': 'دوبارە بکە',
     'join_channel': 'بو کەنالێ بڕۆ'
@@ -37,11 +34,11 @@ let currentLanguage = localStorage.getItem('selectedLanguage') || 'en';
 
 // Sayfa yüklendiğinde
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("✅ Site yüklendi. Dil:", currentLanguage);
+    console.log("✅ Site yüklendi. Aktif dil:", currentLanguage);
     initLanguageSelector();
     loadPrompts();
     updateLanguage();
-    setupImageProtection(); // Resim koruma
+    setupImageProtection();
     
     // Dil seçiciyi güncelle
     document.getElementById('current-language').textContent = languages[currentLanguage];
@@ -90,9 +87,9 @@ function updateLanguage() {
     updateCopyButtons();
     
     // Badini dili için özel font
-    if (currentLanguage === 'badini') {
+    if (currentLanguage === 'badini' || currentLanguage === 'ar' || currentLanguage === 'sorani') {
         document.body.style.fontFamily = "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif";
-        document.documentElement.lang = 'badini';
+        document.documentElement.lang = currentLanguage;
     } else {
         document.body.style.fontFamily = "'Poppins', sans-serif";
         document.documentElement.lang = currentLanguage;
@@ -296,6 +293,12 @@ function displayPrompts(prompts) {
             let altText = 'Image failed to load';
             if (currentLanguage === 'badini') {
                 altText = 'وێنە نەهات';
+            } else if (currentLanguage === 'tr') {
+                altText = 'Resim yüklenemedi';
+            } else if (currentLanguage === 'ar') {
+                altText = 'فشل تحميل الصورة';
+            } else if (currentLanguage === 'sorani') {
+                altText = 'وێنە بار نەکرا';
             }
             this.alt = altText;
         };
@@ -358,41 +361,27 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// RESİM KORUMA SİSTEMİ - BADİNİ DAHİL
+// RESİM KORUMA SİSTEMİ
 function setupImageProtection() {
-    console.log("🛡️ Resim koruma sistemi aktif (Badini dahil)...");
-    
-    // CSS ile koruma ekle
-    const style = document.createElement('style');
-    style.textContent = `
-        /* RESİMLERİN LINK MENÜSÜNÜ ENGELLE */
-        .prompt-image {
-            -webkit-touch-callout: none !important;
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
-            user-select: none !important;
-        }
-        
-        /* Badini font için ek ayar */
-        body[lang="badini"] .prompt-image {
-            font-family: 'Noto Sans Arabic', sans-serif;
-        }
-    `;
-    document.head.appendChild(style);
+    console.log("🛡️ Resim koruma sistemi aktif...");
     
     // Event listener'lar
     document.addEventListener('contextmenu', function(e) {
         if (e.target.classList.contains('prompt-image')) {
             e.preventDefault();
             
-            // Badini dilinde uyarı
+            let message = '⛔ Images are protected!';
             if (currentLanguage === 'badini') {
-                showProtectionMessage('⛔ وێنەکان پارێزراون!');
-            } else {
-                showProtectionMessage('⛔ Images are protected!');
+                message = '⛔ وێنەکان پارێزراون!';
+            } else if (currentLanguage === 'tr') {
+                message = '⛔ Resimler korunuyor!';
+            } else if (currentLanguage === 'ar') {
+                message = '⛔ الصور محمية!';
+            } else if (currentLanguage === 'sorani') {
+                message = '⛔ وێنهکان پارێزراون!';
             }
             
+            showProtectionMessage(message);
             return false;
         }
     });
@@ -449,5 +438,5 @@ function showProtectionMessage(message) {
     }, 2000);
 }
 
-console.log("✨ Script hazır! 5 dil desteği (Badini dahil)");
+console.log("✨ Script hazır! 5 dil desteği aktif");
 console.log("🌍 Aktif dil: " + currentLanguage);
