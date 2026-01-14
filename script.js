@@ -1,30 +1,48 @@
-// Google Sheets API
+// Google Sheets API URL
 const SHEET_ID = '1a4gxpaMg2gHNP9krJtVtqmDwMsvpY1KD1tqIes6zNNY';
 const SHEET_NAME = 'Sheet1';
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
-console.log("🚀 Sheets ID:", SHEET_ID);
+console.log("🚀 AI Prompt Gallery - Script.js yüklendi");
+console.log("📊 Sheets ID:", SHEET_ID);
 
 // Dil ayarları
 const languages = {
-    'en': 'English', 'sorani': 'Kurdish Sorani', 'badini': 'Kurdish Badini', 
-    'tr': 'Turkish', 'ar': 'Arabic'
+    'en': 'English',
+    'sorani': 'Kurdish Sorani',
+    'badini': 'Kurdish Badini',
+    'tr': 'Turkish',
+    'ar': 'Arabic'
 };
 
+// Varsayılan dil
 let currentLanguage = localStorage.getItem('selectedLanguage') || 'en';
+
+// Badini çevirileri
+const badiniTranslations = {
+    'loading': 'چافەرێبە',
+    'load_error': 'خەلەتیەک چێبی هیفیە سەڤحێ جدید بکە',
+    'no_prompts': 'هێشتا چ کود داخل نەکرنە',
+    'copy_button': 'کوپی بکە',
+    'copied': 'هاتە کوپیکرن',
+    'telegram_title': 'کەنالێ مەیێ تلیگرامی',
+    'telegram_desc': 'بو پرومپتێن جدید و تحدیسان جوین بکە'
+};
 
 // Sayfa yüklendiğinde
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("✅ Site yüklendi - YENİ VERSİYON");
+    console.log("✅ Site yüklendi");
     initLanguageSelector();
     loadPrompts();
     updateLanguage();
     document.getElementById('current-language').textContent = languages[currentLanguage];
 });
 
-// Dil seçici
+// Dil seçiciyi başlat
 function initLanguageSelector() {
-    document.querySelectorAll('.language-option').forEach(option => {
+    const languageOptions = document.querySelectorAll('.language-option');
+    
+    languageOptions.forEach(option => {
         option.addEventListener('click', function() {
             const lang = this.getAttribute('data-lang');
             changeLanguage(lang);
@@ -32,7 +50,7 @@ function initLanguageSelector() {
     });
 }
 
-// Dil değiştir
+// Dil değiştirme
 function changeLanguage(lang) {
     currentLanguage = lang;
     localStorage.setItem('selectedLanguage', lang);
@@ -40,64 +58,100 @@ function changeLanguage(lang) {
     updateLanguage();
 }
 
-// Dil güncelle
+// Tüm sayfayı güncelle
 function updateLanguage() {
+    // Tüm elementleri güncelle
     document.querySelectorAll('[data-tr]').forEach(element => {
         const text = element.getAttribute(`data-${currentLanguage}`);
-        if (text) element.textContent = text;
+        if (text) {
+            element.textContent = text;
+        }
+    });
+    
+    // Badini dili için font
+    if (currentLanguage === 'badini') {
+        document.body.style.fontFamily = "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif";
+    } else {
+        document.body.style.fontFamily = "'Poppins', sans-serif";
+    }
+    
+    // Kopyala butonlarını güncelle
+    updateCopyButtons();
+}
+
+// Kopyala butonlarını güncelle
+function updateCopyButtons() {
+    const copyButtons = document.querySelectorAll('.copy-btn span');
+    
+    copyButtons.forEach(span => {
+        const text = span.getAttribute(`data-${currentLanguage}`);
+        if (text) {
+            span.textContent = text;
+        } else if (currentLanguage === 'badini') {
+            span.textContent = badiniTranslations.copy_button || 'کوپی بکە';
+        }
     });
 }
 
-// Sheets'ten veri çek - KESİN ÇALIŞAN
+// Google Sheets'ten veri çek
 async function loadPrompts() {
-    console.log("📥 Sheets verisi çekiliyor...");
+    const container = document.getElementById('prompts-container');
     
     try {
+        console.log("📥 Sheets verisi çekiliyor...");
+        
         const response = await fetch(SHEET_URL);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP hatası: ${response.status}`);
+        }
+        
         const text = await response.text();
-        console.log("📝 Ham veri (ilk 200 karakter):", text.substring(0, 200));
+        console.log("✅ Veri alındı");
         
         // Google formatını düzelt
-        let jsonStr = text;
-        if (jsonStr.startsWith("/*O_o*/")) {
-            jsonStr = jsonStr.substring(7); // /*O_o*/ kısmını kes
-        }
-        if (jsonStr.includes("google.visualization.Query.setResponse(")) {
-            jsonStr = jsonStr.replace("google.visualization.Query.setResponse(", "");
-            jsonStr = jsonStr.substring(0, jsonStr.length - 2); // Son 2 karakteri kes
-        }
+        const jsonStr = text
+            .replace("google.visualization.Query.setResponse(", "")
+            .replace(/\);?$/, "");
         
-        console.log("🔄 JSON dönüştürülüyor...");
         const jsonData = JSON.parse(jsonStr);
-        console.log("✅ JSON parse edildi");
-        
-        // Verileri işle
         processSheetData(jsonData.table);
         
     } catch (error) {
-        console.error("❌ HATA:", error.message);
-        showErrorMessage(error.message);
+        console.error("❌ Hata:", error);
+        showErrorMessage();
     }
 }
 
 // Hata mesajı göster
-function showErrorMessage(errorMsg) {
+function showErrorMessage() {
     const container = document.getElementById('prompts-container');
+    let errorMessage = '';
+    let tryAgainText = 'Try Again';
     
-    let message = "Veri yüklenemedi: " + errorMsg;
-    if (currentLanguage === 'tr') {
-        message = "Veri yüklenemedi: " + errorMsg;
-    } else if (currentLanguage === 'badini') {
-        message = "داتا بار نه کرا: " + errorMsg;
+    if (currentLanguage === 'badini') {
+        errorMessage = badiniTranslations.load_error || 'خەلەتیەک چێبی';
+        tryAgainText = 'دوبارە بکە';
+    } else if (currentLanguage === 'tr') {
+        errorMessage = 'Promptlar yüklenirken bir hata oluştu.';
+        tryAgainText = 'Tekrar Dene';
+    } else if (currentLanguage === 'ar') {
+        errorMessage = 'حدث خطأ أثناء تحميل الأوامر.';
+        tryAgainText = 'حاول مرة أخرى';
+    } else if (currentLanguage === 'sorani') {
+        errorMessage = 'هەڵەیەک ڕوویدا لە کاتی بارکردنی پڕۆمپتەکان.';
+        tryAgainText = 'دووبارە هەوڵبدە';
+    } else {
+        errorMessage = 'An error occurred while loading prompts.';
     }
     
     container.innerHTML = `
         <div class="error-message">
             <i class="fas fa-exclamation-triangle"></i>
-            <p>${message}</p>
+            <p>${errorMessage}</p>
             <button class="retry-btn" onclick="location.reload()">
                 <i class="fas fa-redo"></i>
-                ${currentLanguage === 'tr' ? 'Tekrar Dene' : 'Try Again'}
+                ${tryAgainText}
             </button>
         </div>
     `;
@@ -105,7 +159,7 @@ function showErrorMessage(errorMsg) {
 
 // Verileri işle
 function processSheetData(table) {
-    console.log("📊 Tablo satır sayısı:", table.rows.length);
+    console.log("📊 Veriler işleniyor...");
     
     const prompts = [];
     
@@ -117,7 +171,7 @@ function processSheetData(table) {
             let imageUrl = row.c[0].v.toString();
             const promptText = row.c[1].v.toString();
             
-            // URL'yi düzelt
+            // URL'yi düzelt (w-800 -> w=800)
             if (imageUrl.includes('w-800')) {
                 imageUrl = imageUrl.replace('w-800', 'w=800');
             }
@@ -129,18 +183,38 @@ function processSheetData(table) {
         }
     }
     
-    console.log(`🎯 ${prompts.length} prompt bulundu`);
+    console.log(`✅ ${prompts.length} prompt bulundu`);
     
     if (prompts.length > 0) {
         displayPrompts(prompts);
     } else {
-        document.getElementById('prompts-container').innerHTML = `
-            <div class="no-prompts">
-                <i class="fas fa-image"></i>
-                <p>${currentLanguage === 'tr' ? 'Henüz prompt eklenmemiş' : 'No prompts added yet'}</p>
-            </div>
-        `;
+        showNoPromptsMessage();
     }
+}
+
+// Prompt yok mesajı
+function showNoPromptsMessage() {
+    const container = document.getElementById('prompts-container');
+    let message = '';
+    
+    if (currentLanguage === 'badini') {
+        message = badiniTranslations.no_prompts;
+    } else if (currentLanguage === 'tr') {
+        message = 'Henüz prompt eklenmemiş.';
+    } else if (currentLanguage === 'ar') {
+        message = 'لم تتم إضافة أي أوامر بعد.';
+    } else if (currentLanguage === 'sorani') {
+        message = 'هیچ پڕۆمپتێک زیاد نەکراوە.';
+    } else {
+        message = 'No prompts added yet.';
+    }
+    
+    container.innerHTML = `
+        <div class="no-prompts">
+            <i class="fas fa-image"></i>
+            <p>${message}</p>
+        </div>
+    `;
 }
 
 // Promptları göster
@@ -151,29 +225,75 @@ function displayPrompts(prompts) {
     prompts.forEach((prompt, index) => {
         const card = document.createElement('div');
         card.className = 'prompt-card';
+        
+        // Buton metni
+        let copyButtonText = 'Copy Prompt';
+        if (currentLanguage === 'badini') {
+            copyButtonText = badiniTranslations.copy_button || 'کوپی بکە';
+        } else if (currentLanguage === 'tr') {
+            copyButtonText = 'Promptu Kopyala';
+        } else if (currentLanguage === 'ar') {
+            copyButtonText = 'نسخ الأمر';
+        } else if (currentLanguage === 'sorani') {
+            copyButtonText = 'پڕۆمپتەکە کۆپی بکە';
+        }
+        
         card.innerHTML = `
-            <img src="${prompt.image}" alt="AI Image ${index + 1}" class="prompt-image" loading="lazy">
+            <img src="${prompt.image}" alt="AI Generated Image ${index + 1}" 
+                 class="prompt-image" loading="lazy">
             <div class="prompt-content">
                 <div class="prompt-text-container">
-                    <p class="prompt-text">${prompt.prompt}</p>
+                    <p class="prompt-text">${escapeHtml(prompt.prompt)}</p>
                     <div class="fade-overlay"></div>
                 </div>
-                <button class="copy-btn" data-prompt="${prompt.prompt.replace(/"/g, '&quot;')}">
+                <button class="copy-btn" data-prompt="${escapeHtml(prompt.prompt)}">
                     <i class="far fa-copy"></i>
-                    <span>${currentLanguage === 'tr' ? 'Kopyala' : 'Copy'}</span>
+                    <span data-en="Copy Prompt" 
+                          data-tr="Promptu Kopyala" 
+                          data-ar="نسخ الأمر" 
+                          data-sorani="پڕۆمپتەکە کۆپی بکە"
+                          data-badini="${badiniTranslations.copy_button || 'کوپی بکە'}">
+                        ${copyButtonText}
+                    </span>
                 </button>
             </div>
         `;
+        
+        // Resim yükleme hatası
+        const img = card.querySelector('img');
+        img.onerror = function() {
+            this.src = 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800';
+            console.log(`⚠️ Resim yüklenemedi: ${prompt.image}`);
+        };
+        
         container.appendChild(card);
     });
     
     // Kopyalama butonlarına tıklama ekle
+    attachCopyListeners();
+    // Dil güncellemesi
+    updateCopyButtons();
+}
+
+// Kopyalama butonlarını bağla
+function attachCopyListeners() {
     document.querySelectorAll('.copy-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const text = this.getAttribute('data-prompt');
-            navigator.clipboard.writeText(text).then(() => {
+        button.addEventListener('click', async function() {
+            const promptText = this.getAttribute('data-prompt');
+            
+            try {
+                await navigator.clipboard.writeText(promptText);
                 showCopyNotification();
-            });
+            } catch (err) {
+                // Fallback
+                const textArea = document.createElement('textarea');
+                textArea.value = promptText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopyNotification();
+            }
         });
     });
 }
@@ -181,69 +301,31 @@ function displayPrompts(prompts) {
 // Kopyalama bildirimi
 function showCopyNotification() {
     const notification = document.getElementById('copy-notification');
-    notification.classList.add('show');
-    setTimeout(() => notification.classList.remove('show'), 2000);
-}
-
-// RESİMLERİN ÜST KISMINI GÖSTER
-function cropImagesToTop() {
-    console.log("✂️ Resimlerin üst kısmı kesiliyor...");
     
-    // CSS ekle
-    if (!document.getElementById('top-crop-style')) {
-        const style = document.createElement('style');
-        style.id = 'top-crop-style';
-        style.textContent = `
-            .prompt-image {
-                object-position: top !important;
-                object-fit: cover !important;
-            }
-            
-            /* Mobil için optimize */
-            @media (max-width: 768px) {
-                .prompt-image {
-                    object-position: top center !important;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-        console.log("✅ CSS eklendi: Üst kırpma aktif");
+    // Metni güncelle
+    const span = notification.querySelector('span');
+    if (currentLanguage === 'badini') {
+        span.textContent = badiniTranslations.copied || 'هاتە کوپیکرن';
     }
     
-    // Resimlere direkt müdahale
-    const images = document.querySelectorAll('img.prompt-image');
-    images.forEach(img => {
-        // object-position ayarla
-        img.style.objectPosition = 'top';
-        img.style.objectFit = 'cover';
-        
-        // Unsplash linklerine crop=top ekle
-        if (img.src.includes('unsplash.com')) {
-            const url = new URL(img.src);
-            
-            // w-800 düzeltmesi
-            if (url.search.includes('w-800')) {
-                url.search = url.search.replace('w-800', 'w=800');
-            }
-            
-            // crop=top ekle
-            if (!url.searchParams.has('crop')) {
-                url.searchParams.set('crop', 'top');
-            }
-            
-            // Yeni URL'yi uygula
-            img.src = url.toString();
-        }
-    });
+    notification.classList.add('show');
     
-    console.log(`✅ ${images.length} resim düzenlendi: Üst kısmı görünüyor`);
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 2000);
 }
 
-// Sayfa yüklendiğinde ve resimler yüklendiğinde çalıştır
-document.addEventListener('DOMContentLoaded', cropImagesToTop);
+// HTML escape
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 
-// Resimler değiştiğinde (yeni resimler eklendiğinde)
-const observer = new MutationObserver(cropImagesToTop);
-observer.observe(document.body, { childList: true, subtree: true });
-
-console.log("✨ YENİ script.js yüklendi! Tarih: " + new Date().toLocaleString());
+// Console bilgisi
+console.log(`
+✨ AI PROMPT GALLERY - Hazır!
+📊 Sheets: ${SHEET_ID}
+🌍 Diller: English, Kurdish Sorani, Kurdish Badini, Turkish, Arabic
+🚀 Özellikler: Resimler tam boyutlu, 5 dil, kopyalama, Telegram bağlantısı
+`);
