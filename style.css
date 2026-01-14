@@ -1,75 +1,34 @@
 /* ============================================
-   AI PROMPT GALLERY - PREMIUM CSS FRAMEWORK
-   Ultra Modern, Luxury Design, Mobile First
-   Designed by Elite UI/UX Specialist
+   AI PROMPT GALLERY - ESKİ MÜKEMMEL GÖRÜNÜM
+   Temiz, Modern, Profesyonel Tasarım
 ============================================ */
 
 /* ==================== CSS VARIABLES ==================== */
 :root {
-    /* COLOR PALETTE - Premium Dark Theme */
-    --color-primary: #0a0a0a;
-    --color-secondary: #1a1a1a;
-    --color-tertiary: #2a2a2a;
-    --color-surface: rgba(30, 30, 30, 0.95);
-    --color-accent: #8b5cf6;
-    --color-accent-light: #a78bfa;
-    --color-accent-glow: rgba(139, 92, 246, 0.25);
-    --color-success: #10b981;
-    --color-like: #ec4899;
-    --color-like-glow: rgba(236, 72, 153, 0.3);
-    --color-text: #f8fafc;
-    --color-text-secondary: #cbd5e1;
-    --color-text-muted: #94a3b8;
-    --color-border: rgba(255, 255, 255, 0.1);
-    --color-border-light: rgba(255, 255, 255, 0.05);
-    --color-hover: rgba(255, 255, 255, 0.03);
+    /* Renk Paleti - Koyu Tema */
+    --color-primary: #1a1a1a;
+    --color-secondary: #2d2d2d;
+    --color-accent: #6366f1;
+    --color-accent-light: #818cf8;
+    --color-text: #f3f4f6;
+    --color-text-secondary: #d1d5db;
+    --color-border: #374151;
+    --color-hover: #3f3f46;
     
-    /* GRADIENTS - Luxury Feel */
-    --gradient-primary: linear-gradient(135deg, #0a0a0a 0%, #1e1b4b 100%);
-    --gradient-accent: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
-    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-    --gradient-overlay: linear-gradient(to bottom, transparent 85%, var(--color-surface) 100%);
-    --gradient-card: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-tertiary) 100%);
-    --gradient-like: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+    /* Gölgeler */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+    --shadow-xl: 0 20px 40px rgba(0,0,0,0.2);
     
-    /* SHADOWS - Premium Depth */
-    --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.25);
-    --shadow-medium: 0 8px 40px rgba(0, 0, 0, 0.35);
-    --shadow-hard: 0 16px 60px rgba(0, 0, 0, 0.45);
-    --shadow-glow: 0 0 30px var(--color-accent-glow);
-    --shadow-like: 0 0 20px var(--color-like-glow);
-    --shadow-inner: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
     
-    /* BORDER RADIUS - Modern Curves */
-    --radius-sm: 12px;
-    --radius-md: 20px;
-    --radius-lg: 28px;
-    --radius-xl: 36px;
-    --radius-full: 9999px;
-    
-    /* TRANSITIONS - Smooth Interactions */
-    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    
-    /* SPACING - Balanced Layout */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 1rem;
-    --spacing-md: 1.5rem;
-    --spacing-lg: 2rem;
-    --spacing-xl: 3rem;
-    --spacing-2xl: 4rem;
-    
-    /* TYPOGRAPHY - Modern Scale */
-    --text-xs: 0.75rem;
-    --text-sm: 0.875rem;
-    --text-base: 1rem;
-    --text-lg: 1.125rem;
-    --text-xl: 1.25rem;
-    --text-2xl: 1.5rem;
-    --text-3xl: 1.875rem;
-    --text-4xl: 2.25rem;
+    /* Transitions */
+    --transition: all 0.3s ease;
 }
 
 /* ==================== RESET & BASE STYLES ==================== */
@@ -79,756 +38,393 @@
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 80px;
-}
-
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--gradient-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: var(--color-primary);
     color: var(--color-text);
     min-height: 100vh;
     line-height: 1.6;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Badini dili için özel font */
-body[lang="badini"] {
-    font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
-    direction: rtl;
-}
-
-/* ==================== PREMIUM HEADER (GLASSMORPHISM) ==================== */
-.premium-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(10, 10, 10, 0.85);
-    backdrop-filter: blur(20px) saturate(200%);
-    -webkit-backdrop-filter: blur(20px) saturate(200%);
-    border-bottom: 1px solid var(--color-border-light);
-    box-shadow: var(--shadow-soft);
-}
-
-.header-container {
-    max-width: 1400px;
+.container {
+    max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-md);
+    padding: 0 20px;
 }
 
-/* Logo Section */
-.logo-section {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.logo-icon {
-    font-size: 1.5rem;
-    color: var(--color-accent);
-    animation: subtle-pulse 4s ease-in-out infinite;
-}
-
-@keyframes subtle-pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.05); }
-}
-
-.logo-text {
-    font-size: var(--text-xl);
-    font-weight: 800;
-    background: linear-gradient(135deg, #fff 0%, var(--color-accent-light) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-/* Header Controls */
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-}
-
-/* ==================== PREMIUM LANGUAGE SELECTOR ==================== */
-.language-dropdown-premium {
-    position: relative;
-}
-
-.language-btn-premium {
-    padding: 0.625rem 1rem;
-    background: var(--gradient-glass);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-full);
-    color: var(--color-text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: var(--text-sm);
-    font-weight: 500;
-    transition: all var(--transition-normal);
-    backdrop-filter: blur(10px);
-    min-width: 120px;
-}
-
-.language-btn-premium:hover {
-    background: var(--color-hover);
-    border-color: var(--color-accent);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.language-btn-premium i:last-child {
-    margin-left: auto;
-    font-size: 0.875rem;
-    opacity: 0.7;
-}
-
-.language-menu-premium {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    background: rgba(26, 26, 26, 0.98);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-hard);
-    display: none;
-    min-width: 180px;
-    overflow: hidden;
-    z-index: 1001;
-}
-
-.language-dropdown-premium:hover .language-menu-premium {
-    display: block;
-    animation: slideInDown 0.3s ease;
-}
-
-@keyframes slideInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.language-option-premium {
-    padding: 0.875rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    cursor: pointer;
-    transition: background var(--transition-fast);
-    border-bottom: 1px solid var(--color-border-light);
-}
-
-.language-option-premium:last-child {
-    border-bottom: none;
-}
-
-.language-option-premium:hover {
-    background: var(--color-hover);
-}
-
-.language-option-premium .flag {
-    font-size: 1.125rem;
-    width: 20px;
+/* ==================== HEADER ==================== */
+.header {
     text-align: center;
+    padding: 40px 0;
+    position: relative;
 }
 
-/* ==================== PREMIUM IMAGE CARDS (BANANAPROMPTS STYLE) ==================== */
-.prompts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: var(--spacing-xl);
-    padding: var(--spacing-xl) 0;
-    max-width: 1400px;
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    max-width: 600px;
     margin: 0 auto;
+    opacity: 0.9;
 }
 
-/* Premium Card Container */
-.premium-image-card {
-    background: var(--gradient-card);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    position: relative;
-    box-shadow: var(--shadow-medium);
-    transition: all var(--transition-normal);
-    border: 1px solid var(--color-border);
-    will-change: transform;
-}
-
-.premium-image-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-hard);
-    border-color: var(--color-accent);
-}
-
-/* Premium Frame - BananaPrompts Inspired */
-.premium-frame {
-    position: relative;
-    padding: 20px;
-    background: var(--color-primary);
-    margin: 16px;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-border-light);
-    box-shadow: var(--shadow-inner);
-}
-
-/* Image Container */
-.image-container {
-    position: relative;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    background: var(--color-secondary);
-    min-height: 280px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.premium-image {
-    width: 100%;
-    height: 100%;
-    min-height: 280px;
-    max-height: 400px;
-    object-fit: contain;
-    display: block;
-    transition: transform var(--transition-slow);
-    background: var(--color-primary);
-    padding: 8px;
-}
-
-.premium-image-card:hover .premium-image {
-    transform: scale(1.02);
-}
-
-/* ==================== LIKE BUTTON (ALWAYS VISIBLE) ==================== */
-.like-container {
+/* ==================== DİL SEÇİCİ ==================== */
+.language-selector {
     position: absolute;
-    top: 24px;
-    right: 24px;
-    z-index: 10;
+    top: 20px;
+    right: 20px;
+}
+
+.language-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.language-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
-    padding: 6px 12px;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--color-border-light);
+    transition: var(--transition);
 }
 
-.like-btn {
-    background: none;
-    border: none;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: var(--text-sm);
-    font-weight: 500;
-    transition: all var(--transition-normal);
-    position: relative;
+.language-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
 }
 
-.like-btn:hover {
-    color: var(--color-like);
-    transform: scale(1.1);
-}
-
-.like-btn.liked {
-    color: var(--color-like);
-    animation: likePulse 0.6s ease;
-}
-
-@keyframes likePulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-}
-
-.like-count {
-    font-size: var(--text-sm);
-    font-weight: 600;
-    color: var(--color-text);
-    min-width: 20px;
-    text-align: center;
-    font-feature-settings: "tnum";
-}
-
-/* ==================== "PROMPTS GÖRMEK İÇİN TIKLA 👈" BUTTON ==================== */
-.show-prompt-btn {
-    width: calc(100% - 32px);
-    margin: 0 16px 16px;
-    padding: 1.25rem var(--spacing-lg);
-    background: var(--gradient-accent);
-    border: none;
-    border-radius: var(--radius-lg);
-    color: white;
-    font-size: var(--text-lg);
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    transition: all var(--transition-normal);
-    position: relative;
-    overflow: hidden;
-    letter-spacing: 0.3px;
-}
-
-.show-prompt-btn::before {
-    content: '';
+.language-menu {
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-    transition: left 0.7s ease;
-}
-
-.show-prompt-btn:hover::before {
-    left: 100%;
-}
-
-.show-prompt-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-}
-
-.show-prompt-btn:active {
-    transform: translateY(0) scale(0.98);
-}
-
-.show-prompt-btn i {
-    font-size: 1.2rem;
-    transition: transform var(--transition-normal);
-}
-
-.show-prompt-btn.active i {
-    transform: rotate(180deg);
-}
-
-/* ==================== PROMPT EXPANDABLE SECTION ==================== */
-.prompt-expandable {
-    max-height: 0;
+    top: 100%;
+    right: 0;
+    background: var(--color-secondary);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    margin-top: 5px;
+    display: none;
+    min-width: 180px;
     overflow: hidden;
-    transition: max-height var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(0, 0, 0, 0.3);
-    border-top: 1px solid var(--color-border-light);
 }
 
-.prompt-expandable.active {
-    max-height: 500px;
+.language-dropdown:hover .language-menu {
+    display: block;
 }
 
-/* Same Image in Expanded View */
-.expanded-image-container {
-    padding: var(--spacing-lg);
+.language-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transition);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.language-option:last-child {
+    border-bottom: none;
+}
+
+.language-option:hover {
+    background: var(--color-hover);
+}
+
+/* ==================== PROMPT KARTLARI ==================== */
+.prompts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 20px 0 40px;
+}
+
+.prompt-card {
     background: var(--color-secondary);
     border-radius: var(--radius-lg);
-    margin: var(--spacing-lg);
-    border: 1px solid var(--color-border-light);
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow-md);
 }
 
-.expanded-image {
+.prompt-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* ==================== RESİMLER ==================== */
+.prompt-image {
     width: 100%;
-    max-height: 300px;
-    object-fit: contain;
+    height: 250px;
+    object-fit: cover;
     display: block;
-    border-radius: var(--radius-md);
-    background: var(--color-primary);
-    padding: 12px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
-/* Prompt Content */
+/* Resim koruması - sadece link menüsü engeli */
+.prompt-image {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: auto;
+}
+
+/* ==================== PROMPT İÇERİĞİ ==================== */
 .prompt-content {
-    padding: 0 var(--spacing-lg) var(--spacing-lg);
+    padding: 20px;
 }
 
-/* Prompt Text with Fade Effect */
 .prompt-text-container {
     position: relative;
-    max-height: 150px;
+    margin-bottom: 20px;
+    max-height: 120px;
     overflow: hidden;
-    margin-bottom: var(--spacing-lg);
-    background: rgba(0, 0, 0, 0.2);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-border-light);
 }
 
 .prompt-text {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: var(--text-sm);
-    line-height: 1.8;
+    font-size: 0.95rem;
+    line-height: 1.6;
     color: var(--color-text-secondary);
-    white-space: pre-wrap;
-    word-break: break-word;
     margin: 0;
 }
 
-.text-fade-overlay {
+.fade-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
-    background: var(--gradient-overlay);
-    pointer-events: none;
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, var(--color-secondary));
 }
 
-/* ==================== ACTION BUTTONS ROW ==================== */
-.action-buttons-row {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-lg);
-}
-
-/* Premium Copy Button */
-.copy-btn-premium {
-    flex: 1;
-    padding: 1rem var(--spacing-md);
-    background: var(--gradient-accent);
+/* ==================== KOPYALA BUTONU ==================== */
+.copy-btn {
+    background: var(--color-accent);
+    color: white;
     border: none;
+    padding: 12px 20px;
     border-radius: var(--radius-md);
-    color: white;
-    font-size: var(--text-base);
-    font-weight: 600;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all var(--transition-normal);
-    position: relative;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.copy-btn-premium::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.6s ease;
-}
-
-.copy-btn-premium:hover::before {
-    left: 100%;
-}
-
-.copy-btn-premium:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-}
-
-.copy-btn-premium:active {
-    transform: translateY(0) scale(0.98);
-}
-
-.copy-btn-premium i {
-    font-size: 1.1rem;
-}
-
-/* Like Button in Expanded View */
-.expanded-like-btn {
-    padding: 1rem 1.25rem;
-    background: rgba(236, 72, 153, 0.1);
-    border: 1px solid rgba(236, 72, 153, 0.2);
-    border-radius: var(--radius-md);
-    color: var(--color-like);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all var(--transition-normal);
-    font-weight: 600;
-}
-
-.expanded-like-btn:hover {
-    background: rgba(236, 72, 153, 0.2);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-like);
-}
-
-.expanded-like-btn.liked {
-    background: var(--gradient-like);
-    color: white;
-    border-color: transparent;
-}
-
-/* Support Button (Smaller) */
-.support-btn {
-    padding: 1rem;
-    background: var(--gradient-glass);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all var(--transition-normal);
+    font-size: 1rem;
     font-weight: 500;
-    font-size: var(--text-sm);
-    min-width: 44px;
-}
-
-.support-btn:hover {
-    background: var(--color-hover);
-    border-color: var(--color-accent);
-    transform: translateY(-1px);
-}
-
-/* ==================== COPY NOTIFICATION ==================== */
-.copy-notification-premium {
-    position: fixed;
-    bottom: var(--spacing-xl);
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--gradient-accent);
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    box-shadow: var(--shadow-glow);
-    opacity: 0;
-    transition: all var(--transition-normal);
-    z-index: 1001;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+    width: 100%;
 }
 
-.copy-notification-premium.show {
-    transform: translateX(-50%) translateY(0);
+.copy-btn:hover {
+    background: var(--color-accent-light);
+    transform: translateY(-2px);
+}
+
+/* ==================== TELEGRAM BÖLÜMÜ ==================== */
+.telegram-section {
+    padding: 40px 0;
+}
+
+.telegram-card {
+    background: var(--color-secondary);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: var(--shadow-md);
+}
+
+.telegram-icon {
+    background: var(--color-accent);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.telegram-info h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.telegram-info p {
+    color: var(--color-text-secondary);
+    margin-bottom: 15px;
+}
+
+.telegram-links {
+    display: flex;
+    gap: 10px;
+}
+
+.telegram-link {
+    background: var(--color-primary);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.telegram-link:hover {
+    background: var(--color-hover);
+}
+
+/* ==================== FOOTER ==================== */
+.footer {
+    text-align: center;
+    padding: 30px 0;
+    color: var(--color-text-secondary);
+    border-top: 1px solid var(--color-border);
+    margin-top: 20px;
+}
+
+/* ==================== YÜKLEME ==================== */
+.loading-spinner {
+    text-align: center;
+    padding: 60px 0;
+    color: var(--color-text-secondary);
+}
+
+.spinner {
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid var(--color-accent);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==================== HATA MESAJI ==================== */
+.error-message {
+    background: var(--color-secondary);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    color: #ef4444;
+    box-shadow: var(--shadow-md);
+}
+
+.retry-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    margin-top: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.retry-btn:hover {
+    background: #dc2626;
+}
+
+/* ==================== KOPYALANDI BİLDİRİMİ ==================== */
+.copy-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--color-accent);
+    color: white;
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: var(--transition);
+    z-index: 1000;
+}
+
+.copy-notification.show {
+    transform: translateY(0);
     opacity: 1;
 }
 
-.copy-notification-premium i {
-    font-size: 1.2rem;
-}
-
-/* ==================== MOBILE OPTIMIZATION ==================== */
+/* ==================== MOBİL UYUMLULUK ==================== */
 @media (max-width: 768px) {
-    /* Mobile Header */
-    .premium-header {
-        padding: var(--spacing-xs) var(--spacing-sm);
+    .title {
+        font-size: 2rem;
     }
     
-    .header-container {
-        flex-direction: column;
-        gap: var(--spacing-xs);
-    }
-    
-    .logo-text {
-        font-size: var(--text-lg);
-    }
-    
-    .header-controls {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    /* Mobile Language Selector */
-    .language-btn-premium {
-        min-width: 100px;
-        padding: 0.5rem 0.75rem;
-        font-size: var(--text-xs);
-    }
-    
-    /* Mobile Grid */
     .prompts-grid {
         grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-        padding: var(--spacing-lg) var(--spacing-sm);
+        gap: 20px;
+        padding: 20px 0;
     }
     
-    /* Mobile Cards */
-    .premium-frame {
-        padding: 16px;
-        margin: 12px;
+    .telegram-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
     }
     
-    .image-container {
-        min-height: 240px;
+    .language-selector {
+        position: relative;
+        top: auto;
+        right: auto;
+        text-align: center;
+        margin-bottom: 20px;
     }
     
-    .premium-image {
-        min-height: 240px;
-        max-height: 320px;
+    .language-menu {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
     }
     
-    /* Mobile Buttons */
-    .show-prompt-btn {
-        padding: 1rem var(--spacing-md);
-        font-size: var(--text-base);
-        margin: 0 12px 12px;
-    }
-    
-    .action-buttons-row {
-        flex-wrap: wrap;
-    }
-    
-    .copy-btn-premium,
-    .expanded-like-btn,
-    .support-btn {
-        padding: 0.875rem var(--spacing-sm);
-        font-size: var(--text-sm);
-    }
-    
-    /* Mobile Like Container */
-    .like-container {
-        top: 16px;
-        right: 16px;
-        padding: 4px 8px;
-    }
-    
-    .like-count {
-        font-size: var(--text-xs);
-    }
-    
-    /* Mobile Copy Notification */
-    .copy-notification-premium {
-        left: var(--spacing-sm);
-        right: var(--spacing-sm);
-        transform: translateX(0) translateY(100px);
+    .copy-notification {
+        left: 20px;
+        right: 20px;
         text-align: center;
         justify-content: center;
-        bottom: var(--spacing-lg);
-    }
-    
-    .copy-notification-premium.show {
-        transform: translateX(0) translateY(0);
     }
 }
 
-/* Small Mobile Devices */
-@media (max-width: 480px) {
-    .prompts-grid {
-        padding: var(--spacing-md) var(--spacing-xs);
-    }
-    
-    .premium-image-card {
-        border-radius: var(--radius-lg);
-    }
-    
-    .premium-frame {
-        padding: 12px;
-        margin: 8px;
-        border-radius: var(--radius-md);
-    }
-    
-    .image-container {
-        min-height: 200px;
-        border-radius: var(--radius-sm);
-    }
-    
-    .show-prompt-btn {
-        border-radius: var(--radius-md);
-        font-size: var(--text-sm);
-    }
-    
-    .action-buttons-row {
-        gap: var(--spacing-xs);
-    }
+/* ==================== DİL ÖZEL AYARLARI ==================== */
+/* Badini dili için font */
+body[lang="badini"] .prompt-text {
+    font-family: 'Noto Sans Arabic', sans-serif;
+    text-align: right;
 }
 
-/* Tablet Optimization */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .prompts-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-lg);
-        padding: var(--spacing-lg);
-    }
+/* Arapça için */
+body[lang="ar"] .prompt-text {
+    font-family: 'Noto Sans Arabic', sans-serif;
+    text-align: right;
 }
 
-/* Large Screens */
-@media (min-width: 1400px) {
-    .prompts-grid {
-        grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-    }
-}
-
-/* ==================== DARK MODE ENHANCEMENTS ==================== */
-@media (prefers-color-scheme: dark) {
-    .premium-image-card {
-        background: rgba(20, 20, 20, 0.95);
-    }
-    
-    .language-menu-premium {
-        background: rgba(15, 15, 15, 0.98);
-    }
-}
-
-/* ==================== PERFORMANCE OPTIMIZATIONS ==================== */
-.premium-image-card,
-.show-prompt-btn,
-.copy-btn-premium,
-.like-btn {
-    will-change: transform;
-}
-
-/* Image loading optimization */
-.premium-image,
-.expanded-image {
-    loading: lazy;
-}
-
-/* ==================== ACCESSIBILITY ==================== */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* Focus styles for keyboard navigation */
-.show-prompt-btn:focus-visible,
-.copy-btn-premium:focus-visible,
-.like-btn:focus-visible,
-.support-btn:focus-visible,
-.language-btn-premium:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-    :root {
-        --color-text: #ffffff;
-        --color-text-secondary: #cccccc;
-        --color-border: #666666;
-    }
-    
-    .premium-image-card {
-        border: 2px solid var(--color-border);
-    }
+/* Diğer diller için */
+body:not([lang="badini"]):not([lang="ar"]) .prompt-text {
+    font-family: inherit;
+    text-align: left;
 }
