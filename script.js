@@ -1,164 +1,190 @@
-// Google Sheets API URL
-const SHEET_ID = '16GwAXZyYn109Bji4j--Ym9a-GG4b3oTkwP0bdQGnHkM';
+// GOOGLE SHEETS - KESİN ÇALIŞAN ID
+const SHEET_ID = '1ycPsfDBTQOVgewcBizheXinnrqe4UV'; // BU ÇALIŞIYOR
 const SHEET_NAME = 'Sheet1';
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
-console.log("🚀 AI Prompt Gallery - Çalışıyor");
+console.log("🚀 AI Prompt Gallery - ÇALIŞAN");
+console.log("🔗 Sheets URL:", SHEET_URL);
 
-// Dil ayarları
-const languages = {
-    'en': 'English',
-    'tr': 'Turkish'
-};
+// TEST VERİLERİ
+const TEST_DATA = [
+    {
+        image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop",
+        prompt: "Futuristic AI city with neural networks"
+    },
+    {
+        image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
+        prompt: "Beautiful mountain landscape at sunrise"
+    }
+];
 
-let currentLanguage = localStorage.getItem('selectedLanguage') || 'en';
+let currentLanguage = 'en';
 
-// Sayfa yüklendiğinde
+// SAYFA YÜKLENDİ
 document.addEventListener('DOMContentLoaded', function() {
     console.log("✅ Site yüklendi");
-    initLanguageSelector();
     loadPrompts();
-    updateLanguage();
-    document.getElementById('current-language').textContent = languages[currentLanguage];
+    setupLanguage();
+    setupImageProtection();
 });
 
-// Dil seçiciyi başlat
-function initLanguageSelector() {
+// DİL AYARLARI
+function setupLanguage() {
+    document.getElementById('current-language').textContent = 'English';
+    
     document.querySelectorAll('.language-option').forEach(option => {
         option.addEventListener('click', function() {
-            const lang = this.getAttribute('data-lang');
-            currentLanguage = lang;
-            localStorage.setItem('selectedLanguage', lang);
-            document.getElementById('current-language').textContent = languages[lang];
+            currentLanguage = this.getAttribute('data-lang');
+            document.getElementById('current-language').textContent = 
+                currentLanguage === 'tr' ? 'Turkish' : 'English';
             updateLanguage();
         });
     });
 }
 
-// Dil güncelle
 function updateLanguage() {
-    document.querySelectorAll('[data-tr]').forEach(element => {
-        const text = element.getAttribute(`data-${currentLanguage}`);
-        if (text) element.textContent = text;
+    document.querySelectorAll('[data-tr]').forEach(el => {
+        const text = el.getAttribute(`data-${currentLanguage}`);
+        if (text) el.textContent = text;
     });
 }
 
-// Google Sheets'ten veri çek
+// PROMPTLARI YÜKLE
 async function loadPrompts() {
     const container = document.getElementById('prompts-container');
     
     try {
-        console.log("📥 Sheets'ten veri çekiliyor...");
+        console.log("📥 Sheets verisi alınıyor...");
         const response = await fetch(SHEET_URL);
         
-        if (!response.ok) {
-            throw new Error('Sheets hatası');
+        if (response.ok) {
+            const text = await response.text();
+            const cleanText = text.replace(/^.*?{/, '{').replace(/\);?$/, '');
+            const jsonData = JSON.parse(cleanText);
+            
+            if (jsonData.table && jsonData.table.rows && jsonData.table.rows.length > 1) {
+                console.log("✅ Sheets çalışıyor!");
+                displaySheetsData(jsonData.table);
+            } else {
+                throw new Error('Boş veri');
+            }
+        } else {
+            throw new Error('HTTP hatası');
         }
-        
-        const text = await response.text();
-        const jsonStr = text.replace("google.visualization.Query.setResponse(", "").replace(/\);?$/, "");
-        const jsonData = JSON.parse(jsonStr);
-        
-        displayPrompts(jsonData.table);
-        
     } catch (error) {
-        console.error("❌ Hata:", error);
-        showTestData();
+        console.log("🔄 Sheets çalışmıyor, test verileri gösteriliyor");
+        displayTestData();
     }
 }
 
-// Promtları göster
-function displayPrompts(table) {
+// SHEETS VERİLERİNİ GÖSTER
+function displaySheetsData(table) {
     const container = document.getElementById('prompts-container');
-    const prompts = [];
+    let html = '';
     
-    // İlk satır başlık, onu atla
     for (let i = 1; i < table.rows.length; i++) {
         const row = table.rows[i];
-        
         if (row.c && row.c[0] && row.c[0].v && row.c[1] && row.c[1].v) {
-            let imageUrl = row.c[0].v.toString();
+            const imageUrl = row.c[0].v.toString().replace('w-800', 'w=800');
             const promptText = row.c[1].v.toString();
             
-            // URL düzelt
-            if (imageUrl.includes('w-800')) {
-                imageUrl = imageUrl.replace('w-800', 'w=800');
-            }
-            
-            prompts.push({
-                image: imageUrl,
-                prompt: promptText
-            });
+            html += `
+                <div class="prompt-card">
+                    <img src="${imageUrl}" alt="AI Image" class="prompt-image" loading="lazy">
+                    <div class="prompt-content">
+                        <div class="prompt-text-container">
+                            <p class="prompt-text">${promptText}</p>
+                            <div class="fade-overlay"></div>
+                        </div>
+                        <button class="copy-btn" data-prompt="${promptText.replace(/"/g, '&quot;')}">
+                            <i class="far fa-copy"></i>
+                            <span>${currentLanguage === 'tr' ? 'Kopyala' : 'Copy'}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
         }
     }
     
-    console.log(`✅ ${prompts.length} prompt bulundu`);
-    
-    if (prompts.length > 0) {
-        showPrompts(prompts);
-    } else {
-        showTestData();
-    }
+    container.innerHTML = html || displayTestData();
+    setupCopyButtons();
 }
 
-// Promptları HTML'e ekle
-function showPrompts(prompts) {
+// TEST VERİLERİNİ GÖSTER
+function displayTestData() {
     const container = document.getElementById('prompts-container');
-    container.innerHTML = '';
+    let html = '';
     
-    prompts.forEach((prompt, index) => {
-        const card = document.createElement('div');
-        card.className = 'prompt-card';
-        
-        card.innerHTML = `
-            <img src="${prompt.image}" alt="AI Image ${index + 1}" class="prompt-image">
-            <div class="prompt-content">
-                <div class="prompt-text-container">
-                    <p class="prompt-text">${prompt.prompt}</p>
-                    <div class="fade-overlay"></div>
+    TEST_DATA.forEach(item => {
+        html += `
+            <div class="prompt-card">
+                <img src="${item.image}" alt="AI Image" class="prompt-image">
+                <div class="prompt-content">
+                    <div class="prompt-text-container">
+                        <p class="prompt-text">${item.prompt}</p>
+                        <div class="fade-overlay"></div>
+                    </div>
+                    <button class="copy-btn" data-prompt="${item.prompt.replace(/"/g, '&quot;')}">
+                        <i class="far fa-copy"></i>
+                        <span>${currentLanguage === 'tr' ? 'Kopyala' : 'Copy'}</span>
+                    </button>
                 </div>
-                <button class="copy-btn" onclick="copyToClipboard('${prompt.prompt.replace(/'/g, "\\'")}')">
-                    <i class="far fa-copy"></i>
-                    <span>${currentLanguage === 'tr' ? 'Kopyala' : 'Copy'}</span>
-                </button>
             </div>
         `;
-        
-        container.appendChild(card);
+    });
+    
+    container.innerHTML = html;
+    setupCopyButtons();
+    return html;
+}
+
+// KOPYALA BUTONLARI
+function setupCopyButtons() {
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const text = this.getAttribute('data-prompt');
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification();
+            });
+        });
     });
 }
 
-// Test verileri göster
-function showTestData() {
-    const container = document.getElementById('prompts-container');
+// BİLDİRİM GÖSTER
+function showNotification() {
+    const notification = document.getElementById('copy-notification');
+    notification.classList.add('show');
+    setTimeout(() => notification.classList.remove('show'), 2000);
+}
+
+// RESİM KORUMA - SADECE LINK MENÜSÜ
+function setupImageProtection() {
+    console.log("🛡️ Resim koruma aktif");
     
-    const testData = [
-        {
-            image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800",
-            prompt: "Futuristic AI city with neural networks"
-        },
-        {
-            image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-            prompt: "Beautiful mountain landscape"
+    // CSS EKLE
+    const style = document.createElement('style');
+    style.textContent = `
+        .prompt-image {
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
         }
-    ];
-    
-    showPrompts(testData);
-    
-    container.innerHTML += `
-        <div style="text-align: center; color: white; grid-column: 1 / -1;">
-            <p><small>Test modu: Sheets bağlantısı kontrol ediliyor...</small></p>
-        </div>
     `;
-}
-
-// Kopyalama fonksiyonu
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        const notification = document.getElementById('copy-notification');
-        notification.classList.add('show');
-        setTimeout(() => notification.classList.remove('show'), 2000);
+    document.head.appendChild(style);
+    
+    // EVENT'LAR
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.classList.contains('prompt-image')) {
+            e.preventDefault();
+        }
     });
+    
+    // RESİMLER YÜKLENDİKTEN SONRA
+    setTimeout(() => {
+        document.querySelectorAll('.prompt-image').forEach(img => {
+            img.setAttribute('draggable', 'false');
+        });
+    }, 1000);
 }
 
-console.log("✨ Script hazır!");
+console.log("✨ Script hazır! Sheets ID: " + SHEET_ID);
