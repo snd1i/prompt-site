@@ -1,4 +1,4 @@
-/* GENEL AYARLAR */
+/* TELEFON İÇİN TASARLANMIŞ TAM STYLE.CSS */
 * {
     margin: 0;
     padding: 0;
@@ -10,48 +10,60 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     color: #333;
+    padding: 0;
+    margin: 0;
+}
+
+/* Badini dili için */
+body[lang="badini"] {
+    font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+    direction: rtl;
 }
 
 .container {
-    max-width: 1200px;
+    width: 100%;
+    padding: 0 15px;
     margin: 0 auto;
-    padding: 0 20px;
 }
 
-/* BAŞLIK - ESKİ GÜZEL STİL */
+/* BAŞLIK - TELEFON İÇİN */
 .header {
     text-align: center;
-    padding: 50px 0 30px;
+    padding: 80px 0 30px;
     color: white;
+    position: relative;
 }
 
 .title {
     font-family: 'Montserrat', sans-serif;
-    font-size: 3.5rem;
+    font-size: 2.2rem;
     font-weight: 800;
     margin-bottom: 15px;
-    text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    text-shadow: 0 3px 10px rgba(0,0,0,0.3);
     background: linear-gradient(to right, #ffffff, #e0e7ff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    line-height: 1.2;
+    padding: 0 10px;
 }
 
 .subtitle {
-    font-size: 1.3rem;
+    font-size: 1rem;
     opacity: 0.95;
-    max-width: 600px;
+    max-width: 100%;
     margin: 0 auto;
     font-weight: 300;
-    letter-spacing: 0.5px;
+    padding: 0 15px;
+    line-height: 1.4;
 }
 
-/* DİL SEÇİCİ - ESKİ STİL */
+/* DİL SEÇİCİ - TELEFON İÇİN ÖZEL */
 .language-selector {
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    z-index: 1000;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1001;
 }
 
 .language-dropdown {
@@ -63,93 +75,94 @@ body {
     background: rgba(255, 255, 255, 0.25);
     border: 2px solid rgba(255, 255, 255, 0.4);
     color: white;
-    padding: 12px 20px;
+    padding: 10px 15px;
     border-radius: 12px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     backdrop-filter: blur(15px);
     transition: all 0.3s ease;
     font-weight: 500;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    font-size: 14px;
+    min-width: 120px;
+    justify-content: space-between;
 }
 
 .language-btn:hover {
     background: rgba(255, 255, 255, 0.35);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
 .language-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
+    position: fixed;
+    top: 60px;
+    right: 15px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    margin-top: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin-top: 5px;
     display: none;
-    min-width: 220px;
+    width: 200px;
+    max-width: 85vw;
     overflow: hidden;
     border: 1px solid #eee;
+    z-index: 1002;
 }
 
-.language-dropdown:hover .language-menu {
+.language-dropdown:hover .language-menu,
+.language-dropdown:active .language-menu {
     display: block;
-    animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 .language-option {
-    padding: 14px 20px;
+    padding: 14px 15px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 12px;
     transition: all 0.2s;
     border-bottom: 1px solid #f5f5f5;
+    font-size: 14px;
 }
 
 .language-option:last-child {
     border-bottom: none;
 }
 
-.language-option:hover {
+.language-option:hover,
+.language-option:active {
     background: linear-gradient(to right, #f8f9ff, #eef2ff);
-    transform: translateX(5px);
 }
 
 .language-option .flag {
-    font-size: 1.4rem;
-    width: 30px;
+    font-size: 1.3rem;
+    width: 25px;
     text-align: center;
 }
 
-/* PROMPT KARTLARI - ESKİ MÜKEMMEL TASARIM */
+/* PROMPT KARTLARI - TELEFON İÇİN */
 .prompts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 35px;
-    padding: 30px 0 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 20px 0 40px;
+    width: 100%;
 }
 
 .prompt-card {
     background: white;
-    border-radius: 20px;
+    border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    transition: all 0.3s ease;
+    width: 100%;
+    margin: 0 auto;
 }
 
-.prompt-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+.prompt-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .prompt-card::before {
@@ -158,43 +171,45 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 5px;
+    height: 4px;
     background: linear-gradient(to right, #667eea, #764ba2);
-    border-radius: 20px 20px 0 0;
+    border-radius: 18px 18px 0 0;
 }
 
-/* RESİMLER - ESKİ GÜZEL BOYUT */
+/* RESİMLER - TELEFON İÇİN */
 .prompt-image {
     width: 100%;
-    height: 280px;
+    height: 220px;
     object-fit: cover;
     display: block;
-    border-radius: 20px 20px 0 0;
-    transition: transform 0.5s ease;
-}
-
-.prompt-card:hover .prompt-image {
-    transform: scale(1.05);
+    border-radius: 18px 18px 0 0;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
 }
 
 .prompt-content {
-    padding: 25px;
-    position: relative;
+    padding: 20px;
 }
 
 .prompt-text-container {
     position: relative;
-    margin-bottom: 25px;
-    max-height: 140px;
+    margin-bottom: 20px;
+    max-height: 100px;
     overflow: hidden;
 }
 
 .prompt-text {
-    font-size: 1.05rem;
-    line-height: 1.6;
+    font-size: 0.95rem;
+    line-height: 1.5;
     color: #444;
     margin: 0;
     font-weight: 400;
+}
+
+body[lang="badini"] .prompt-text {
+    text-align: right;
+    font-family: 'Noto Sans Arabic', sans-serif;
 }
 
 .fade-overlay {
@@ -202,76 +217,57 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: 40px;
     background: linear-gradient(to bottom, transparent, white);
 }
 
-/* KOPYALA BUTONU - ESKİ GÜZEL STİL */
+/* KOPYALA BUTONU - TELEFON İÇİN */
 .copy-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    padding: 16px 25px;
+    padding: 16px 20px;
     border-radius: 12px;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    transition: all 0.3s ease;
+    gap: 10px;
+    transition: all 0.2s ease;
     width: 100%;
-    letter-spacing: 0.5px;
     text-transform: uppercase;
-    position: relative;
-    overflow: hidden;
-}
-
-.copy-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
-}
-
-.copy-btn:hover::before {
-    left: 100%;
-}
-
-.copy-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    letter-spacing: 0.5px;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .copy-btn:active {
-    transform: translateY(-1px);
+    transform: scale(0.98);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
 }
 
 .copy-btn i {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
-/* TELEGRAM BÖLÜMÜ - ESKİ STİL */
+/* TELEGRAM BÖLÜMÜ - TELEFON İÇİN */
 .telegram-section {
-    padding: 60px 0;
+    padding: 40px 0;
 }
 
 .telegram-card {
     background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
-    border-radius: 20px;
-    padding: 40px;
+    border-radius: 18px;
+    padding: 25px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 40px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    gap: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     border: 1px solid rgba(255,255,255,0.3);
-    position: relative;
-    overflow: hidden;
+    text-align: center;
+    margin: 0 10px;
 }
 
 .telegram-card::before {
@@ -280,27 +276,27 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 5px;
+    height: 4px;
     background: linear-gradient(to right, #0088cc, #00aced);
+    border-radius: 18px 18px 0 0;
 }
 
 .telegram-icon {
     background: linear-gradient(135deg, #0088cc 0%, #00aced 100%);
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     color: white;
-    box-shadow: 0 10px 20px rgba(0, 136, 204, 0.3);
-    flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(0, 136, 204, 0.3);
 }
 
 .telegram-info h3 {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
     color: #222;
     font-weight: 700;
 }
@@ -308,34 +304,37 @@ body {
 .telegram-info p {
     color: #555;
     margin-bottom: 20px;
-    font-size: 1.1rem;
-    line-height: 1.6;
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 
 .telegram-links {
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
 }
 
 .telegram-link {
     background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
-    padding: 12px 20px;
+    padding: 14px 20px;
     border-radius: 10px;
     text-decoration: none;
     color: #333;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     font-weight: 500;
     border: 1px solid #e0e0e0;
+    width: 100%;
 }
 
-.telegram-link:hover {
+.telegram-link:active {
+    transform: scale(0.98);
     background: linear-gradient(135deg, #e0e0e0 0%, #d8d8d8 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .telegram-link.user-link {
@@ -344,46 +343,32 @@ body {
     border-color: #90caf9;
 }
 
-.telegram-link.user-link:hover {
-    background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
-}
-
-/* FOOTER - ESKİ STİL */
+/* FOOTER - TELEFON İÇİN */
 .footer {
     text-align: center;
-    padding: 40px 0;
+    padding: 30px 0;
     color: white;
-    font-size: 1rem;
+    font-size: 0.9rem;
     opacity: 0.9;
-    position: relative;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 20px;
 }
 
-.footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 10%;
-    right: 10%;
-    height: 1px;
-    background: rgba(255,255,255,0.2);
-}
-
-/* YÜKLEME - ESKİ STİL */
+/* YÜKLEME - TELEFON İÇİN */
 .loading-spinner {
     text-align: center;
-    padding: 80px 0;
+    padding: 60px 0;
     color: white;
 }
 
 .spinner {
-    border: 5px solid rgba(255, 255, 255, 0.2);
-    border-top: 5px solid white;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top: 4px solid white;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     animation: spin 1s linear infinite;
-    margin: 0 auto 30px;
-    box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    margin: 0 auto 20px;
 }
 
 @keyframes spin {
@@ -392,29 +377,31 @@ body {
 }
 
 .loading-spinner p {
-    font-size: 1.2rem;
-    letter-spacing: 1px;
+    font-size: 1rem;
     font-weight: 300;
 }
 
-/* KOPYALANDI BİLDİRİMİ - ESKİ STİL */
+/* KOPYALANDI BİLDİRİMİ - TELEFON İÇİN */
 .copy-notification {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
     background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
     color: white;
-    padding: 18px 25px;
+    padding: 15px 20px;
     border-radius: 12px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
-    box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
     transform: translateY(100px);
     opacity: 0;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 0.4s ease;
     z-index: 1000;
     border: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
 }
 
 .copy-notification.show {
@@ -423,66 +410,87 @@ body {
 }
 
 .copy-notification i {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
 }
 
-/* RESİM KORUMA - GÖRÜNMEZ */
-.prompt-image {
-    -webkit-touch-callout: none !important;
-    -webkit-user-select: none !important;
-    user-select: none !important;
+/* REKLAM - TELEFON İÇİN */
+.ad-container {
+    padding: 15px 0;
+    text-align: center;
 }
 
-/* MOBİL UYUMLULUK */
-@media (max-width: 768px) {
+#frame {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+/* KÜÇÜK TELEFONLAR İÇİN */
+@media (max-width: 360px) {
     .title {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
     }
     
     .subtitle {
-        font-size: 1.1rem;
-        padding: 0 20px;
+        font-size: 0.9rem;
     }
     
-    .prompts-grid {
-        grid-template-columns: 1fr;
-        gap: 25px;
-        padding: 20px 15px;
+    .prompt-image {
+        height: 200px;
+    }
+    
+    .language-btn {
+        min-width: 110px;
+        padding: 8px 12px;
+        font-size: 13px;
     }
     
     .telegram-card {
-        flex-direction: column;
-        text-align: center;
-        padding: 30px 20px;
-        margin: 0 15px;
-    }
-    
-    .language-selector {
-        position: relative;
-        top: auto;
-        right: auto;
-        text-align: center;
-        margin: 0 auto 30px;
-        display: inline-block;
-    }
-    
-    .language-menu {
-        left: 0;
-        right: 0;
-        margin: 10px auto;
-    }
-    
-    .copy-notification {
-        left: 20px;
-        right: 20px;
-        bottom: 20px;
-        text-align: center;
-        justify-content: center;
+        padding: 20px 15px;
+        margin: 0 5px;
     }
 }
 
-/* Badini dili için ekstra */
-body[lang="badini"] .prompt-text {
-    text-align: right;
-    font-family: 'Noto Sans Arabic', 'Poppins', sans-serif;
+/* YATAY MOD İÇİN */
+@media (min-width: 768px) and (orientation: landscape) {
+    .prompts-grid {
+        grid-template-columns: repeat(2, 1fr);
+        display: grid;
+    }
+    
+    .prompt-card {
+        max-width: 100%;
+    }
+}
+
+/* DARK MOD DESTEĞİ */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    }
+    
+    .prompt-card {
+        background: #2d3748;
+    }
+    
+    .prompt-text {
+        color: #e2e8f0;
+    }
+    
+    .fade-overlay {
+        background: linear-gradient(to bottom, transparent, #2d3748);
+    }
+    
+    .telegram-card {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        color: #e2e8f0;
+    }
+    
+    .telegram-info h3 {
+        color: #e2e8f0;
+    }
+    
+    .telegram-info p {
+        color: #cbd5e0;
+    }
 }
