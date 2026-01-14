@@ -12,6 +12,12 @@ body {
     color: #333;
 }
 
+/* Badini dili için font */
+body[lang="badini"] {
+    font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+    direction: rtl;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -33,6 +39,10 @@ body {
     text-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
+body[lang="badini"] .title {
+    font-family: 'Noto Sans Arabic', 'Montserrat', sans-serif;
+}
+
 .subtitle {
     font-size: 1.2rem;
     opacity: 0.9;
@@ -46,6 +56,11 @@ body {
     top: 20px;
     right: 20px;
     z-index: 1000;
+}
+
+body[lang="badini"] .language-selector {
+    left: 20px;
+    right: auto;
 }
 
 .language-dropdown {
@@ -81,6 +96,11 @@ body {
     margin-top: 5px;
     display: none;
     min-width: 200px;
+}
+
+body[lang="badini"] .language-menu {
+    right: auto;
+    left: 0;
 }
 
 .language-dropdown:hover .language-menu {
@@ -125,13 +145,19 @@ body {
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
-/* RESİMLER */
+/* RESİMLER - TAM BOYUTLU */
 .prompt-image {
     width: 100%;
-    height: 250px;
-    object-fit: cover;
-    object-position: center;
+    height: auto;
+    display: block;
     border-radius: 15px 15px 0 0;
+}
+
+/* RESİM KORUMA */
+.prompt-image {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
 }
 
 .prompt-content {
@@ -140,9 +166,9 @@ body {
 
 .prompt-text-container {
     position: relative;
+    margin-bottom: 20px;
     max-height: 120px;
     overflow: hidden;
-    margin-bottom: 20px;
 }
 
 .prompt-text {
@@ -150,6 +176,11 @@ body {
     line-height: 1.5;
     color: #555;
     margin: 0;
+}
+
+body[lang="badini"] .prompt-text {
+    font-family: 'Noto Sans Arabic', sans-serif;
+    text-align: right;
 }
 
 .fade-overlay {
@@ -184,8 +215,8 @@ body {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-.copy-btn:active {
-    transform: translateY(0);
+body[lang="badini"] .copy-btn {
+    font-family: 'Noto Sans Arabic', sans-serif;
 }
 
 /* TELEGRAM BÖLÜMÜ */
@@ -226,6 +257,12 @@ body {
     margin-bottom: 15px;
 }
 
+body[lang="badini"] .telegram-info h3,
+body[lang="badini"] .telegram-info p {
+    text-align: right;
+    font-family: 'Noto Sans Arabic', sans-serif;
+}
+
 .telegram-links {
     display: flex;
     gap: 15px;
@@ -248,17 +285,6 @@ body {
     background: #e0e0e0;
 }
 
-.telegram-link.user-link {
-    background: #e3f2fd;
-    color: #1976d2;
-}
-
-/* REKLAM */
-.ad-container {
-    padding: 20px 0;
-    text-align: center;
-}
-
 /* FOOTER */
 .footer {
     text-align: center;
@@ -266,6 +292,10 @@ body {
     color: white;
     opacity: 0.8;
     font-size: 0.9rem;
+}
+
+body[lang="badini"] .footer {
+    font-family: 'Noto Sans Arabic', sans-serif;
 }
 
 /* YÜKLEME */
@@ -299,16 +329,6 @@ body {
     color: #d32f2f;
 }
 
-.error-message i {
-    font-size: 3rem;
-    margin-bottom: 20px;
-}
-
-.error-message p {
-    margin-bottom: 20px;
-    font-size: 1.1rem;
-}
-
 .retry-btn {
     background: #d32f2f;
     color: white;
@@ -322,21 +342,6 @@ body {
     justify-content: center;
     gap: 10px;
     margin: 0 auto;
-}
-
-/* PROMPT YOK */
-.no-prompts {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    text-align: center;
-    color: #666;
-}
-
-.no-prompts i {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    color: #ccc;
 }
 
 /* KOPYALANDI BİLDİRİMİ */
@@ -363,6 +368,12 @@ body {
     opacity: 1;
 }
 
+body[lang="badini"] .copy-notification {
+    right: auto;
+    left: 20px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+}
+
 /* MOBİL */
 @media (max-width: 768px) {
     .title {
@@ -373,16 +384,15 @@ body {
         grid-template-columns: 1fr;
     }
     
-    .telegram-card {
-        flex-direction: column;
-        text-align: center;
-    }
-    
     .language-selector {
         position: relative;
         top: auto;
         right: auto;
         text-align: center;
         margin-bottom: 20px;
+    }
+    
+    body[lang="badini"] .language-selector {
+        left: auto;
     }
 }
