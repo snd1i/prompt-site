@@ -1,17 +1,4 @@
-/* Genel Stiller */
-:root {
-    --primary-color: #6c63ff;
-    --primary-dark: #554fd8;
-    --secondary-color: #ff6584;
-    --bg-color: #0f0f23;
-    --card-bg: #1a1a2e;
-    --text-color: #f0f0f0;
-    --text-secondary: #b0b0c0;
-    --border-radius: 20px;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    --transition: all 0.3s ease;
-}
-
+/* GENEL AYARLAR */
 * {
     margin: 0;
     padding: 0;
@@ -20,11 +7,9 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    overflow-x: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
+    color: #333;
 }
 
 .container {
@@ -33,9 +18,31 @@ body {
     padding: 0 20px;
 }
 
-/* Dil Seçici */
+/* BAŞLIK */
+.header {
+    text-align: center;
+    padding: 40px 0;
+    color: white;
+}
+
+.title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* DİL SEÇİCİ */
 .language-selector {
-    position: fixed;
+    position: absolute;
     top: 20px;
     right: 20px;
     z-index: 1000;
@@ -43,181 +50,113 @@ body {
 
 .language-dropdown {
     position: relative;
+    display: inline-block;
 }
 
 .language-btn {
-    background: var(--card-bg);
-    color: var(--text-color);
-    border: 2px solid rgba(108, 99, 255, 0.3);
-    border-radius: var(--border-radius);
-    padding: 12px 20px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 10px;
-    transition: var(--transition);
-    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
 }
 
 .language-btn:hover {
-    border-color: var(--primary-color);
-    transform: translateY(-2px);
-}
-
-.language-btn i {
-    font-size: 18px;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .language-menu {
     position: absolute;
     top: 100%;
     right: 0;
-    margin-top: 10px;
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
-    min-width: 250px;
-    box-shadow: var(--shadow);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: var(--transition);
-    z-index: 1000;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-top: 5px;
+    display: none;
+    min-width: 200px;
 }
 
 .language-dropdown:hover .language-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+    display: block;
 }
 
 .language-option {
-    padding: 15px 20px;
+    padding: 12px 15px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 12px;
-    transition: var(--transition);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.language-option:last-child {
-    border-bottom: none;
+    gap: 10px;
+    transition: background 0.2s;
 }
 
 .language-option:hover {
-    background: rgba(108, 99, 255, 0.1);
-    padding-left: 25px;
+    background: #f5f5f5;
 }
 
 .language-option .flag {
-    font-size: 20px;
+    font-size: 1.2rem;
 }
 
-/* Badini dili için font */
-.language-option[data-lang="badini"],
-html[lang="badini"] {
-    font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Header */
-.header {
-    text-align: center;
-    padding: 100px 0 60px;
-    background: linear-gradient(135deg, rgba(108, 99, 255, 0.1) 0%, rgba(26, 26, 46, 0.1) 100%);
-    position: relative;
-    overflow: hidden;
-}
-
-.header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-}
-
-.title {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: fadeInUp 0.8s ease;
-}
-
-.subtitle {
-    font-size: 1.3rem;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto;
-    animation: fadeInUp 0.8s ease 0.2s both;
-}
-
-/* Prompt Kartları */
-.main-content {
-    padding: 40px 0 80px;
-}
-
+/* PROMPT KARTLARI */
 .prompts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
+    padding: 20px 0;
 }
 
 .prompt-card {
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
+    background: white;
+    border-radius: 15px;
     overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-    animation: fadeIn 0.5s ease;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
 }
 
 .prompt-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-    border-color: rgba(108, 99, 255, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
+/* RESİMLER - TAM BOYUTLU */
 .prompt-image {
     width: 100%;
-    height: 250px;
-    object-fit: cover;
+    height: auto !important;
+    object-fit: none !important;
     display: block;
-    transition: var(--transition);
-}
-
-.prompt-card:hover .prompt-image {
-    transform: scale(1.03);
+    border-radius: 15px 15px 0 0;
+    max-height: none !important;
 }
 
 .prompt-content {
-    padding: 25px;
-    position: relative;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .prompt-text-container {
     position: relative;
-    max-height: 200px;
+    flex-grow: 1;
+    margin-bottom: 20px;
+    max-height: 120px;
     overflow: hidden;
-    margin-bottom: 25px;
 }
 
 .prompt-text {
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #555;
+    margin: 0;
 }
 
 .fade-overlay {
@@ -225,166 +164,72 @@ html[lang="badini"] {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 80px;
-    background: linear-gradient(to bottom, transparent, var(--card-bg));
-    pointer-events: none;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, white);
 }
 
+/* KOPYALA BUTONU */
 .copy-btn {
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 50px;
-    padding: 14px 30px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    width: 100%;
-    transition: var(--transition);
-    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+    transition: all 0.3s;
+    margin-top: auto;
 }
 
 .copy-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(108, 99, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 .copy-btn:active {
     transform: translateY(0);
 }
 
-.copy-btn i {
-    font-size: 18px;
-}
-
-/* Yükleme Spinner */
-.loading-spinner {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 0;
-}
-
-.spinner {
-    width: 60px;
-    height: 60px;
-    border: 5px solid rgba(108, 99, 255, 0.2);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    animation: spin 1s linear infinite;
-}
-
-.loading-spinner p {
-    color: var(--text-secondary);
-    font-size: 18px;
-}
-
-/* Hata Mesajı */
-.error-message {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 0;
-    background: rgba(255, 77, 77, 0.1);
-    border-radius: var(--border-radius);
-    border: 1px solid rgba(255, 77, 77, 0.2);
-}
-
-.error-message i {
-    font-size: 50px;
-    color: #ff4444;
-    margin-bottom: 20px;
-}
-
-.error-message p {
-    font-size: 18px;
-    color: var(--text-color);
-    margin-bottom: 20px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.retry-btn {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 25px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: var(--transition);
-}
-
-.retry-btn:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-}
-
-/* Prompt Yok Mesajı */
-.no-prompts {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 0;
-}
-
-.no-prompts i {
-    font-size: 50px;
-    color: var(--primary-color);
-    margin-bottom: 20px;
-}
-
-.no-prompts p {
-    font-size: 18px;
-    color: var(--text-secondary);
-}
-
-/* Telegram Bölümü */
+/* TELEGRAM BÖLÜMÜ */
 .telegram-section {
-    padding: 40px 0;
+    padding: 50px 0;
 }
 
 .telegram-card {
-    background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(26, 26, 46, 0.8));
-    border-radius: var(--border-radius);
+    background: white;
+    border-radius: 15px;
     padding: 30px;
     display: flex;
     align-items: center;
-    gap: 25px;
-    border: 1px solid rgba(108, 99, 255, 0.2);
-    box-shadow: var(--shadow);
+    gap: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .telegram-icon {
-    background: linear-gradient(45deg, #0088cc, #00a2ff);
+    background: linear-gradient(135deg, #0088cc 0%, #00aced 100%);
     width: 70px;
     height: 70px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
-    flex-shrink: 0;
+    font-size: 2rem;
+    color: white;
 }
 
 .telegram-info h3 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 24px;
-    margin-bottom: 8px;
-    color: var(--text-color);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
 }
 
 .telegram-info p {
-    color: var(--text-secondary);
+    color: #666;
     margin-bottom: 15px;
 }
 
@@ -395,160 +240,181 @@ html[lang="badini"] {
 }
 
 .telegram-link {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 10px 20px;
-    border-radius: 50px;
-    color: var(--text-color);
+    background: #f0f0f0;
+    padding: 8px 15px;
+    border-radius: 8px;
     text-decoration: none;
+    color: #333;
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: var(--transition);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.3s;
 }
 
 .telegram-link:hover {
-    background: rgba(0, 136, 204, 0.2);
-    border-color: #0088cc;
-    transform: translateY(-3px);
+    background: #e0e0e0;
 }
 
-.user-link:hover {
-    background: rgba(108, 99, 255, 0.2);
-    border-color: var(--primary-color);
+.telegram-link.user-link {
+    background: #e3f2fd;
+    color: #1976d2;
 }
 
-/* Reklam */
+/* REKLAM */
 .ad-container {
-    padding: 30px 0;
+    padding: 20px 0;
+    text-align: center;
 }
 
-/* Footer */
+/* FOOTER */
 .footer {
     text-align: center;
     padding: 30px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    color: var(--text-secondary);
-    font-size: 14px;
+    color: white;
+    opacity: 0.8;
+    font-size: 0.9rem;
 }
 
-/* Kopyalandı Bildirimi */
-.copy-notification {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: rgba(26, 26, 46, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(108, 99, 255, 0.3);
-    border-radius: var(--border-radius);
-    padding: 15px 25px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    z-index: 1001;
-    opacity: 0;
-    transition: var(--transition);
+/* YÜKLEME */
+.loading-spinner {
+    text-align: center;
+    padding: 50px;
+    color: white;
 }
 
-.copy-notification.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-
-.copy-notification i {
-    color: #4CAF50;
-    font-size: 20px;
-}
-
-/* Animasyonlar */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* Mobil Uyumluluk */
+/* HATA MESAJI */
+.error-message {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    color: #d32f2f;
+}
+
+.error-message i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.error-message p {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.retry-btn {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto;
+}
+
+/* PROMPT YOK */
+.no-prompts {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    color: #666;
+}
+
+.no-prompts i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #ccc;
+}
+
+/* KOPYALANDI BİLDİRİMİ */
+.copy-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.copy-notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* MOBİL UYUMLULUK */
 @media (max-width: 768px) {
-    .language-selector {
-        top: 15px;
-        right: 15px;
-    }
-    
-    .language-btn {
-        padding: 10px 15px;
-        font-size: 14px;
-    }
-    
     .title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
     
     .subtitle {
-        font-size: 1.1rem;
-        padding: 0 15px;
-    }
-    
-    .header {
-        padding: 80px 0 40px;
+        font-size: 1rem;
     }
     
     .prompts-grid {
         grid-template-columns: 1fr;
-        gap: 25px;
+        gap: 20px;
     }
     
     .telegram-card {
         flex-direction: column;
         text-align: center;
-        padding: 25px;
+        padding: 20px;
     }
     
-    .telegram-links {
-        justify-content: center;
+    .language-selector {
+        position: relative;
+        top: auto;
+        right: auto;
+        text-align: center;
+        margin-bottom: 20px;
     }
     
     .language-menu {
-        min-width: 200px;
-        right: -20px;
+        left: 0;
+        right: auto;
     }
 }
 
 @media (max-width: 480px) {
     .title {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     
-    .prompt-card {
-        margin: 0 10px;
+    .container {
+        padding: 0 15px;
     }
     
-    .prompt-content {
-        padding: 20px;
-    }
-    
-    .language-menu {
-        min-width: 180px;
+    .telegram-links {
+        flex-direction: column;
     }
 }
