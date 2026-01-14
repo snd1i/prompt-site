@@ -1,304 +1,188 @@
-// Google Sheets API URL
-const SHEET_ID = '1a4gxpaMg2gHNP9krJtVtqmDwMsvpY1KD1tqIes6zNNY';
+// GOOGLE SHEETS AYARLARI
+const SHEET_ID = '16GwAXZyYn109Bji4j--Ym9a-GG4b3oTkwP0bdQGnHkM';
 const SHEET_NAME = 'Sheet1';
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
-console.log("🚀 AI Prompt Gallery - Script.js yüklendi");
+console.log("🚀 AI Prompt Gallery Başladı");
 console.log("📊 Sheets ID:", SHEET_ID);
+console.log("🔗 API URL:", SHEET_URL);
 
 // Dil ayarları
 const languages = {
     'en': 'English',
-    'sorani': 'Kurdish Sorani',
-    'badini': 'Kurdish Badini',
-    'tr': 'Turkish',
-    'ar': 'Arabic'
+    'tr': 'Turkish'
 };
 
-// Varsayılan dil
 let currentLanguage = localStorage.getItem('selectedLanguage') || 'en';
 
 // Sayfa yüklendiğinde
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("✅ Site yüklendi");
-    initLanguageSelector();
+    console.log("✅ DOM yüklendi");
     loadPrompts();
     updateLanguage();
-    setupImageProtection(); // RESİM KORUMA
-    document.getElementById('current-language').textContent = languages[currentLanguage];
+    setupImageProtection();
 });
 
-// Dil seçiciyi başlat
-function initLanguageSelector() {
-    const languageOptions = document.querySelectorAll('.language-option');
-    
-    languageOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            const lang = this.getAttribute('data-lang');
-            changeLanguage(lang);
-        });
-    });
-}
-
-// Dil değiştirme
-function changeLanguage(lang) {
-    currentLanguage = lang;
-    localStorage.setItem('selectedLanguage', lang);
-    document.getElementById('current-language').textContent = languages[lang];
-    updateLanguage();
-}
-
-// Tüm sayfayı güncelle
+// Dil güncelle
 function updateLanguage() {
-    document.querySelectorAll('[data-tr]').forEach(element => {
-        const text = element.getAttribute(`data-${currentLanguage}`);
-        if (text) {
-            element.textContent = text;
-        }
+    document.querySelectorAll('[data-tr]').forEach(el => {
+        const text = el.getAttribute(`data-${currentLanguage}`);
+        if (text) el.textContent = text;
     });
     
-    if (currentLanguage === 'badini') {
-        document.body.style.fontFamily = "'Noto Sans Arabic', sans-serif";
-    } else {
-        document.body.style.fontFamily = "'Poppins', sans-serif";
-    }
+    document.getElementById('current-language').textContent = languages[currentLanguage];
 }
 
 // Google Sheets'ten veri çek
 async function loadPrompts() {
-    const container = document.getElementById('prompts-container');
+    console.log("📥 Sheets'ten veri çekiliyor...");
     
     try {
-        console.log("📥 Sheets verisi çekiliyor...");
-        
         const response = await fetch(SHEET_URL);
         
         if (!response.ok) {
-            throw new Error(`HTTP hatası: ${response.status}`);
+            console.error("❌ HTTP Hatası:", response.status);
+            showTestData();
+            return;
         }
         
         const text = await response.text();
-        console.log("✅ Veri alındı");
+        console.log("📝 Gelen veri:", text.substring(0, 200));
         
-        // Google formatını düzelt
-        const jsonStr = text
-            .replace("google.visualization.Query.setResponse(", "")
-            .replace(/\);?$/, "");
+        // JSON'u temizle
+        const cleanText = text.replace(/^.*?{/, '{').replace(/\);?$/, '');
+        const jsonData = JSON.parse(cleanText);
         
-        const jsonData = JSON.parse(jsonStr);
-        processSheetData(jsonData.table);
+        console.log("✅ JSON parse edildi");
+        displayPromptsFromData(jsonData.table);
         
     } catch (error) {
         console.error("❌ Hata:", error);
-        showErrorMessage();
+        showTestData();
     }
 }
 
-// Hata mesajı göster
-function showErrorMessage() {
+// Verileri göster
+function displayPromptsFromData(table) {
     const container = document.getElementById('prompts-container');
     
-    let errorMessage = 'An error occurred while loading prompts.';
-    let tryAgainText = 'Try Again';
-    
-    if (currentLanguage === 'tr') {
-        errorMessage = 'Promptlar yüklenirken bir hata oluştu.';
-        tryAgainText = 'Tekrar Dene';
+    if (!table || !table.rows || table.rows.length < 2) {
+        showTestData();
+        return;
     }
     
-    container.innerHTML = `
-        <div class="error-message">
-            <i class="fas fa-exclamation-triangle"></i>
-            <p>${errorMessage}</p>
-            <button class="retry-btn" onclick="location.reload()">
-                <i class="fas fa-redo"></i>
-                ${tryAgainText}
+    let html = '';
+    
+    // İlk satır başlık, onu atla
+    for (let i = 1; i < table.rows.length; i++) {
+        const row = table.rows[i];
+        
+        if (row.c && row.c[0] && row.c[0].v && row.c[1] && row.c[1].v) {
+            const imageUrl = row.c[0].v.toString().replace('w-800', 'w=800');
+            const promptText = row.c[1].v.toString();
+            
+            html += `
+                <div class="prompt-card">
+                    <img src="${imageUrl}" alt="AI Image" class="prompt-image" loading="lazy">
+                    <div class="prompt-content">
+                        <div class="prompt-text-container">
+                            <p class="prompt-text">${promptText}</p>
+                            <div class="fade-overlay"></div>
+                        </div>
+                        <button class="copy-btn" onclick="copyPrompt('${promptText.replace(/'/g, "\\'")}')">
+                            <i class="far fa-copy"></i>
+                            <span>${currentLanguage === 'tr' ? 'Kopyala' : 'Copy'}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    if (html) {
+        container.innerHTML = html;
+    } else {
+        showTestData();
+    }
+}
+
+// TEST verileri göster (Sheets çalışmazsa)
+function showTestData() {
+    console.log("🧪 Test verileri gösteriliyor...");
+    
+    const container = document.getElementById('prompts-container');
+    const testPrompts = [
+        {
+            image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop",
+            prompt: "Futuristic AI city with neural networks"
+        },
+        {
+            image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
+            prompt: "Beautiful mountain landscape at sunrise"
+        }
+    ];
+    
+    let html = '';
+    testPrompts.forEach(prompt => {
+        html += `
+            <div class="prompt-card">
+                <img src="${prompt.image}" alt="AI Image" class="prompt-image">
+                <div class="prompt-content">
+                    <div class="prompt-text-container">
+                        <p class="prompt-text">${prompt.prompt}</p>
+                        <div class="fade-overlay"></div>
+                    </div>
+                    <button class="copy-btn" onclick="copyPrompt('${prompt.prompt.replace(/'/g, "\\'")}')">
+                        <i class="far fa-copy"></i>
+                        <span>${currentLanguage === 'tr' ? 'Kopyala' : 'Copy'}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html + `
+        <div style="text-align: center; color: white; grid-column: 1 / -1; padding: 20px;">
+            <p><small>Test modu: Google Sheets bağlantısı kontrol ediliyor...</small></p>
+            <button onclick="location.reload()" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                Sayfayı Yenile
             </button>
         </div>
     `;
 }
 
-// Verileri işle
-function processSheetData(table) {
-    console.log("📊 Veriler işleniyor...");
-    
-    const prompts = [];
-    
-    // İlk satırı atla (başlık satırı)
-    for (let i = 1; i < table.rows.length; i++) {
-        const row = table.rows[i];
-        
-        if (row.c && row.c[0] && row.c[0].v && row.c[1] && row.c[1].v) {
-            let imageUrl = row.c[0].v.toString();
-            const promptText = row.c[1].v.toString();
-            
-            // URL'yi düzelt (w-800 -> w=800)
-            if (imageUrl.includes('w-800')) {
-                imageUrl = imageUrl.replace('w-800', 'w=800');
-            }
-            
-            prompts.push({
-                image: imageUrl,
-                prompt: promptText
-            });
-        }
-    }
-    
-    console.log(`✅ ${prompts.length} prompt bulundu`);
-    
-    if (prompts.length > 0) {
-        displayPrompts(prompts);
-    } else {
-        showNoPromptsMessage();
-    }
-}
-
-// Prompt yok mesajı
-function showNoPromptsMessage() {
-    const container = document.getElementById('prompts-container');
-    let message = 'No prompts added yet.';
-    
-    if (currentLanguage === 'tr') {
-        message = 'Henüz prompt eklenmemiş.';
-    }
-    
-    container.innerHTML = `
-        <div class="no-prompts">
-            <i class="fas fa-image"></i>
-            <p>${message}</p>
-        </div>
-    `;
-}
-
-// Promptları göster
-function displayPrompts(prompts) {
-    const container = document.getElementById('prompts-container');
-    container.innerHTML = '';
-    
-    prompts.forEach((prompt, index) => {
-        const card = document.createElement('div');
-        card.className = 'prompt-card';
-        
-        // Buton metni
-        let copyButtonText = 'Copy Prompt';
-        if (currentLanguage === 'tr') {
-            copyButtonText = 'Promptu Kopyala';
-        }
-        
-        card.innerHTML = `
-            <img src="${prompt.image}" alt="AI Generated Image ${index + 1}" 
-                 class="prompt-image" loading="lazy">
-            <div class="prompt-content">
-                <div class="prompt-text-container">
-                    <p class="prompt-text">${escapeHtml(prompt.prompt)}</p>
-                    <div class="fade-overlay"></div>
-                </div>
-                <button class="copy-btn" data-prompt="${escapeHtml(prompt.prompt)}">
-                    <i class="far fa-copy"></i>
-                    <span>${copyButtonText}</span>
-                </button>
-            </div>
-        `;
-        
-        container.appendChild(card);
-    });
-    
-    // Kopyalama butonlarına tıklama ekle
-    attachCopyListeners();
-    // Resim korumasını tekrar uygula
-    setupImageProtection();
-}
-
-// Kopyalama butonlarını bağla
-function attachCopyListeners() {
-    document.querySelectorAll('.copy-btn').forEach(button => {
-        button.addEventListener('click', async function() {
-            const promptText = this.getAttribute('data-prompt');
-            
-            try {
-                await navigator.clipboard.writeText(promptText);
-                showCopyNotification();
-            } catch (err) {
-                const textArea = document.createElement('textarea');
-                textArea.value = promptText;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showCopyNotification();
-            }
-        });
+// Prompt kopyala
+function copyPrompt(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        const notification = document.getElementById('copy-notification');
+        notification.classList.add('show');
+        setTimeout(() => notification.classList.remove('show'), 2000);
     });
 }
 
-// Kopyalama bildirimi
-function showCopyNotification() {
-    const notification = document.getElementById('copy-notification');
-    
-    notification.classList.add('show');
-    
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 2000);
-}
-
-// HTML escape
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// RESİM KORUMA SİSTEMİ - SADECE LINK MENÜSÜNÜ ENGELLE
+// Resim koruma
 function setupImageProtection() {
-    console.log("🛡️ Resim koruma aktif...");
+    console.log("🛡️ Resim koruma aktif");
     
-    // 1. Tüm resimleri koru
-    setTimeout(() => {
-        document.querySelectorAll('.prompt-image').forEach(img => {
-            // Mobilde uzun basmayı engelle
-            img.style.webkitTouchCallout = 'none';
-            img.style.webkitUserSelect = 'none';
-            img.style.userSelect = 'none';
-            
-            // Sürüklemeyi engelle
-            img.setAttribute('draggable', 'false');
-            
-            // Sağ tıkı engelle
-            img.oncontextmenu = function(e) {
-                e.preventDefault();
-                return false;
-            };
-            
-            // Touch event'ini engelle (mobil)
-            img.ontouchstart = function(e) {
-                e.preventDefault();
-                return false;
-            };
-        });
-    }, 1000);
-    
-    // 2. Global koruma
-    document.addEventListener('contextmenu', function(e) {
-        if (e.target.tagName === 'IMG') {
-            e.preventDefault();
-            return false;
+    // CSS ile koruma
+    const style = document.createElement('style');
+    style.textContent = `
+        .prompt-image {
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
         }
+    `;
+    document.head.appendChild(style);
+    
+    // Event listener'lar
+    document.addEventListener('contextmenu', e => {
+        if (e.target.tagName === 'IMG') e.preventDefault();
     });
     
-    // 3. Sürükleme engelle
-    document.addEventListener('dragstart', function(e) {
-        if (e.target.tagName === 'IMG') {
-            e.preventDefault();
-            return false;
-        }
+    document.addEventListener('dragstart', e => {
+        if (e.target.tagName === 'IMG') e.preventDefault();
     });
 }
 
-console.log(`
-✨ AI PROMPT GALLERY - Hazır!
-📊 Sheets: ${SHEET_ID}
-🌍 Diller: English, Turkish, Kurdish
-🛡️ Koruma: Resim link menüsü engellendi
-🚀 Resimler: Orjinal boyutta gösteriliyor
-`);
+console.log("✨ Script hazır!");
