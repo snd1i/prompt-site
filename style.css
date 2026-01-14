@@ -1,6 +1,6 @@
 /* ============================================
-   AI PROMPT GALLERY - ESKİ MÜKEMMEL GÖRÜNÜM
-   Temiz, Modern, Profesyonel Tasarım
+   AI PROMPT GALLERY - MODERN TASARIM
+   Temiz, Modern, Profesyonel
 ============================================ */
 
 /* ==================== CSS VARIABLES ==================== */
@@ -39,7 +39,7 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     background: var(--color-primary);
     color: var(--color-text);
     min-height: 100vh;
@@ -115,6 +115,7 @@ body {
     display: none;
     min-width: 180px;
     overflow: hidden;
+    z-index: 1000;
 }
 
 .language-dropdown:hover .language-menu {
@@ -169,10 +170,12 @@ body {
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
-/* Resim koruması - sadece link menüsü engeli */
+/* Resim koruması */
 .prompt-image {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
     pointer-events: auto;
 }
@@ -370,6 +373,20 @@ body {
     opacity: 1;
 }
 
+/* ==================== NO PROMPTS MESSAGE ==================== */
+.no-prompts {
+    text-align: center;
+    padding: 60px 0;
+    color: var(--color-text-secondary);
+}
+
+.no-prompts i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: var(--color-accent);
+    opacity: 0.7;
+}
+
 /* ==================== MOBİL UYUMLULUK ==================== */
 @media (max-width: 768px) {
     .title {
@@ -415,16 +432,26 @@ body {
 body[lang="badini"] .prompt-text {
     font-family: 'Noto Sans Arabic', sans-serif;
     text-align: right;
+    direction: rtl;
 }
 
 /* Arapça için */
 body[lang="ar"] .prompt-text {
     font-family: 'Noto Sans Arabic', sans-serif;
     text-align: right;
+    direction: rtl;
+}
+
+/* Sorani için */
+body[lang="sorani"] .prompt-text {
+    font-family: 'Noto Sans Arabic', sans-serif;
+    text-align: right;
+    direction: rtl;
 }
 
 /* Diğer diller için */
-body:not([lang="badini"]):not([lang="ar"]) .prompt-text {
+body:not([lang="badini"]):not([lang="ar"]):not([lang="sorani"]) .prompt-text {
     font-family: inherit;
     text-align: left;
+    direction: ltr;
 }
