@@ -3,7 +3,7 @@ const SHEET_ID = '16GwAXZyYn109Bji4j--Ym9a-GG4b3oTkwP0bdQGnHkM';
 const SHEET_NAME = 'Sheet1';
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
-console.log("🚀 AI Prompt Gallery - 5 Dil Desteğiyle");
+console.log("🚀 AI Prompt Gallery - En Yeniler Üstte");
 console.log("📊 Sheets ID:", SHEET_ID);
 
 // Dil desteği
@@ -183,17 +183,18 @@ function showErrorMessage() {
     `;
 }
 
-// Google Sheets verilerini işle
+// Google Sheets verilerini işle - EN YENİLER ÜSTTE
 function processSheetData(table) {
     const container = document.getElementById('prompts-container');
     
     // Promptlar için verileri işle
     const prompts = [];
     
-    // İlk satır başlık, onu atla
+    // Tüm satırları işle (ilk satır başlık)
     for (let i = 1; i < table.rows.length; i++) {
         const row = table.rows[i];
         
+        // Resim URL'si ve prompt metni olan satırları al
         if (row.c && row.c[0] && row.c[0].v && row.c[1] && row.c[1].v) {
             let imageUrl = row.c[0].v.toString();
             const promptText = row.c[1].v.toString();
@@ -203,14 +204,22 @@ function processSheetData(table) {
                 imageUrl = imageUrl.replace('w-800', 'w=800');
             }
             
+            // Satır numarasını da kaydet (sıralama için)
             prompts.push({
                 image: imageUrl,
-                prompt: promptText
+                prompt: promptText,
+                rowIndex: i // Satır numarası - yeni eklenenler daha büyük numaralı
             });
         }
     }
     
     console.log(`✅ ${prompts.length} prompt bulundu`);
+    
+    // EN YENİLER ÜSTTE OLACAK ŞEKİLDE SIRALA
+    // Google Sheets'te alttan yukarı eklendiği için tersten sırala
+    prompts.sort((a, b) => b.rowIndex - a.rowIndex);
+    
+    console.log("📈 Sıralandı: En yeniler üstte");
     
     // Prompt kartlarını oluştur
     if (prompts.length > 0) {
@@ -250,6 +259,7 @@ function displayPrompts(prompts) {
     const container = document.getElementById('prompts-container');
     container.innerHTML = '';
     
+    // En yeniden en eskiye doğru göster
     prompts.forEach((prompt, index) => {
         const card = document.createElement('div');
         card.className = 'prompt-card';
@@ -289,7 +299,7 @@ function displayPrompts(prompts) {
         // Resim yükleme hatası
         const img = card.querySelector('img');
         img.onerror = function() {
-            this.src = 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop';
+            this.src = 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1000&auto=format&fit=crop';
             let altText = 'Image failed to load';
             if (currentLanguage === 'badini') {
                 altText = 'وێنە نەهات';
@@ -438,5 +448,5 @@ function showProtectionMessage(message) {
     }, 2000);
 }
 
-console.log("✨ Script hazır! 5 dil desteği aktif");
+console.log("✨ Script hazır! En yeniler üstte sıralanacak");
 console.log("🌍 Aktif dil: " + currentLanguage);
