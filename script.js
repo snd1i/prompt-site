@@ -18,23 +18,13 @@ const languages = {
 // Varsayılan dil
 let currentLanguage = localStorage.getItem('selectedLanguage') || 'en';
 
-// Badini çevirileri
-const badiniTranslations = {
-    'loading': 'چافەرێبە',
-    'load_error': 'خەلەتیەک چێبی هیفیە سەڤحێ جدید بکە',
-    'no_prompts': 'هێشتا چ کود داخل نەکرنە',
-    'copy_button': 'کوپی بکە',
-    'copied': 'هاتە کوپیکرن',
-    'telegram_title': 'کەنالێ مەیێ تلیگرامی',
-    'telegram_desc': 'بو پرومپتێن جدید و تحدیسان جوین بکە'
-};
-
 // Sayfa yüklendiğinde
 document.addEventListener('DOMContentLoaded', function() {
     console.log("✅ Site yüklendi");
     initLanguageSelector();
     loadPrompts();
     updateLanguage();
+    setupImageProtection(); // RESİM KORUMA
     document.getElementById('current-language').textContent = languages[currentLanguage];
 });
 
@@ -60,7 +50,6 @@ function changeLanguage(lang) {
 
 // Tüm sayfayı güncelle
 function updateLanguage() {
-    // Tüm elementleri güncelle
     document.querySelectorAll('[data-tr]').forEach(element => {
         const text = element.getAttribute(`data-${currentLanguage}`);
         if (text) {
@@ -68,29 +57,11 @@ function updateLanguage() {
         }
     });
     
-    // Badini dili için font
     if (currentLanguage === 'badini') {
-        document.body.style.fontFamily = "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif";
+        document.body.style.fontFamily = "'Noto Sans Arabic', sans-serif";
     } else {
         document.body.style.fontFamily = "'Poppins', sans-serif";
     }
-    
-    // Kopyala butonlarını güncelle
-    updateCopyButtons();
-}
-
-// Kopyala butonlarını güncelle
-function updateCopyButtons() {
-    const copyButtons = document.querySelectorAll('.copy-btn span');
-    
-    copyButtons.forEach(span => {
-        const text = span.getAttribute(`data-${currentLanguage}`);
-        if (text) {
-            span.textContent = text;
-        } else if (currentLanguage === 'badini') {
-            span.textContent = badiniTranslations.copy_button || 'کوپی بکە';
-        }
-    });
 }
 
 // Google Sheets'ten veri çek
@@ -126,23 +97,13 @@ async function loadPrompts() {
 // Hata mesajı göster
 function showErrorMessage() {
     const container = document.getElementById('prompts-container');
-    let errorMessage = '';
+    
+    let errorMessage = 'An error occurred while loading prompts.';
     let tryAgainText = 'Try Again';
     
-    if (currentLanguage === 'badini') {
-        errorMessage = badiniTranslations.load_error || 'خەلەتیەک چێبی';
-        tryAgainText = 'دوبارە بکە';
-    } else if (currentLanguage === 'tr') {
+    if (currentLanguage === 'tr') {
         errorMessage = 'Promptlar yüklenirken bir hata oluştu.';
         tryAgainText = 'Tekrar Dene';
-    } else if (currentLanguage === 'ar') {
-        errorMessage = 'حدث خطأ أثناء تحميل الأوامر.';
-        tryAgainText = 'حاول مرة أخرى';
-    } else if (currentLanguage === 'sorani') {
-        errorMessage = 'هەڵەیەک ڕوویدا لە کاتی بارکردنی پڕۆمپتەکان.';
-        tryAgainText = 'دووبارە هەوڵبدە';
-    } else {
-        errorMessage = 'An error occurred while loading prompts.';
     }
     
     container.innerHTML = `
@@ -195,18 +156,10 @@ function processSheetData(table) {
 // Prompt yok mesajı
 function showNoPromptsMessage() {
     const container = document.getElementById('prompts-container');
-    let message = '';
+    let message = 'No prompts added yet.';
     
-    if (currentLanguage === 'badini') {
-        message = badiniTranslations.no_prompts;
-    } else if (currentLanguage === 'tr') {
+    if (currentLanguage === 'tr') {
         message = 'Henüz prompt eklenmemiş.';
-    } else if (currentLanguage === 'ar') {
-        message = 'لم تتم إضافة أي أوامر بعد.';
-    } else if (currentLanguage === 'sorani') {
-        message = 'هیچ پڕۆمپتێک زیاد نەکراوە.';
-    } else {
-        message = 'No prompts added yet.';
     }
     
     container.innerHTML = `
@@ -228,14 +181,8 @@ function displayPrompts(prompts) {
         
         // Buton metni
         let copyButtonText = 'Copy Prompt';
-        if (currentLanguage === 'badini') {
-            copyButtonText = badiniTranslations.copy_button || 'کوپی بکە';
-        } else if (currentLanguage === 'tr') {
+        if (currentLanguage === 'tr') {
             copyButtonText = 'Promptu Kopyala';
-        } else if (currentLanguage === 'ar') {
-            copyButtonText = 'نسخ الأمر';
-        } else if (currentLanguage === 'sorani') {
-            copyButtonText = 'پڕۆمپتەکە کۆپی بکە';
         }
         
         card.innerHTML = `
@@ -248,31 +195,18 @@ function displayPrompts(prompts) {
                 </div>
                 <button class="copy-btn" data-prompt="${escapeHtml(prompt.prompt)}">
                     <i class="far fa-copy"></i>
-                    <span data-en="Copy Prompt" 
-                          data-tr="Promptu Kopyala" 
-                          data-ar="نسخ الأمر" 
-                          data-sorani="پڕۆمپتەکە کۆپی بکە"
-                          data-badini="${badiniTranslations.copy_button || 'کوپی بکە'}">
-                        ${copyButtonText}
-                    </span>
+                    <span>${copyButtonText}</span>
                 </button>
             </div>
         `;
-        
-        // Resim yükleme hatası
-        const img = card.querySelector('img');
-        img.onerror = function() {
-            this.src = 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800';
-            console.log(`⚠️ Resim yüklenemedi: ${prompt.image}`);
-        };
         
         container.appendChild(card);
     });
     
     // Kopyalama butonlarına tıklama ekle
     attachCopyListeners();
-    // Dil güncellemesi
-    updateCopyButtons();
+    // Resim korumasını tekrar uygula
+    setupImageProtection();
 }
 
 // Kopyalama butonlarını bağla
@@ -285,7 +219,6 @@ function attachCopyListeners() {
                 await navigator.clipboard.writeText(promptText);
                 showCopyNotification();
             } catch (err) {
-                // Fallback
                 const textArea = document.createElement('textarea');
                 textArea.value = promptText;
                 document.body.appendChild(textArea);
@@ -302,12 +235,6 @@ function attachCopyListeners() {
 function showCopyNotification() {
     const notification = document.getElementById('copy-notification');
     
-    // Metni güncelle
-    const span = notification.querySelector('span');
-    if (currentLanguage === 'badini') {
-        span.textContent = badiniTranslations.copied || 'هاتە کوپیکرن';
-    }
-    
     notification.classList.add('show');
     
     setTimeout(() => {
@@ -322,10 +249,56 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Console bilgisi
+// RESİM KORUMA SİSTEMİ - SADECE LINK MENÜSÜNÜ ENGELLE
+function setupImageProtection() {
+    console.log("🛡️ Resim koruma aktif...");
+    
+    // 1. Tüm resimleri koru
+    setTimeout(() => {
+        document.querySelectorAll('.prompt-image').forEach(img => {
+            // Mobilde uzun basmayı engelle
+            img.style.webkitTouchCallout = 'none';
+            img.style.webkitUserSelect = 'none';
+            img.style.userSelect = 'none';
+            
+            // Sürüklemeyi engelle
+            img.setAttribute('draggable', 'false');
+            
+            // Sağ tıkı engelle
+            img.oncontextmenu = function(e) {
+                e.preventDefault();
+                return false;
+            };
+            
+            // Touch event'ini engelle (mobil)
+            img.ontouchstart = function(e) {
+                e.preventDefault();
+                return false;
+            };
+        });
+    }, 1000);
+    
+    // 2. Global koruma
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // 3. Sürükleme engelle
+    document.addEventListener('dragstart', function(e) {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            return false;
+        }
+    });
+}
+
 console.log(`
 ✨ AI PROMPT GALLERY - Hazır!
 📊 Sheets: ${SHEET_ID}
-🌍 Diller: English, Kurdish Sorani, Kurdish Badini, Turkish, Arabic
-🚀 Özellikler: Resimler tam boyutlu, 5 dil, kopyalama, Telegram bağlantısı
+🌍 Diller: English, Turkish, Kurdish
+🛡️ Koruma: Resim link menüsü engellendi
+🚀 Resimler: Orjinal boyutta gösteriliyor
 `);
