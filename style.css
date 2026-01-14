@@ -118,8 +118,6 @@ body {
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     transition: transform 0.3s, box-shadow 0.3s;
-    display: flex;
-    flex-direction: column;
 }
 
 .prompt-card:hover {
@@ -127,27 +125,24 @@ body {
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
-/* RESİMLER - ORJİNAL GÖRÜNÜM */
+/* RESİMLER */
 .prompt-image {
     width: 100%;
-    height: auto; /* Orjinal boyut */
-    display: block;
+    height: 250px;
+    object-fit: cover;
+    object-position: center;
     border-radius: 15px 15px 0 0;
 }
 
 .prompt-content {
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
 }
 
 .prompt-text-container {
     position: relative;
-    flex-grow: 1;
-    margin-bottom: 20px;
     max-height: 120px;
     overflow: hidden;
+    margin-bottom: 20px;
 }
 
 .prompt-text {
@@ -181,7 +176,7 @@ body {
     justify-content: center;
     gap: 10px;
     transition: all 0.3s;
-    margin-top: auto;
+    width: 100%;
 }
 
 .copy-btn:hover {
@@ -368,32 +363,19 @@ body {
     opacity: 1;
 }
 
-/* RESİM KORUMA - SADECE LINK MENÜSÜ */
-.prompt-image {
-    -webkit-touch-callout: none !important; /* iOS link menüsü */
-    -webkit-user-select: none !important; /* Seçmeyi engelle */
-    user-select: none !important;
-}
-
-/* MOBİL UYUMLULUK */
+/* MOBİL */
 @media (max-width: 768px) {
     .title {
         font-size: 2.2rem;
     }
     
-    .subtitle {
-        font-size: 1rem;
-    }
-    
     .prompts-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
     }
     
     .telegram-card {
         flex-direction: column;
         text-align: center;
-        padding: 20px;
     }
     
     .language-selector {
@@ -402,33 +384,5 @@ body {
         right: auto;
         text-align: center;
         margin-bottom: 20px;
-    }
-    
-    .language-menu {
-        left: 0;
-        right: auto;
-    }
-    
-    .prompt-image {
-        max-height: 400px; /* Mobilde çok büyük olmasın */
-        object-fit: contain; /* Orantılı küçült */
-    }
-}
-
-@media (max-width: 480px) {
-    .title {
-        font-size: 1.8rem;
-    }
-    
-    .container {
-        padding: 0 15px;
-    }
-    
-    .telegram-links {
-        flex-direction: column;
-    }
-    
-    .prompt-image {
-        max-height: 300px;
     }
 }
