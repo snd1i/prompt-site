@@ -185,4 +185,65 @@ function showCopyNotification() {
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
+// RESİMLERİN ÜST KISMINI GÖSTER
+function cropImagesToTop() {
+    console.log("✂️ Resimlerin üst kısmı kesiliyor...");
+    
+    // CSS ekle
+    if (!document.getElementById('top-crop-style')) {
+        const style = document.createElement('style');
+        style.id = 'top-crop-style';
+        style.textContent = `
+            .prompt-image {
+                object-position: top !important;
+                object-fit: cover !important;
+            }
+            
+            /* Mobil için optimize */
+            @media (max-width: 768px) {
+                .prompt-image {
+                    object-position: top center !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        console.log("✅ CSS eklendi: Üst kırpma aktif");
+    }
+    
+    // Resimlere direkt müdahale
+    const images = document.querySelectorAll('img.prompt-image');
+    images.forEach(img => {
+        // object-position ayarla
+        img.style.objectPosition = 'top';
+        img.style.objectFit = 'cover';
+        
+        // Unsplash linklerine crop=top ekle
+        if (img.src.includes('unsplash.com')) {
+            const url = new URL(img.src);
+            
+            // w-800 düzeltmesi
+            if (url.search.includes('w-800')) {
+                url.search = url.search.replace('w-800', 'w=800');
+            }
+            
+            // crop=top ekle
+            if (!url.searchParams.has('crop')) {
+                url.searchParams.set('crop', 'top');
+            }
+            
+            // Yeni URL'yi uygula
+            img.src = url.toString();
+        }
+    });
+    
+    console.log(`✅ ${images.length} resim düzenlendi: Üst kısmı görünüyor`);
+}
+
+// Sayfa yüklendiğinde ve resimler yüklendiğinde çalıştır
+document.addEventListener('DOMContentLoaded', cropImagesToTop);
+
+// Resimler değiştiğinde (yeni resimler eklendiğinde)
+const observer = new MutationObserver(cropImagesToTop);
+observer.observe(document.body, { childList: true, subtree: true });
+
 console.log("✨ YENİ script.js yüklendi! Tarih: " + new Date().toLocaleString());
