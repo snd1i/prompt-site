@@ -1,210 +1,163 @@
-// image-protection.js - RESİM KORUMA SİSTEMİ (MEVCUT KODLARA DOKUNMAZ)
+// image-protection.js - SADECE URL GİZLEME (MEVCUT KODLARA DOKUNMAZ)
 
-console.log('🛡️ Resim koruma sistemi yükleniyor...');
+console.log('🔒 URL gizleme sistemi yükleniyor...');
 
-// Tüm resimleri koruma altına al
-function protectAllImages() {
-    console.log('🔒 Resimler koruma altına alınıyor...');
+// URL gizleme fonksiyonu
+function hideImageURLs() {
+    console.log('🖼️ Resim URL\'leri gizleniyor...');
     
     // Tüm resimleri seç
     const images = document.querySelectorAll('img');
     
     images.forEach(img => {
-        // Resim özelliklerini ayarla
-        img.setAttribute('draggable', 'false');
-        img.style.userSelect = 'none';
-        img.style.webkitUserDrag = 'none';
-        img.style.khtmlUserDrag = 'none';
-        img.style.mozUserDrag = 'none';
-        img.style.msUserDrag = 'none';
-        
-        // Context menu (sağ tık) engelle
-        img.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            showProtectionMessage('⛔ Resimler koruma altındadır!');
-            return false;
-        });
-        
-        // Drag start engelle
-        img.addEventListener('dragstart', function(e) {
-            e.preventDefault();
-            return false;
-        });
-        
-        // Select start engelle
-        img.addEventListener('selectstart', function(e) {
-            e.preventDefault();
-            return false;
-        });
-        
-        // Copy engelle
-        img.addEventListener('copy', function(e) {
-            e.preventDefault();
-            showProtectionMessage('⛔ Kopyalama engellendi!');
-            return false;
-        });
-        
-        // Mouse ile resim URL'sini görmeyi engelle
-        img.addEventListener('mousedown', function(e) {
-            if (e.button === 0) { // Sol tık
-                // Normal tıklamaya izin ver, sadece uzun basmayı engelle
-                this._clickTimer = setTimeout(() => {
-                    showProtectionMessage('⛔ Resim koruma altındadır!');
-                }, 800); // 800ms'den uzun basılı tutunca uyarı göster
-            }
-        });
-        
-        img.addEventListener('mouseup', function(e) {
-            if (this._clickTimer) {
-                clearTimeout(this._clickTimer);
-                this._clickTimer = null;
-            }
-        });
-        
-        img.addEventListener('mouseleave', function(e) {
-            if (this._clickTimer) {
-                clearTimeout(this._clickTimer);
-                this._clickTimer = null;
-            }
-        });
-        
-        // Touch events için (mobil)
-        img.addEventListener('touchstart', function(e) {
-            this._touchTimer = setTimeout(() => {
-                showProtectionMessage('⛔ Resim koruma altındadır!');
-                e.preventDefault();
-            }, 800);
-        });
-        
-        img.addEventListener('touchend', function(e) {
-            if (this._touchTimer) {
-                clearTimeout(this._touchTimer);
-                this._touchTimer = null;
-            }
-        });
-        
-        img.addEventListener('touchcancel', function(e) {
-            if (this._touchTimer) {
-                clearTimeout(this._touchTimer);
-                this._touchTimer = null;
-            }
-        });
+        // Sadece URL gizleme için özel işlem
+        protectImageURL(img);
     });
     
-    console.log(`✅ ${images.length} resim koruma altına alındı`);
+    console.log(`✅ ${images.length} resim URL'si gizlendi`);
 }
 
-// Koruma mesajı göster
-function showProtectionMessage(message) {
-    // Mevcut mesaj varsa kaldır
-    const existingMsg = document.getElementById('protection-message');
-    if (existingMsg) {
-        existingMsg.remove();
-    }
+// Tek bir resmin URL'sini gizle
+function protectImageURL(img) {
+    // Eğer zaten korunmuşsa atla
+    if (img.getAttribute('data-url-protected')) return;
     
-    // Yeni mesaj oluştur
-    const msg = document.createElement('div');
-    msg.id = 'protection-message';
-    msg.textContent = message;
-    msg.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.85);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 10px;
-        font-family: 'Poppins', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        z-index: 10000;
-        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        animation: protectionFade 2s ease-in-out;
-        pointer-events: none;
-    `;
+    // İşaretle
+    img.setAttribute('data-url-protected', 'true');
     
-    // Animasyon CSS'ini ekle
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes protectionFade {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-    `;
-    document.head.appendChild(style);
+    // Resmin orijinal URL'sini sakla
+    const originalSrc = img.src;
     
-    document.body.appendChild(msg);
-    
-    // 2 saniye sonra mesajı kaldır
-    setTimeout(() => {
-        if (msg.parentNode) {
-            msg.remove();
-        }
-    }, 2000);
-}
-
-// Sayfa üzerindeki tüm bağlantıları kontrol et
-function protectLinks() {
-    const links = document.querySelectorAll('a[href*=".jpg"], a[href*=".jpeg"], a[href*=".png"], a[href*=".gif"], a[href*=".webp"]');
-    
-    links.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            showProtectionMessage('⛔ Direkt bağlantı engellendi!');
-            return false;
-        });
+    // Resme tıklandığında normal davranış (hiçbir şey yapma)
+    img.addEventListener('click', function(e) {
+        // Normal tıklamaya izin ver
+        return true;
     });
-}
-
-// İnspect element'i engellemeye çalış (temel koruma)
-function preventInspect() {
-    // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U engelleme
-    document.addEventListener('keydown', function(e) {
-        // DevTools açma tuş kombinasyonları
-        if (
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) ||
-            (e.key === 'F12') ||
-            (e.ctrlKey && e.key === 'U') ||
-            (e.ctrlKey && e.key === 'u')
-        ) {
-            e.preventDefault();
-            showProtectionMessage('⛔ Bu özellik devre dışı bırakıldı!');
-            return false;
+    
+    // Resme basılı tutulduğunda URL'yi gizle
+    let longPressTimer;
+    
+    img.addEventListener('mousedown', function(e) {
+        // Sadece sol tık için
+        if (e.button === 0) {
+            longPressTimer = setTimeout(() => {
+                // Basılı tutulunca resmin src'sini geçici olarak değiştir
+                this.dataset.originalSrc = this.src;
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxYTFhMmEiLz48L3N2Zz4=';
+            }, 100); // Çok hızlı çalışsın
         }
     });
     
-    // Sağ tık menüsünü engelle (tüm sayfa için)
-    document.addEventListener('contextmenu', function(e) {
-        if (e.target.tagName === 'IMG') {
-            // Resimler için özel mesaj (yukarıda zaten var)
-            return;
+    img.addEventListener('mouseup', function(e) {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
         }
-        // Diğer elementler için genel engelleme
+        // Orijinal resmi geri yükle
+        if (this.dataset.originalSrc) {
+            this.src = this.dataset.originalSrc;
+            delete this.dataset.originalSrc;
+        }
+    });
+    
+    img.addEventListener('mouseleave', function(e) {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+        }
+        // Orijinal resmi geri yükle
+        if (this.dataset.originalSrc) {
+            this.src = this.dataset.originalSrc;
+            delete this.dataset.originalSrc;
+        }
+    });
+    
+    // Touch events için (mobil)
+    img.addEventListener('touchstart', function(e) {
+        longPressTimer = setTimeout(() => {
+            // Basılı tutulunca resmin src'sini geçici olarak değiştir
+            this.dataset.originalSrc = this.src;
+            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxYTFhMmEiLz48L3N2Zz4=';
+        }, 100);
+    });
+    
+    img.addEventListener('touchend', function(e) {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+        }
+        // Orijinal resmi geri yükle
+        if (this.dataset.originalSrc) {
+            this.src = this.dataset.originalSrc;
+            delete this.dataset.originalSrc;
+        }
+    });
+    
+    img.addEventListener('touchcancel', function(e) {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+        }
+        // Orijinal resmi geri yükle
+        if (this.dataset.originalSrc) {
+            this.src = this.dataset.originalSrc;
+            delete this.dataset.originalSrc;
+        }
+    });
+    
+    // Sağ tık menüsünü ENGELLEME (sadece URL gizleme için)
+    img.addEventListener('contextmenu', function(e) {
+        // Sağ tık yapıldığında resmi geçici olarak değiştir
+        this.dataset.originalSrc = this.src;
+        this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxYTFhMmEiLz48L3N2Zz4=';
+        
+        // 500ms sonra geri yükle
+        setTimeout(() => {
+            if (this.dataset.originalSrc) {
+                this.src = this.dataset.originalSrc;
+                delete this.dataset.originalSrc;
+            }
+        }, 500);
+        
         e.preventDefault();
         return false;
-    }, false);
+    });
+    
+    // Sürükleme işlemini engelle (URL gözükmesin)
+    img.addEventListener('dragstart', function(e) {
+        // Sürüklenen veriyi boş olarak ayarla
+        e.dataTransfer.setData('text/plain', '');
+        e.dataTransfer.setData('text/html', '');
+        e.dataTransfer.setData('text/uri-list', '');
+        
+        // Görsel feedback için resmi geçici değiştir
+        this.dataset.originalSrc = this.src;
+        this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxYTFhMmEiLz48L3N2Zz4=';
+        
+        // Sürükleme bittiğinde geri yükle
+        setTimeout(() => {
+            if (this.dataset.originalSrc) {
+                this.src = this.dataset.originalSrc;
+                delete this.dataset.originalSrc;
+            }
+        }, 100);
+        
+        return false;
+    });
 }
 
-// Yeni resimler yüklendiğinde de koruma uygula
+// Yeni resimleri izle
 function setupImageObserver() {
-    // MutationObserver ile yeni eklenen resimleri izle
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.addedNodes.length) {
                 mutation.addedNodes.forEach(function(node) {
-                    if (node.nodeType === 1) { // Element node
+                    if (node.nodeType === 1) {
                         if (node.tagName === 'IMG') {
-                            // Yeni resim bulundu, koruma uygula
-                            protectSingleImage(node);
+                            protectImageURL(node);
                         } else if (node.querySelectorAll) {
-                            // İçindeki resimleri koru
                             const images = node.querySelectorAll('img');
-                            images.forEach(protectSingleImage);
+                            images.forEach(protectImageURL);
                         }
                     }
                 });
@@ -212,7 +165,6 @@ function setupImageObserver() {
         });
     });
     
-    // Body'deki değişiklikleri izle
     observer.observe(document.body, {
         childList: true,
         subtree: true
@@ -221,124 +173,22 @@ function setupImageObserver() {
     console.log('👁️ Resim gözlemcisi aktif');
 }
 
-// Tek bir resmi koru
-function protectSingleImage(img) {
-    if (img.getAttribute('data-protected')) return;
-    
-    img.setAttribute('data-protected', 'true');
-    img.setAttribute('draggable', 'false');
-    img.style.userSelect = 'none';
-    img.style.webkitUserDrag = 'none';
-    
-    // Event listeners ekle
-    const events = ['contextmenu', 'dragstart', 'selectstart', 'copy'];
-    events.forEach(event => {
-        img.addEventListener(event, function(e) {
-            e.preventDefault();
-            showProtectionMessage('⛔ Resim koruma altındadır!');
-            return false;
-        });
-    });
-    
-    // Uzun basmayı engelle
-    let pressTimer;
-    img.addEventListener('mousedown', function(e) {
-        pressTimer = setTimeout(() => {
-            showProtectionMessage('⛔ Resim koruma altındadır!');
-        }, 800);
-    });
-    
-    img.addEventListener('mouseup', function() {
-        clearTimeout(pressTimer);
-    });
-    
-    img.addEventListener('mouseleave', function() {
-        clearTimeout(pressTimer);
-    });
-}
-
-// Tüm koruma sistemini başlat
-function initializeProtection() {
-    console.log('🚀 Resim koruma sistemi başlatılıyor...');
+// Başlangıç fonksiyonu
+function initializeURLProtection() {
+    console.log('🚀 URL gizleme sistemi başlatılıyor...');
     
     // Mevcut resimleri koru
-    protectAllImages();
-    
-    // Bağlantıları koru
-    protectLinks();
-    
-    // Inspect engelle (temel)
-    preventInspect();
+    hideImageURLs();
     
     // Yeni resimleri izle
     setupImageObserver();
     
-    // Prompt resimleri özel koruma
-    protectPromptImages();
-    
-    console.log('✅ Resim koruma sistemi aktif!');
-}
-
-// Prompt resimlerine özel koruma
-function protectPromptImages() {
-    // Prompt resimlerini bul
-    const promptImages = document.querySelectorAll('.prompt-image');
-    
-    promptImages.forEach(img => {
-        // URL'yi gizlemek için
-        img.onerror = function() {
-            // Hata durumunda farklı bir resim göster
-            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFhMWEyYSIvPjx0ZXh0IHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFJIEdlbmVyYXRlZCBJbWFnZTwvdGV4dD48L3N2Zz4=';
-        };
-        
-        // Resmin URL'sini gizle
-        Object.defineProperty(img, 'src', {
-            get: function() {
-                return this._originalSrc || '';
-            },
-            set: function(value) {
-                this._originalSrc = value;
-                // Proxy üzerinden yükle
-                loadImageThroughProxy(this, value);
-            }
-        });
-    });
-}
-
-// Proxy üzerinden resim yükle
-function loadImageThroughProxy(imgElement, originalUrl) {
-    // Burada bir proxy servisi kullanabilirsiniz
-    // Şimdilik direkt yüklüyoruz ama kaynağı gizliyoruz
-    const tempImg = new Image();
-    tempImg.crossOrigin = 'anonymous';
-    tempImg.onload = function() {
-        // Resim yüklendikten sonra canvas'a çiz
-        const canvas = document.createElement('canvas');
-        canvas.width = tempImg.width;
-        canvas.height = tempImg.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(tempImg, 0, 0);
-        
-        // Canvas'ı data URL'ye çevir (orijinal URL gizli)
-        imgElement.src = canvas.toDataURL('image/jpeg', 0.9);
-        imgElement.setAttribute('data-original-url', 'protected');
-    };
-    tempImg.onerror = function() {
-        // Hata durumunda placeholder göster
-        imgElement.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFhMWEyYSIvPjx0ZXh0IHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFJIEdlbmVyYXRlZCBJbWFnZTwvdGV4dD48L3N2Zz4=';
-    };
-    tempImg.src = originalUrl;
+    console.log('✅ URL gizleme sistemi aktif!');
 }
 
 // Sayfa yüklendiğinde başlat
 document.addEventListener('DOMContentLoaded', function() {
-    // Biraz bekle (diğer script'lerin yüklenmesi için)
-    setTimeout(initializeProtection, 2000);
-    
-    // Resimler yüklendikten sonra tekrar kontrol et
-    window.addEventListener('load', function() {
-        setTimeout(initializeProtection, 1000);
-    });
+    setTimeout(initializeURLProtection, 1000);
 });
 
 // Google Sheets'ten resimler yüklendiğinde de koruma uygula
@@ -346,8 +196,8 @@ if (typeof displayPrompts === 'function') {
     const originalDisplayPrompts = displayPrompts;
     window.displayPrompts = function(prompts) {
         originalDisplayPrompts(prompts);
-        setTimeout(initializeProtection, 500);
+        setTimeout(initializeURLProtection, 500);
     };
 }
 
-console.log('🛡️ Resim koruma scripti hazır!');
+console.log('🔒 URL gizleme scripti hazır!');
