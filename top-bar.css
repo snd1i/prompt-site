@@ -1,0 +1,253 @@
+/* top-bar.css - ÜSTTE TELEGRAM VE İSİM (MEVCUT KODLARA DOKUNMAZ) */
+
+/* ==================== ÜST BAR KONTEYNERİ ==================== */
+.top-bar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(26, 26, 26, 0.98);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 1000;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* ==================== SOL TARAF: LOGO VE BAŞLIK ==================== */
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.logo-container:hover {
+    transform: translateY(-1px);
+}
+
+.logo-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+.site-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.site-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    max-width: 180px;
+    font-weight: 400;
+}
+
+/* ==================== ORTA: TELEGRAM BAĞLANTILARI ==================== */
+.top-bar-center {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.telegram-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 7px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.telegram-mini:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(0, 136, 204, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.2);
+}
+
+.telegram-icon-mini {
+    color: #0088cc;
+    font-size: 1rem;
+}
+
+.telegram-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.user-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 7px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.user-mini:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(236, 72, 153, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
+}
+
+.user-icon-mini {
+    color: #ec4899;
+    font-size: 0.9rem;
+}
+
+.user-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* ==================== SAĞ TARAF: DİL SEÇİCİ ==================== */
+.top-bar-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Dil seçiciyi güncelle */
+.language-selector {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    margin: 0 !important;
+}
+
+.language-btn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 7px 14px !important;
+    font-size: 0.85rem !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+.language-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(99, 102, 241, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+/* ==================== ANA İÇERİK BOŞLUĞU ==================== */
+.main-content {
+    margin-top: 75px !important; /* Üst bar yüksekliği */
+}
+
+/* ==================== ESKİ TELEGRAM BÖLÜMÜNÜ GİZLE ==================== */
+.telegram-section {
+    display: none !important;
+}
+
+/* ==================== ESKİ HEADER'I GİZLE ==================== */
+.header {
+    display: none !important;
+}
+
+/* ==================== MOBİL UYUMLULUK ==================== */
+@media (max-width: 768px) {
+    .top-bar-container {
+        padding: 10px 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .top-bar-left {
+        order: 1;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .top-bar-center {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+        gap: 10px;
+    }
+    
+    .top-bar-right {
+        order: 2;
+    }
+    
+    .logo-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+    
+    .site-title {
+        font-size: 1rem;
+    }
+    
+    .site-subtitle {
+        font-size: 0.7rem;
+        max-width: 140px;
+    }
+    
+    .telegram-mini,
+    .user-mini {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        flex: 1;
+        justify-content: center;
+        max-width: 160px;
+    }
+    
+    .main-content {
+        margin-top: 110px !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .top-bar-container {
+        padding: 10px 20px;
+    }
+    
+    .site-title {
+        font-size: 1.1rem;
+    }
+    
+    .site-subtitle {
+        font-size: 0.7rem;
+    }
+    
+    .telegram-mini,
+    .user-mini {
+        padding: 6px 12px;
+    }
+}
