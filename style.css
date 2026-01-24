@@ -154,6 +154,8 @@ body {
     overflow: hidden;
     transition: var(--transition);
     box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
 }
 
 .prompt-card:hover {
@@ -161,10 +163,10 @@ body {
     box-shadow: var(--shadow-xl);
 }
 
-/* ==================== RESİMLER ==================== */
+/* ==================== RESİMLER - TAM GÖRÜNÜM AYARI ==================== */
 .prompt-image {
     width: 100%;
-    height: 250px;
+    height: 280px;
     object-fit: cover;
     display: block;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -180,9 +182,24 @@ body {
     pointer-events: auto;
 }
 
+/* Resim yükleme animasyonu */
+.prompt-image {
+    background: linear-gradient(90deg, #2d2d2d 25%, #3f3f46 50%, #2d2d2d 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
 /* ==================== PROMPT İÇERİĞİ ==================== */
 .prompt-content {
     padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .prompt-text-container {
@@ -190,6 +207,7 @@ body {
     margin-bottom: 20px;
     max-height: 120px;
     overflow: hidden;
+    flex: 1;
 }
 
 .prompt-text {
@@ -425,6 +443,18 @@ body {
         text-align: center;
         justify-content: center;
     }
+    
+    /* Mobilde resim boyutu */
+    .prompt-image {
+        height: 220px;
+    }
+}
+
+/* Tablet için */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .prompts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 /* ==================== DİL ÖZEL AYARLARI ==================== */
@@ -454,4 +484,24 @@ body:not([lang="badini"]):not([lang="ar"]):not([lang="sorani"]) .prompt-text {
     font-family: inherit;
     text-align: left;
     direction: ltr;
+}
+
+/* ==================== EKSTRA GELİŞTİRMELER ==================== */
+/* Kartlar arası boşluk optimizasyonu */
+.prompts-grid {
+    grid-auto-rows: minmax(450px, auto);
+}
+
+/* Resim hover efekti */
+.prompt-image:hover {
+    opacity: 0.95;
+}
+
+/* Daha iyi görünüm için */
+.prompt-card {
+    height: 100%;
+}
+
+.prompt-content {
+    height: calc(100% - 280px); /* Resim yüksekliğini çıkar */
 }
