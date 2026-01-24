@@ -39,33 +39,103 @@ document.addEventListener('DOMContentLoaded', function() {
     loadPrompts();
     updateLanguage();
     setupImageProtection();
+    fixIOSDropdown(); // iOS için düzeltme
     
     // Dil seçiciyi güncelle
     document.getElementById('current-language').textContent = languages[currentLanguage];
 });
 
-// Dil seçiciyi başlat
+// Dil seçiciyi başlat - GÜNCELLENDİ (iOS fix)
 function initLanguageSelector() {
     const languageOptions = document.querySelectorAll('.language-option');
+    const languageBtn = document.querySelector('.language-btn');
+    const languageMenu = document.querySelector('.language-menu');
     
     languageOptions.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
             const lang = this.getAttribute('data-lang');
             changeLanguage(lang);
+            
+            // Dropdown'ı kapat - iOS için
+            if (languageMenu) {
+                languageMenu.style.display = 'none';
+            }
+            
+            // iOS için focus'u kaldır
+            if (languageBtn) {
+                languageBtn.blur();
+            }
         });
     });
+    
+    // Dropdown aç/kapa
+    if (languageBtn && languageMenu) {
+        languageBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            if (languageMenu.style.display === 'block') {
+                languageMenu.style.display = 'none';
+            } else {
+                languageMenu.style.display = 'block';
+            }
+        });
+        
+        // Dışarı tıklayınca kapat
+        document.addEventListener('click', function(e) {
+            if (languageBtn && languageMenu) {
+                if (!languageBtn.contains(e.target) && !languageMenu.contains(e.target)) {
+                    languageMenu.style.display = 'none';
+                }
+            }
+        });
+        
+        // iOS touch event'leri
+        languageBtn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            if (languageMenu.style.display === 'block') {
+                languageMenu.style.display = 'none';
+            } else {
+                languageMenu.style.display = 'block';
+            }
+        });
+    }
 }
 
-// Dil değiştirme
+// Dil değiştirme - GÜNCELLENDİ (iOS fix)
 function changeLanguage(lang) {
+    console.log("🌍 Dil değiştiriliyor:", lang);
+    
     currentLanguage = lang;
     localStorage.setItem('selectedLanguage', lang);
-    document.getElementById('current-language').textContent = languages[lang];
+    
+    // Dil buton metnini güncelle
+    const currentLanguageSpan = document.getElementById('current-language');
+    if (currentLanguageSpan) {
+        currentLanguageSpan.textContent = languages[lang];
+    }
+    
+    // Dropdown menüyü kapat - iOS için
+    const languageMenu = document.querySelector('.language-menu');
+    if (languageMenu) {
+        languageMenu.style.display = 'none';
+    }
+    
+    // iOS için focus'u kaldır
+    const languageBtn = document.querySelector('.language-btn');
+    if (languageBtn) {
+        languageBtn.blur();
+    }
+    
     updateLanguage();
 }
 
 // Tüm sayfa içeriğini seçilen dile göre güncelle
 function updateLanguage() {
+    console.log("🔄 Dil güncelleniyor:", currentLanguage);
+    
     // Başlık ve alt başlık
     updateTextBySelector('.title', currentLanguage);
     updateTextBySelector('.subtitle', currentLanguage);
@@ -90,9 +160,13 @@ function updateLanguage() {
     if (currentLanguage === 'badini' || currentLanguage === 'ar' || currentLanguage === 'sorani') {
         document.body.style.fontFamily = "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif";
         document.documentElement.lang = currentLanguage;
+        document.body.style.direction = 'rtl';
+        document.body.style.textAlign = 'right';
     } else {
         document.body.style.fontFamily = "'Poppins', sans-serif";
         document.documentElement.lang = currentLanguage;
+        document.body.style.direction = 'ltr';
+        document.body.style.textAlign = 'left';
     }
 }
 
@@ -448,5 +522,98 @@ function showProtectionMessage(message) {
     }, 2000);
 }
 
+// iOS DROPDOWN FIX - YENİ EKLENDİ
+function fixIOSDropdown() {
+    // iOS cihaz kontrolü
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    if (isIOS) {
+        console.log('📱 iOS cihaz tespit edildi, dropdown düzeltiliyor...');
+        
+        // Dil dropdown'ını yeniden yapılandır
+        const languageMenu = document.querySelector('.language-menu');
+        const languageBtn = document.querySelector('.language-btn');
+        
+        if (languageMenu && languageBtn) {
+            // Mevcut event listener'ları temizle
+            const newBtn = languageBtn.cloneNode(true);
+            const newMenu = languageMenu.cloneNode(true);
+            
+            languageBtn.parentNode.replaceChild(newBtn, languageBtn);
+            languageMenu.parentNode.replaceChild(newMenu, languageMenu);
+            
+            // Yeni event listener'lar ekle
+            newBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                if (newMenu.style.display === 'block') {
+                    newMenu.style.display = 'none';
+                } else {
+                    newMenu.style.display = 'block';
+                }
+            });
+            
+            // iOS touch için
+            newBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                
+                if (newMenu.style.display === 'block') {
+                    newMenu.style.display = 'none';
+                } else {
+                    newMenu.style.display = 'block';
+                }
+            });
+            
+            // Dil seçenekleri
+            const options = newMenu.querySelectorAll('.language-option');
+            options.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const lang = this.getAttribute('data-lang');
+                    changeLanguage(lang);
+                    
+                    // Menüyü kapat
+                    newMenu.style.display = 'none';
+                    
+                    // iOS için focus'u kaldır
+                    newBtn.blur();
+                });
+                
+                // iOS touch için
+                option.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const lang = this.getAttribute('data-lang');
+                    changeLanguage(lang);
+                    
+                    // Menüyü kapat
+                    newMenu.style.display = 'none';
+                    
+                    // iOS için focus'u kaldır
+                    newBtn.blur();
+                });
+            });
+            
+            // Dışarı tıklayınca kapat
+            document.addEventListener('click', function(e) {
+                if (!newBtn.contains(e.target) && !newMenu.contains(e.target)) {
+                    newMenu.style.display = 'none';
+                }
+            });
+            
+            // Dışarı dokununca kapat (iOS)
+            document.addEventListener('touchend', function(e) {
+                if (!newBtn.contains(e.target) && !newMenu.contains(e.target)) {
+                    newMenu.style.display = 'none';
+                }
+            });
+        }
+    }
+}
+
 console.log("✨ Script hazır! En yeniler üstte sıralanacak");
 console.log("🌍 Aktif dil: " + currentLanguage);
+console.log("📱 iOS fix aktif");
